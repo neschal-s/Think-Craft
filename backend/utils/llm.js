@@ -18,16 +18,16 @@ export const generateCarouselStructure = async (prompt, tone, format = '1:1') =>
       messages: [
         {
           role: 'system',
-          content: `You are an educational carousel expert. Create informative, engaging 5-slide carousels that help users understand topics deeply. Each slide should build on the previous one and teach something valuable. You MUST respond with ONLY a valid JSON array, no markdown, no explanations.`,
+          content: `You are a master carousel storyteller. Create 5-slide carousels that are SO ENGAGING users can't help but read from start to finish. Each slide must hook the reader and build on the last. Focus on: compelling headlines, surprising facts, practical value, and emotional connection. You MUST respond with ONLY a valid JSON array, no markdown, no explanations.`,
         },
         {
           role: 'user',
-          content: `Create a 5-slide educational carousel that teaches about: "${prompt}"
+          content: `Create an ENGAGING 5-slide carousel that teaches about: "${prompt}"
 
 Tone: ${tone}
 Format: ${format} aspect ratio
 
-Your goal: Help the user understand this topic through a clear learning progression.
+CRITICAL: Make each headline irresistible. Make users WANT to read the next slide.
 
 For each slide, provide EXACTLY this JSON structure (no markdown):
 [
@@ -38,18 +38,24 @@ For each slide, provide EXACTLY this JSON structure (no markdown):
   {"slideNumber": 5, "headline": "...", "body": "...", "imagePrompt": "..."}
 ]
 
-Guidelines:
-- Slide 1: Introduction/Definition - What is this topic?
-- Slide 2: Context/Why It Matters - Why should people care?
-- Slide 3: Key Concepts - What are the main ideas?
-- Slide 4: Practical Applications - How is it used in real life?
-- Slide 5: Conclusion/Takeaway - What should they remember?
+NARRATIVE STRUCTURE (Must follow this arc):
+- Slide 1: HOOK - Start with a surprising fact, problem, or "did you know?" about ${prompt}. Make them curious.
+- Slide 2: WHY IT MATTERS - Show the real-world impact. Why should they care RIGHT NOW?
+- Slide 3: THE INSIGHT - Reveal a key concept or truth about ${prompt} that changes perspective.
+- Slide 4: PRACTICAL USE - Show how to actually USE this. Real examples, not theory.
+- Slide 5: ACTION - End with an actionable takeaway. What should they do TODAY?
 
-- Headlines: max 50 characters, clear and specific
-- Body: 2-3 sentences, informative and easy to understand
-- imagePrompt: descriptive scene matching the ${tone} tone and slide topic
-- Make content educational and progressively build understanding
-- Tone: ${tone}`,
+GUIDELINES FOR MAXIMUM ENGAGEMENT:
+- Slide 1 headline: Use curiosity gap (e.g., "The ${prompt} Secret Nobody Tells You", "Why You've Been Wrong About ${prompt}")
+- Headlines: 5-10 words max, direct, intriguing, promise value
+- Body: 2-3 sentences MAX. Short, punchy, conversational. NO JARGON.
+- Each slide must end with a reason to read the next one (curiosity or "here's how")
+- imagePrompt: Specific, vivid scenes matching ${tone} style and ${format} ratio
+
+Example good headline: "The Hidden Truth About Marketing" (curiosity, promise)
+Example bad headline: "Introduction to Marketing Concepts" (boring, generic)
+
+Make it impossible for readers to stop swiping. Go! Remember: only JSON, no markdown.`,
         },
       ],
       temperature: 0.7,

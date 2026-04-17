@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useImperativeHandle, forwardRef } from 'react';
 import html2canvas from 'html2canvas';
+import JSZip from 'jszip';
 import { useTheme } from '../context/ThemeContext';
 
-const CarouselViewer = ({ carousel, palette, customColor, selectedFormat }) => {
+const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFormat }, ref) => {
   const { isDark, theme } = useTheme();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [downloading, setDownloading] = useState(false);
@@ -112,15 +113,15 @@ const CarouselViewer = ({ carousel, palette, customColor, selectedFormat }) => {
 
           {/* Text Content */}
           <div className="w-full h-full flex flex-col items-center justify-center p-6 relative z-10">
-            <div className="text-center space-y-4">
+            <div className="w-full text-center space-y-4 flex flex-col items-center">
               <h2
-                className="text-4xl font-bold leading-tight drop-shadow-lg"
+                className="text-4xl font-bold leading-tight drop-shadow-lg w-full text-center"
                 style={{ color: colors.text }}
               >
                 {currentSlideData?.headline}
               </h2>
               <p
-                className="text-lg leading-relaxed drop-shadow-md opacity-95 max-w-xs"
+                className="text-lg leading-relaxed drop-shadow-md opacity-95 w-full text-center"
                 style={{ color: colors.text }}
               >
                 {currentSlideData?.body}
