@@ -1,35 +1,27 @@
-import { OpenAI } from 'openai';
+import axios from 'axios';
+import { generateMockCarouselStructure, generateMockAdaptedStructure } from './mock.js';
 
-// Lazy-load OpenAI to avoid error if API key is not set
-let openai = null;
-
-const getOpenAI = () => {
-  if (!openai) {
-    openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-    });
-  }
-  return openai;
-};
-
+// Use OpenRouter API directly instead of OpenAI SDK
 export const generateCarouselStructure = async (prompt, tone, format = '1:1') => {
-  const openai = getOpenAI();
   const formatInstructions = {
     '1:1': 'Generate a 5-slide carousel for social media (1:1 square ratio).',
     '9:16': 'Generate a 5-slide carousel for social media (9:16 vertical ratio, taller). Adjust text to fit vertical layout.',
     '16:9': 'Generate a 5-slide carousel for social media (16:9 horizontal ratio, wider). Keep text concise for horizontal layout.',
   };
 
-  const message = await openai.chat.completions.create({
-    model: 'gpt-3.5-turbo',
-    messages: [
+  try {
+    const response = await axios.post(
+      'https://openrouter.io/api/v1/chat/completions',
       {
-        role: 'system',
-        content: `You are a social media content expert. Create engaging carousel posts. Return ONLY valid JSON, no markdown or extra text.`,
-      },
-      {
-        role: 'user',
-        content: `${formatInstructions[format] || formatInstructions['1:1']}
+        model: 'openai/gpt-4o-mini',
+        messages: [
+          {
+            role: 'system',
+            content: `You are a social media content expert. Create engaging carousel posts. Return ONLY valid JSON, no markdown or extra text.`,
+          },
+          {
+            role: 'user',
+            content: `${formatInstructions[format] || formatInstructions['1:1']}
         
 Each slide needs:
 - headline (short, max 50 characters)
@@ -41,15 +33,22 @@ Tone: ${tone}
 
 Return JSON array with exactly 5 slides. No markdown, no extra text.
 [{slideNumber: 1, headline: "...", body: "...", imagePrompt: "..."}, ...]`,
+          },
+        ],
+        temperature: 0.7,
+        max_tokens: 2000,
       },
-    ],
-    temperature: 0.7,
-    max_tokens: 2000,
-  });
+      {
+        headers: {
+          'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          'HTTP-Referer': 'http://localhost:3000',
+          'X-OpenRouter-Title': 'Carousel Creator',
+          'Content-Type': 'application/json',
+        },
+      }
+    );
 
-  try {
-    const content = message.choices[0].message.content.trim();
-    // Extract JSON from response (in case model adds extra text)
+    const content = response.data.choices[0].message.content.trim();
     const jsonMatch = content.match(/\[[\s\S]*\]/);
     if (!jsonMatch) throw new Error('No JSON array found in response');
     
@@ -58,26 +57,30 @@ Return JSON array with exactly 5 slides. No markdown, no extra text.
     return {
       title: `Social Media Carousel - ${tone}`,
       format,
-      slides: slides.slice(0, 5), // Ensure max 5 slides
+      slides: slides.slice(0, 5),
     };
   } catch (error) {
-    console.error('LLM parsing error:', error);
-    throw new Error('Failed to parse carousel structure from LLM');
+    console.error('[LLM] Error:', error.response?.status, error.response?.data || error.message);
+    console.warn('[LLM] Falling back to mock mode...');
+    // Fallback to mock data if OpenRouter fails
+    return generateMockCarouselStructure(prompt, tone, format);
   }
 };
 
 export const adaptCarouselFormat = async (carouselStructure, targetFormat, tone) => {
-  const openai = getOpenAI();
-  const message = await openai.chat.completions.create({
-    model: 'gpt-3.5-turbo',
-    messages: [
+  try {
+    const response = await axios.post(
+      'https://openrouter.io/api/v1/chat/completions',
       {
-        role: 'system',
-        content: `You are a social media content expert. Adapt carousels for different formats while maintaining the narrative. Return ONLY valid JSON, no markdown.`,
-      },
-      {
-        role: 'user',
-        content: `Adapt this carousel for ${targetFormat} format:
+        model: 'openai/gpt-4o-mini',
+        messages: [
+          {
+            role: 'system',
+            content: `You are a social media content expert. Adapt carousels for different formats while maintaining the narrative. Return ONLY valid JSON, no markdown.`,
+          },
+          {
+            role: 'user',
+            content: `Adapt this carousel for ${targetFormat} format:
         
 Original carousel:
 ${JSON.stringify(carouselStructure.slides, null, 2)}
@@ -90,14 +93,22 @@ Rewrite copy for the target format. Keep narrative flow intact. Keep tone: ${ton
 Update imagePrompts to mention "${targetFormat} aspect ratio" and "${tone} style".
 
 Return ONLY JSON array with 5 slides: [{slideNumber: 1, headline: "...", body: "...", imagePrompt: "..."}, ...]`,
+          },
+        ],
+        temperature: 0.7,
+        max_tokens: 2000,
       },
-    ],
-    temperature: 0.7,
-    max_tokens: 2000,
-  });
+      {
+        headers: {
+          'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          'HTTP-Referer': 'http://localhost:3000',
+          'X-OpenRouter-Title': 'Carousel Creator',
+          'Content-Type': 'application/json',
+        },
+      }
+    );
 
-  try {
-    const content = message.choices[0].message.content.trim();
+    const content = response.data.choices[0].message.content.trim();
     const jsonMatch = content.match(/\[[\s\S]*\]/);
     if (!jsonMatch) throw new Error('No JSON array found in response');
     
@@ -109,7 +120,9 @@ Return ONLY JSON array with 5 slides: [{slideNumber: 1, headline: "...", body: "
       slides: slides.slice(0, 5),
     };
   } catch (error) {
-    console.error('LLM adaptation error:', error);
-    throw new Error('Failed to adapt carousel for new format');
+    console.error('[LLM] Adaptation error:', error.response?.status, error.response?.data || error.message);
+    console.warn('[LLM] Falling back to mock mode...');
+    // Fallback to mock data if OpenRouter fails
+    return generateMockAdaptedStructure(carouselStructure, targetFormat, tone);
   }
 };

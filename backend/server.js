@@ -1,9 +1,18 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import generateRoutes from './routes/generate.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-dotenv.config();
+// Load .env file FIRST, before any other imports that depend on env vars
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const envPath = path.join(__dirname, '.env');
+const result = dotenv.config({ path: envPath });
+if (result.error) console.error('[ERROR] Failed to load .env:', result.error);
+
+// Now dynamically import generateRoutes after dotenv is configured
+const { default: generateRoutes } = await import('./routes/generate.js');
 
 const app = express();
 const PORT = process.env.PORT || 5000;

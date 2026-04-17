@@ -6,10 +6,12 @@ import { generateMockCarouselStructure, generateMockAdaptedStructure } from '../
 const router = express.Router();
 
 // Check if we should use mock mode
-const USE_MOCK = !process.env.OPENAI_API_KEY || !process.env.REPLICATE_API_KEY || process.env.MOCK_MODE === 'true';
+const USE_MOCK = !process.env.OPENROUTER_API_KEY || !process.env.REPLICATE_API_KEY || process.env.MOCK_MODE === 'true';
 
 if (USE_MOCK) {
-  console.warn('⚠️  Using MOCK mode - API keys not configured. Set OPENAI_API_KEY and REPLICATE_API_KEY to use real APIs.');
+  console.warn('⚠️  Using MOCK mode - API keys not configured. Set OPENROUTER_API_KEY and REPLICATE_API_KEY to use real APIs.');
+} else {
+  console.log('✅ Real APIs configured - carousel generation will use OpenRouter + Replicate');
 }
 
 // Generate placeholder image URLs
