@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import html2canvas from 'html2canvas';
+import { useTheme } from '../context/ThemeContext';
 
 const CarouselViewer = ({ carousel, palette, selectedFormat }) => {
+  const { isDark, theme } = useTheme();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [downloading, setDownloading] = useState(false);
 
@@ -75,7 +77,7 @@ const CarouselViewer = ({ carousel, palette, selectedFormat }) => {
         >
           <div className="w-full h-full flex flex-col">
             {/* Image Section */}
-            <div className="flex-1 overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900">
+            <div className={`flex-1 overflow-hidden ${isDark ? 'bg-gradient-to-br from-gray-800 to-gray-900' : 'bg-gradient-to-br from-gray-200 to-gray-300'}`}>
               {currentSlideData?.imageUrl ? (
                 <img
                   src={currentSlideData.imageUrl}
@@ -102,16 +104,16 @@ const CarouselViewer = ({ carousel, palette, selectedFormat }) => {
       </div>
 
       {/* Controls Container */}
-      <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6 space-y-6">
+      <div className={`border ${theme.colors.border} rounded-xl p-6 space-y-6 transition-colors duration-300 ${isDark ? 'bg-slate-800/50' : 'bg-gray-100'}`}>
         {/* Navigation Buttons */}
         <div className="flex items-center justify-center gap-4">
           <button
             onClick={handlePrev}
             disabled={currentSlide === 0}
-            className="p-3 rounded-lg bg-slate-700 hover:bg-slate-600 disabled:opacity-30 disabled:cursor-not-allowed transition duration-200"
+            className={`p-3 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed transition duration-200 ${isDark ? 'bg-slate-700 hover:bg-slate-600' : 'bg-gray-300 hover:bg-gray-400'}`}
             title="Previous slide"
           >
-            <span className="text-white text-lg">←</span>
+            <span className={`text-lg ${isDark ? 'text-white' : 'text-gray-900'}`}>←</span>
           </button>
 
           {/* Slide Indicators */}
@@ -122,8 +124,12 @@ const CarouselViewer = ({ carousel, palette, selectedFormat }) => {
                 onClick={() => setCurrentSlide(idx)}
                 className={`rounded-full transition duration-200 ${
                   idx === currentSlide
-                    ? 'bg-cyan-400 w-8 h-3'
-                    : 'bg-slate-600 hover:bg-slate-500 w-3 h-3'
+                    ? isDark
+                      ? 'bg-cyan-400 w-8 h-3'
+                      : 'bg-blue-600 w-8 h-3'
+                    : isDark
+                      ? 'bg-slate-600 hover:bg-slate-500 w-3 h-3'
+                      : 'bg-gray-400 hover:bg-gray-500 w-3 h-3'
                 }`}
                 title={`Go to slide ${idx + 1}`}
               />
@@ -133,18 +139,18 @@ const CarouselViewer = ({ carousel, palette, selectedFormat }) => {
           <button
             onClick={handleNext}
             disabled={currentSlide === totalSlides - 1}
-            className="p-3 rounded-lg bg-slate-700 hover:bg-slate-600 disabled:opacity-30 disabled:cursor-not-allowed transition duration-200"
+            className={`p-3 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed transition duration-200 ${isDark ? 'bg-slate-700 hover:bg-slate-600' : 'bg-gray-300 hover:bg-gray-400'}`}
             title="Next slide"
           >
-            <span className="text-white text-lg">→</span>
+            <span className={`text-lg ${isDark ? 'text-white' : 'text-gray-900'}`}>→</span>
           </button>
         </div>
 
         {/* Slide Counter */}
         <div className="text-center">
-          <p className="text-slate-300 text-sm font-medium">
-            Slide <span className="text-cyan-400">{currentSlide + 1}</span> of{' '}
-            <span className="text-cyan-400">{totalSlides}</span>
+          <p className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
+            Slide <span className={isDark ? 'text-cyan-400' : 'text-blue-600'}>{currentSlide + 1}</span> of{' '}
+            <span className={isDark ? 'text-cyan-400' : 'text-blue-600'}>{totalSlides}</span>
           </p>
         </div>
 
@@ -156,8 +162,12 @@ const CarouselViewer = ({ carousel, palette, selectedFormat }) => {
             data-download-btn
             className={`px-8 py-3 rounded-xl font-semibold transition duration-200 transform ${
               downloading
-                ? 'bg-slate-600 text-slate-400 cursor-not-allowed opacity-50'
-                : 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white hover:from-cyan-400 hover:to-blue-500 active:scale-95 shadow-lg hover:shadow-cyan-500/50'
+                ? isDark
+                  ? 'bg-slate-600 text-slate-400 cursor-not-allowed opacity-50'
+                  : 'bg-gray-400 text-gray-600 cursor-not-allowed opacity-50'
+                : isDark
+                  ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white hover:from-cyan-400 hover:to-blue-500 active:scale-95 shadow-lg hover:shadow-cyan-500/50'
+                  : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-500 hover:to-purple-500 active:scale-95 shadow-lg hover:shadow-blue-400/50'
             }`}
           >
             {downloading ? (
@@ -169,10 +179,7 @@ const CarouselViewer = ({ carousel, palette, selectedFormat }) => {
                 Downloading...
               </span>
             ) : (
-              <span className="flex items-center justify-center gap-2">
-                <span>⬇️</span>
-                <span>Download Slide as PNG</span>
-              </span>
+              <span>Download Slide as PNG</span>
             )}
           </button>
         </div>

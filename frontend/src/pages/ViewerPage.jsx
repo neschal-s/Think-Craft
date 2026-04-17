@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CarouselViewer from '../components/CarouselViewer';
 import FormatSelector from '../components/FormatSelector';
+import { useTheme } from '../context/ThemeContext';
 
 const ViewerPage = () => {
   const navigate = useNavigate();
+  const { isDark, theme } = useTheme();
   const [carousel, setCarousel] = useState(null);
-  const [palette, setPalette] = useState('vibrant');
+  const [palette, setPalette] = useState('slate');
   const [tone, setTone] = useState('professional');
   const [selectedFormat, setSelectedFormat] = useState('1:1');
   const [formatCarousels, setFormatCarousels] = useState({});
@@ -24,7 +26,7 @@ const ViewerPage = () => {
 
     const parsedCarousel = JSON.parse(saved);
     setCarousel(parsedCarousel);
-    setPalette(savedPalette || 'vibrant');
+    setPalette(savedPalette || 'slate');
     setTone(savedTone || 'professional');
 
     setFormatCarousels({ '1:1': parsedCarousel });
@@ -66,10 +68,10 @@ const ViewerPage = () => {
 
   if (!carousel) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className={`flex items-center justify-center min-h-screen transition-colors duration-300 ${theme.colors.bg.primary}`}>
         <div className="text-center">
-          <div className="animate-spin h-12 w-12 border-4 border-cyan-400 border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-slate-400">Loading your carousel...</p>
+          <div className={`animate-spin h-12 w-12 border-4 rounded-full mx-auto mb-4 ${isDark ? 'border-cyan-400 border-t-transparent' : 'border-blue-600 border-t-transparent'}`}></div>
+          <p className={theme.colors.text.tertiary}>Loading your carousel...</p>
         </div>
       </div>
     );
@@ -78,23 +80,18 @@ const ViewerPage = () => {
   const currentCarousel = formatCarousels[selectedFormat] || carousel;
 
   return (
-    <div className="min-h-screen py-12 px-4">
+    <div className={`min-h-screen py-12 px-4 transition-colors duration-300 ${theme.colors.bg.primary}`}>
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-12 text-center">
-          <h1 className="text-5xl font-bold mb-3">
-            <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
-              Your Carousel is Ready
+          <h1 className="text-6xl font-bold mb-4">
+            <span className={`bg-gradient-to-r ${theme.colors.gradient} bg-clip-text text-transparent`}>
+              Your Carousel
             </span>
           </h1>
-          <div className="flex items-center justify-center gap-3 text-slate-400">
-            <span className="w-8 h-8 bg-slate-700 rounded-full flex items-center justify-center text-sm">
-              {tone.charAt(0).toUpperCase()}
-            </span>
-            <p className="text-sm">
-              {tone.charAt(0).toUpperCase() + tone.slice(1)} Tone • {selectedFormat} Format
-            </p>
-          </div>
+          <p className={`text-lg ${theme.colors.text.tertiary}`}>
+            {tone.charAt(0).toUpperCase() + tone.slice(1)} Tone • {selectedFormat} Format • Ready to Download
+          </p>
         </div>
 
         {/* Format Selector */}
@@ -108,7 +105,7 @@ const ViewerPage = () => {
 
         {/* Carousel Viewer */}
         <div className="mb-12">
-          <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl border border-slate-700 p-8 shadow-2xl">
+          <div className={`${theme.colors.bg.card} rounded-2xl border ${theme.colors.border} p-8 shadow-2xl transition-colors duration-300`}>
             <CarouselViewer
               carousel={currentCarousel}
               palette={palette}
@@ -121,7 +118,11 @@ const ViewerPage = () => {
         <div className="flex items-center justify-center gap-4 flex-wrap">
           <button
             onClick={() => navigate('/')}
-            className="px-8 py-3 bg-gradient-to-r from-slate-700 to-slate-800 hover:from-slate-600 hover:to-slate-700 text-white rounded-xl font-semibold transition duration-200 border border-slate-600 flex items-center gap-2"
+            className={`px-8 py-3 rounded-xl font-semibold transition duration-200 border flex items-center gap-2 ${
+              isDark
+                ? 'bg-gradient-to-r from-slate-700 to-slate-800 hover:from-slate-600 hover:to-slate-700 text-white border-slate-600'
+                : 'bg-gradient-to-r from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-gray-900 border-gray-300'
+            }`}
           >
             <span>←</span>
             <span>Create New</span>
@@ -132,26 +133,29 @@ const ViewerPage = () => {
               const btn = element.parentElement.querySelector('[data-download-btn]');
               if (btn) btn.click();
             }}
-            className="px-8 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-xl font-semibold transition duration-200 shadow-lg hover:shadow-cyan-500/50 flex items-center gap-2"
+            className={`px-8 py-3 rounded-xl font-semibold transition duration-200 shadow-lg text-white flex items-center gap-2 ${
+              isDark
+                ? 'bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 hover:shadow-cyan-500/50'
+                : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 hover:shadow-blue-400/50'
+            }`}
           >
-            <span>📥</span>
             <span>Download Carousel</span>
           </button>
         </div>
 
         {/* Tips */}
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-slate-800 border border-slate-700 rounded-xl p-4 text-center">
-            <p className="text-2xl mb-2">✨</p>
-            <p className="text-sm text-slate-400">Tip: Edit slides to customize the message</p>
+        <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className={`${theme.colors.bg.secondary} border ${theme.colors.border} rounded-xl p-6 text-center hover:border-opacity-100 transition-colors duration-300 ${isDark ? 'hover:border-slate-600' : 'hover:border-gray-400'}`}>
+            <h3 className={`font-semibold mb-2 text-lg ${isDark ? 'text-cyan-400' : 'text-blue-600'}`}>Customize</h3>
+            <p className={`${theme.colors.text.tertiary} text-sm`}>Edit and refine each slide to match your message perfectly</p>
           </div>
-          <div className="bg-slate-800 border border-slate-700 rounded-xl p-4 text-center">
-            <p className="text-2xl mb-2">🔄</p>
-            <p className="text-sm text-slate-400">Tip: Switch formats to adapt for different platforms</p>
+          <div className={`${theme.colors.bg.secondary} border ${theme.colors.border} rounded-xl p-6 text-center hover:border-opacity-100 transition-colors duration-300 ${isDark ? 'hover:border-slate-600' : 'hover:border-gray-400'}`}>
+            <h3 className={`font-semibold mb-2 text-lg ${isDark ? 'text-cyan-400' : 'text-blue-600'}`}>Adapt</h3>
+            <p className={`${theme.colors.text.tertiary} text-sm`}>Switch between formats for different social media platforms</p>
           </div>
-          <div className="bg-slate-800 border border-slate-700 rounded-xl p-4 text-center">
-            <p className="text-2xl mb-2">📱</p>
-            <p className="text-sm text-slate-400">Tip: Use mobile view for best preview</p>
+          <div className={`${theme.colors.bg.secondary} border ${theme.colors.border} rounded-xl p-6 text-center hover:border-opacity-100 transition-colors duration-300 ${isDark ? 'hover:border-slate-600' : 'hover:border-gray-400'}`}>
+            <h3 className={`font-semibold mb-2 text-lg ${isDark ? 'text-cyan-400' : 'text-blue-600'}`}>Export</h3>
+            <p className={`${theme.colors.text.tertiary} text-sm`}>Download individual slides or the entire carousel as PNG</p>
           </div>
         </div>
       </div>
