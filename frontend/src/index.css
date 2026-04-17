@@ -1,0 +1,40 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+body {
+  @apply font-sans;
+}
+
+.carousel-slide {
+  @apply w-full flex flex-col bg-white rounded-lg shadow-md overflow-hidden;
+}
+
+.carousel-image {
+  @apply w-full h-auto object-cover;
+}
+
+.carousel-text {
+  @apply p-4 flex flex-col justify-center;
+}
+
+.carousel-headline {
+  @apply text-lg font-bold text-primary-900 mb-2;
+}
+
+.carousel-body {
+  @apply text-sm text-gray-700;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.loading-pulse {
+  animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
