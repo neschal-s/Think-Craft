@@ -1,10 +1,19 @@
 import { OpenAI } from 'openai';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// Lazy-load OpenAI to avoid error if API key is not set
+let openai = null;
+
+const getOpenAI = () => {
+  if (!openai) {
+    openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+  }
+  return openai;
+};
 
 export const generateCarouselStructure = async (prompt, tone, format = '1:1') => {
+  const openai = getOpenAI();
   const formatInstructions = {
     '1:1': 'Generate a 5-slide carousel for social media (1:1 square ratio).',
     '9:16': 'Generate a 5-slide carousel for social media (9:16 vertical ratio, taller). Adjust text to fit vertical layout.',
@@ -58,6 +67,7 @@ Return JSON array with exactly 5 slides. No markdown, no extra text.
 };
 
 export const adaptCarouselFormat = async (carouselStructure, targetFormat, tone) => {
+  const openai = getOpenAI();
   const message = await openai.chat.completions.create({
     model: 'gpt-3.5-turbo',
     messages: [
