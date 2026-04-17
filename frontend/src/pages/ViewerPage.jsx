@@ -9,6 +9,7 @@ const ViewerPage = () => {
   const { isDark, theme } = useTheme();
   const [carousel, setCarousel] = useState(null);
   const [palette, setPalette] = useState('slate');
+  const [customColor, setCustomColor] = useState('#475569');
   const [tone, setTone] = useState('professional');
   const [selectedFormat, setSelectedFormat] = useState('1:1');
   const [formatCarousels, setFormatCarousels] = useState({});
@@ -17,6 +18,7 @@ const ViewerPage = () => {
   useEffect(() => {
     const saved = localStorage.getItem('carousel');
     const savedPalette = localStorage.getItem('palette');
+    const savedCustomColor = localStorage.getItem('customColor');
     const savedTone = localStorage.getItem('tone');
 
     if (!saved) {
@@ -27,6 +29,7 @@ const ViewerPage = () => {
     const parsedCarousel = JSON.parse(saved);
     setCarousel(parsedCarousel);
     setPalette(savedPalette || 'slate');
+    setCustomColor(savedCustomColor || '#475569');
     setTone(savedTone || 'professional');
 
     setFormatCarousels({ '1:1': parsedCarousel });
@@ -68,7 +71,7 @@ const ViewerPage = () => {
 
   if (!carousel) {
     return (
-      <div className={`flex items-center justify-center min-h-screen transition-colors duration-300 ${theme.colors.bg.primary}`}>
+      <div className={`flex items-center justify-center min-h-screen transition-colors duration-300 bg-transparent`}>
         <div className="text-center">
           <div className={`animate-spin h-12 w-12 border-4 rounded-full mx-auto mb-4 ${isDark ? 'border-cyan-400 border-t-transparent' : 'border-blue-600 border-t-transparent'}`}></div>
           <p className={theme.colors.text.tertiary}>Loading your carousel...</p>
@@ -80,7 +83,7 @@ const ViewerPage = () => {
   const currentCarousel = formatCarousels[selectedFormat] || carousel;
 
   return (
-    <div className={`min-h-screen py-12 px-4 transition-colors duration-300 ${theme.colors.bg.primary}`}>
+    <div className={`min-h-screen py-12 px-4 transition-colors duration-300 bg-transparent`}>
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-12 text-center">
@@ -109,6 +112,7 @@ const ViewerPage = () => {
             <CarouselViewer
               carousel={currentCarousel}
               palette={palette}
+              customColor={customColor}
               selectedFormat={selectedFormat}
             />
           </div>

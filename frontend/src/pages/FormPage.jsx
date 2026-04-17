@@ -8,6 +8,7 @@ const FormPage = () => {
   const { isDark, theme } = useTheme();
   const [prompt, setPrompt] = useState('');
   const [palette, setPalette] = useState('slate');
+  const [customColor, setCustomColor] = useState('#475569');
   const [tone, setTone] = useState('professional');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -54,6 +55,7 @@ const FormPage = () => {
 
       localStorage.setItem('carousel', JSON.stringify(carousel));
       localStorage.setItem('palette', palette);
+      localStorage.setItem('customColor', customColor);
       localStorage.setItem('tone', tone);
 
       navigate('/viewer');
@@ -78,7 +80,7 @@ const FormPage = () => {
   };
 
   return (
-    <div className={`min-h-screen flex items-center justify-center p-4 py-12 transition-colors duration-300 ${theme.colors.bg.primary}`}>
+    <div className={`min-h-screen flex items-center justify-center p-4 py-12 transition-colors duration-300 bg-transparent`}>
       <div className="w-full max-w-2xl">
         {/* Hero Section */}
         <div className="text-center mb-16">
@@ -131,26 +133,70 @@ const FormPage = () => {
             {/* Color Palette */}
             <div>
               <label className={`block text-lg font-semibold ${theme.colors.text.primary} mb-4`}>Color Palette</label>
-              <div className="grid grid-cols-5 gap-3">
-                {Object.entries(palettes).map(([key, pal]) => (
-                  <button
-                    key={key}
-                    type="button"
-                    onClick={() => setPalette(key)}
+              
+              {/* Preset Colors */}
+              <div className="mb-6">
+                <p className={`text-sm ${theme.colors.text.secondary} mb-3`}>Quick Presets</p>
+                <div className="grid grid-cols-5 gap-3">
+                  {Object.entries(palettes).map(([key, pal]) => (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => {
+                        setPalette(key);
+                        setCustomColor(pal.bg);
+                      }}
+                      disabled={loading}
+                      className={`h-16 rounded-xl border-2 transition duration-200 transform hover:scale-105 ${
+                        palette === key 
+                          ? isDark 
+                            ? 'border-cyan-300 ring-2 ring-cyan-400/50 scale-105'
+                            : 'border-blue-600 ring-2 ring-blue-300 scale-105'
+                          : isDark
+                            ? 'border-slate-600'
+                            : 'border-gray-300'
+                      }`}
+                      style={{ backgroundColor: pal.bg }}
+                      title={pal.name}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Custom Color Picker */}
+              <div>
+                <p className={`text-sm ${theme.colors.text.secondary} mb-3`}>Or Choose Any Color</p>
+                <div className="flex items-center gap-4">
+                  <input
+                    type="color"
+                    value={customColor}
+                    onChange={(e) => {
+                      setCustomColor(e.target.value);
+                      setPalette('custom');
+                    }}
                     disabled={loading}
-                    className={`h-16 rounded-xl border-2 transition duration-200 transform hover:scale-105 ${
-                      palette === key 
-                        ? isDark 
-                          ? 'border-cyan-300 ring-2 ring-cyan-400/50 scale-105'
-                          : 'border-blue-600 ring-2 ring-blue-300 scale-105'
-                        : isDark
-                          ? 'border-slate-600'
-                          : 'border-gray-300'
-                    }`}
-                    style={{ backgroundColor: pal.bg }}
-                    title={pal.name}
+                    className="w-20 h-16 rounded-xl border-2 border-slate-400 cursor-pointer"
                   />
-                ))}
+                  <div className="flex-1">
+                    <input
+                      type="text"
+                      value={customColor}
+                      onChange={(e) => {
+                        if (/^#[0-9A-F]{6}$/i.test(e.target.value)) {
+                          setCustomColor(e.target.value);
+                          setPalette('custom');
+                        }
+                      }}
+                      placeholder="#000000"
+                      disabled={loading}
+                      className={`w-full px-4 py-3 rounded-xl border-2 transition focus:outline-none focus:ring-2 ${isDark 
+                        ? 'bg-slate-700/50 border-slate-600 text-white placeholder-slate-400 focus:border-cyan-400 focus:ring-cyan-400/20'
+                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500/20'
+                      }`}
+                    />
+                  </div>
+                </div>
+                <p className={`text-xs ${theme.colors.text.tertiary} mt-2`}>You can paste hex codes like #FF5733 or use the color picker</p>
               </div>
             </div>
 

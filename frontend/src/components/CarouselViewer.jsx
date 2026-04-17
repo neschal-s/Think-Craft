@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import html2canvas from 'html2canvas';
 import { useTheme } from '../context/ThemeContext';
 
-const CarouselViewer = ({ carousel, palette, selectedFormat }) => {
+const CarouselViewer = ({ carousel, palette, customColor, selectedFormat }) => {
   const { isDark, theme } = useTheme();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [downloading, setDownloading] = useState(false);
@@ -13,9 +13,20 @@ const CarouselViewer = ({ carousel, palette, selectedFormat }) => {
     ocean: { bg: '#0284C7', text: '#FFF', secondary: '#00D9FF' },
     sunset: { bg: '#F97316', text: '#FFF', secondary: '#FFD700' },
     forest: { bg: '#16A34A', text: '#FFF', secondary: '#FFD700' },
+    slate: { bg: '#475569', text: '#FFF', secondary: '#00D9FF' },
+    sage: { bg: '#78716C', text: '#FFF', secondary: '#FFD93D' },
+    stone: { bg: '#78716C', text: '#FFF', secondary: '#FFD93D' },
+    mauve: { bg: '#6B5B7A', text: '#FFF', secondary: '#FFD93D' },
+    charcoal: { bg: '#36393F', text: '#FFF', secondary: '#00D9FF' },
   };
 
-  const colors = paletteColors[palette] || paletteColors.vibrant;
+  // Use customColor if provided, otherwise fall back to palette
+  const bgColor = customColor || paletteColors[palette]?.bg || paletteColors.vibrant.bg;
+  const colors = {
+    bg: bgColor,
+    text: '#FFF',
+    secondary: '#FFD93D'
+  };
   const slides = carousel.slides || [];
   const totalSlides = slides.length;
 

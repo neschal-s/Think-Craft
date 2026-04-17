@@ -39,12 +39,12 @@ export const ThemeProvider = ({ children }) => {
     } : {
       // Light mode
       bg: {
-        primary: 'bg-white',
-        secondary: 'bg-gray-50',
-        tertiary: 'bg-gray-100',
-        card: 'bg-gradient-to-br from-white to-gray-50',
+        primary: 'bg-white/70',
+        secondary: 'bg-white/50',
+        tertiary: 'bg-white/40',
+        card: 'bg-white/80 backdrop-blur-sm',
       },
-      border: 'border-gray-200',
+      border: 'border-gray-300',
       text: {
         primary: 'text-gray-900',
         secondary: 'text-gray-700',
