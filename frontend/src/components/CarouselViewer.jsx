@@ -25,13 +25,27 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
     charcoal: { bg: '#36393F', text: '#FFF', secondary: '#00D9FF' },
   };
 
+  // Helper function to determine if a color is dark or light
+  const getContrastingTextColor = (bgColor) => {
+    // Remove # if present
+    const color = bgColor.replace('#', '');
+    // Convert to RGB
+    const r = parseInt(color.substring(0, 2), 16);
+    const g = parseInt(color.substring(2, 4), 16);
+    const b = parseInt(color.substring(4, 6), 16);
+    // Calculate brightness using luminance formula
+    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+    // Return white for dark backgrounds, black for light backgrounds
+    return brightness > 128 ? '#000000' : '#FFFFFF';
+  };
+
   // Use customColor if provided, otherwise fall back to palette
   const bgColor = customColor || paletteColors[palette]?.bg || paletteColors.vibrant.bg;
   
   // Use customColor directly for text if provided, otherwise use palette text color
   let textColor;
   if (customColor) {
-    textColor = customColor;
+    textColor = getContrastingTextColor(customColor);
   } else {
     textColor = paletteColors[palette]?.text || '#FFF';
   }
@@ -46,9 +60,9 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
     return customColor || paletteColors[palette]?.bg || paletteColors.vibrant.bg;
   };
   
-  // Dynamic color for current slide
+  // Dynamic color for current slide - use directly as text color, not for contrast calculation
   const currentColor = getCurrentSlideColor();
-  const currentTextColor = currentColor === customColor ? currentColor : (customColor || paletteColors[palette]?.text || '#FFF');
+  const currentTextColor = currentColor;  // Use selected color directly as text color
   const currentSecondaryColor = currentColor;
   const slides = carousel.slides || [];
   const totalSlides = slides.length;
@@ -248,14 +262,14 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
                   <textarea
                     value={currentSlideData?.headline || ''}
                     onChange={(e) => updateSlideText('headline', e.target.value)}
-                    className="w-full text-4xl font-bold leading-tight drop-shadow-lg text-center p-2 rounded bg-black/50 text-white border-2 border-cyan-400 resize-none"
+                    className="w-full text-4xl font-bold leading-tight drop-shadow-lg text-center p-2 rounded bg-black/50 border-2 border-cyan-400 resize-none"
                     style={{ color: currentTextColor }}
                     rows={2}
                   />
                   <textarea
                     value={currentSlideData?.body || ''}
                     onChange={(e) => updateSlideText('body', e.target.value)}
-                    className="w-full text-lg leading-relaxed drop-shadow-md opacity-95 p-2 rounded bg-black/50 text-white border-2 border-cyan-400 resize-none"
+                    className="w-full text-lg leading-relaxed drop-shadow-md opacity-95 p-2 rounded bg-black/50 border-2 border-cyan-400 resize-none"
                     style={{ color: currentTextColor }}
                     rows={3}
                   />
@@ -404,10 +418,10 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
               Edit Slide {currentSlide + 1}
             </h3>
 
-            {/* Slide Color Picker */}
+            {/* Text Color Picker */}
             <div className="space-y-2">
               <label className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                Slide Background Color
+                Text Color
               </label>
               <div className="flex gap-2 items-center">
                 <input
@@ -425,7 +439,7 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
                     delete newColor[currentSlide];
                     setSlideColors(newColor);
                   }}
-                  className={`ml-auto px-3 py-1 text-sm rounded transition ${
+                  className={`px-3 py-1 text-sm rounded transition ${
                     isDark
                       ? 'bg-slate-700 hover:bg-slate-600 text-gray-300'
                       : 'bg-gray-300 hover:bg-gray-400 text-gray-700'
@@ -434,6 +448,7 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
                   Reset
                 </button>
               </div>
+              <p className={`text-xs ${isDark ? 'text-green-400' : 'text-green-600'}`}>✓ Color applied in real-time</p>
             </div>
 
             {/* Regenerate Content */}
@@ -488,6 +503,20 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
                   {regenerating ? 'Regenerating...' : '🔄 Regenerate Both'}
                 </button>
               </div>
+            </div>
+
+            {/* Save Changes Button */}
+            <div className="pt-4 border-t border-gray-400/30">
+              <button
+                onClick={() => setEditMode(false)}
+                className={`w-full px-4 py-3 rounded-lg font-semibold transition text-sm ${
+                  isDark
+                    ? 'bg-green-600 hover:bg-green-500 text-white'
+                    : 'bg-green-500 hover:bg-green-600 text-white'
+                }`}
+              >
+                ✓ Save All Changes & Close
+              </button>
             </div>
           </div>
         )}

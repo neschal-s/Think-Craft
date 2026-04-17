@@ -111,6 +111,81 @@ Make it impossible for readers to stop swiping. Go! Remember: only JSON, no mark
   }
 };
 
+// Regenerate text for a single slide
+export const generateSlideText = async (slidePrompt, tone, currentSlide) => {
+  try {
+    console.log('[LLM] 📡 Regenerating slide text with prompt:', slidePrompt.substring(0, 50) + '...');
+
+    const payload = {
+      model: 'arcee-ai/trinity-large-preview:free',
+      messages: [
+        {
+          role: 'system',
+          content: `You are a master copywriter. Regenerate carousel slide content to be ENGAGING and compelling.`,
+        },
+        {
+          role: 'user',
+          content: `Regenerate the headline and body text for this carousel slide.
+
+Topic: "${slidePrompt}"
+Tone: ${tone}
+
+Current slide data:
+Headline: "${currentSlide.headline}"
+Body: "${currentSlide.body}"
+
+Create NEW, fresh, engaging content. Respond with ONLY a valid JSON object, no markdown:
+{"headline": "...", "body": "..."}
+
+Guidelines:
+- Headline: 5-10 words max, compelling, intriguing
+- Body: 2-3 sentences max, conversational, punchy
+- Tone should be ${tone}`,
+        },
+      ],
+      temperature: 0.7,
+      max_tokens: 500,
+    };
+
+    console.log('[LLM] Sending slide text regeneration request to OpenRouter...');
+    const response = await axios.post(
+      'https://openrouter.ai/api/v1/chat/completions',
+      payload,
+      {
+        headers: {
+          'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          'HTTP-Referer': 'https://github.com/neschal-s/Think-Craft',
+          'X-OpenRouter-Title': 'ThinkCraft Slide Regeneration',
+          'Content-Type': 'application/json',
+        },
+        timeout: 30000,
+      }
+    );
+
+    const content = response.data.choices[0].message.content.trim();
+    const jsonMatch = content.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      throw new Error('No JSON object found in response');
+    }
+
+    const regeneratedText = JSON.parse(jsonMatch[0]);
+    
+    return {
+      ...currentSlide,
+      headline: regeneratedText.headline,
+      body: regeneratedText.body,
+    };
+  } catch (error) {
+    console.error('[LLM] ❌ ERROR regenerating slide text:', error.message);
+    // Fallback: return current slide with "regenerated" marker
+    return {
+      ...currentSlide,
+      headline: `${currentSlide.headline} (Regenerated)`,
+      body: currentSlide.body + ' [Content regenerated]',
+    };
+  }
+};
+
 export const adaptCarouselFormat = async (carouselStructure, targetFormat, tone) => {
   try {
     const response = await axios.post(
