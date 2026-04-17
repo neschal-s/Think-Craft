@@ -4,6 +4,7 @@ import FormPage from './pages/FormPage';
 import ViewerPage from './pages/ViewerPage';
 import Footer from './components/Footer';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
+import { IconButton } from './styles/ModernButtons';
 import './index.css';
 
 function AppContent() {
@@ -25,9 +26,9 @@ function AppContent() {
             </div>
             <div className="flex items-center gap-4">
               <p className={`text-sm hidden sm:block ${theme.colors.text.tertiary}`}>AI-Powered Social Media Carousels</p>
-              <button
+              <IconButton
                 onClick={toggleTheme}
-                className={`p-2 rounded-lg border ${theme.colors.border} transition-colors duration-200 ${isDark ? 'bg-slate-800 hover:bg-slate-700' : 'bg-gray-100 hover:bg-gray-200'}`}
+                isDark={isDark}
                 title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
               >
                 {isDark ? (
@@ -39,7 +40,7 @@ function AppContent() {
                     <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
                   </svg>
                 )}
-              </button>
+              </IconButton>
             </div>
           </div>
         </header>

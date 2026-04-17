@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTheme } from '../context/ThemeContext';
+import { LinkButton } from '../styles/ModernButtons';
 
 const Footer = () => {
   const { isDark, theme } = useTheme();
@@ -33,20 +34,16 @@ const Footer = () => {
           
           <div className="flex items-center justify-center gap-3 flex-wrap mb-4">
             {links.map((link, idx) => (
-              <a
+              <LinkButton
                 key={idx}
                 href={link.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`px-4 py-3 rounded-xl border-2 transition-all duration-300 font-light font-['Poppins'] hover:scale-105 ${
-                  isDark
-                    ? 'border-slate-600 text-slate-200 hover:border-cyan-400 hover:text-cyan-400 hover:bg-cyan-400/10'
-                    : 'border-gray-400 text-gray-700 hover:border-blue-600 hover:text-blue-600 hover:bg-blue-50'
-                }`}
+                isDark={isDark}
               >
                 <span className="mr-2">{link.icon}</span>
                 {link.label}
-              </a>
+              </LinkButton>
             ))}
           </div>
 

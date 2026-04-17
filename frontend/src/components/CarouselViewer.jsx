@@ -2,6 +2,7 @@ import React, { useState, useImperativeHandle, forwardRef } from 'react';
 import html2canvas from 'html2canvas';
 import JSZip from 'jszip';
 import { useTheme } from '../context/ThemeContext';
+import { IconButton, PrimaryButton, SuccessButton, WarningButton, DangerButton, CompactButton, FullWidthSuccessButton } from '../styles/ModernButtons';
 
 const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFormat, onRegenerateSlide }, ref) => {
   const { isDark, theme } = useTheme();
@@ -316,14 +317,14 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
       >
         {/* Navigation Buttons */}
         <div className="flex items-center justify-center gap-4">
-          <button
+          <IconButton
             onClick={handlePrev}
             disabled={currentSlide === 0}
-            className={`p-3 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed transition duration-200 ${isDark ? 'bg-slate-800/60 hover:bg-slate-700/60' : 'bg-gray-300 hover:bg-gray-400'}`}
+            isDark={isDark}
             title="Previous slide"
           >
-            <span className={`text-lg ${isDark ? 'text-white' : 'text-gray-900'}`}>←</span>
-          </button>
+            <span className="text-lg">←</span>
+          </IconButton>
 
           {/* Slide Indicators */}
           <div className="flex gap-2 items-center">
@@ -345,14 +346,14 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
             ))}
           </div>
 
-          <button
+          <IconButton
             onClick={handleNext}
             disabled={currentSlide === totalSlides - 1}
-            className={`p-3 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed transition duration-200 ${isDark ? 'bg-slate-800/60 hover:bg-slate-700/60' : 'bg-gray-300 hover:bg-gray-400'}`}
+            isDark={isDark}
             title="Next slide"
           >
-            <span className={`text-lg ${isDark ? 'text-white' : 'text-gray-900'}`}>→</span>
-          </button>
+            <span className="text-lg">→</span>
+          </IconButton>
         </div>
 
         {/* Slide Counter */}
@@ -365,19 +366,11 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
 
         {/* Download Button */}
         <div className="text-center">
-          <button
+          <PrimaryButton
             onClick={handleDownload}
             disabled={downloading}
+            isDark={isDark}
             data-download-btn
-            className={`px-8 py-3 rounded-xl font-semibold transition duration-200 transform ${
-              downloading
-                ? isDark
-                  ? 'bg-slate-600 text-slate-400 cursor-not-allowed opacity-50'
-                  : 'bg-gray-400 text-gray-600 cursor-not-allowed opacity-50'
-                : isDark
-                  ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white hover:from-cyan-400 hover:to-blue-500 active:scale-95 shadow-lg hover:shadow-cyan-500/50'
-                  : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-500 hover:to-purple-500 active:scale-95 shadow-lg hover:shadow-blue-400/50'
-            }`}
           >
             {downloading ? (
               <span className="flex items-center justify-center gap-2">
@@ -390,25 +383,17 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
             ) : (
               <span>Download Slide as PNG</span>
             )}
-          </button>
+          </PrimaryButton>
         </div>
 
         {/* Edit Mode Toggle */}
         <div className="text-center">
-          <button
+          <SuccessButton
             onClick={() => setEditMode(!editMode)}
-            className={`px-6 py-3 rounded-xl font-semibold transition duration-200 ${
-              editMode
-                ? isDark
-                  ? 'bg-green-600 text-white hover:bg-green-500'
-                  : 'bg-green-500 text-white hover:bg-green-600'
-                : isDark
-                  ? 'bg-slate-700 text-white hover:bg-slate-600'
-                  : 'bg-gray-400 text-white hover:bg-gray-500'
-            }`}
+            isDark={isDark}
           >
             {editMode ? '✓ Editing Mode (Click to Close)' : '✎ Edit Slide'}
-          </button>
+          </SuccessButton>
         </div>
 
         {/* Edit Controls (Show when edit mode is on) */}
@@ -433,20 +418,16 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
                 <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                   {getCurrentSlideColor()}
                 </span>
-                <button
+                <CompactButton
                   onClick={() => {
                     const newColor = {};
                     delete newColor[currentSlide];
                     setSlideColors(newColor);
                   }}
-                  className={`px-3 py-1 text-sm rounded transition ${
-                    isDark
-                      ? 'bg-slate-700 hover:bg-slate-600 text-gray-300'
-                      : 'bg-gray-300 hover:bg-gray-400 text-gray-700'
-                  }`}
+                  isDark={isDark}
                 >
                   Reset
-                </button>
+                </CompactButton>
               </div>
               <p className={`text-xs ${isDark ? 'text-green-400' : 'text-green-600'}`}>✓ Color applied in real-time</p>
             </div>
@@ -457,66 +438,38 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
                 Regenerate Content
               </label>
               <div className="flex flex-col gap-2">
-                <button
+                <WarningButton
                   onClick={() => handleRegenerateSlide('text')}
                   disabled={regenerating}
-                  className={`px-4 py-2 rounded transition text-sm font-medium ${
-                    regenerating
-                      ? isDark
-                        ? 'bg-slate-600 text-slate-400 cursor-not-allowed opacity-50'
-                        : 'bg-gray-400 text-gray-600 cursor-not-allowed opacity-50'
-                      : isDark
-                        ? 'bg-amber-600 hover:bg-amber-500 text-white'
-                        : 'bg-amber-500 hover:bg-amber-600 text-white'
-                  }`}
+                  isDark={isDark}
                 >
                   {regenerating ? 'Regenerating...' : '🔄 Regenerate Text Only'}
-                </button>
-                <button
+                </WarningButton>
+                <WarningButton
                   onClick={() => handleRegenerateSlide('image')}
                   disabled={regenerating}
-                  className={`px-4 py-2 rounded transition text-sm font-medium ${
-                    regenerating
-                      ? isDark
-                        ? 'bg-slate-600 text-slate-400 cursor-not-allowed opacity-50'
-                        : 'bg-gray-400 text-gray-600 cursor-not-allowed opacity-50'
-                      : isDark
-                        ? 'bg-purple-600 hover:bg-purple-500 text-white'
-                        : 'bg-purple-500 hover:bg-purple-600 text-white'
-                  }`}
+                  isDark={isDark}
                 >
                   {regenerating ? 'Regenerating...' : '🖼️ Regenerate Image Only'}
-                </button>
-                <button
+                </WarningButton>
+                <DangerButton
                   onClick={() => handleRegenerateSlide('both')}
                   disabled={regenerating}
-                  className={`px-4 py-2 rounded transition text-sm font-medium ${
-                    regenerating
-                      ? isDark
-                        ? 'bg-slate-600 text-slate-400 cursor-not-allowed opacity-50'
-                        : 'bg-gray-400 text-gray-600 cursor-not-allowed opacity-50'
-                      : isDark
-                        ? 'bg-red-600 hover:bg-red-500 text-white'
-                        : 'bg-red-500 hover:bg-red-600 text-white'
-                  }`}
+                  isDark={isDark}
                 >
                   {regenerating ? 'Regenerating...' : '🔄 Regenerate Both'}
-                </button>
+                </DangerButton>
               </div>
             </div>
 
             {/* Save Changes Button */}
             <div className="pt-4 border-t border-gray-400/30">
-              <button
+              <FullWidthSuccessButton
                 onClick={() => setEditMode(false)}
-                className={`w-full px-4 py-3 rounded-lg font-semibold transition text-sm ${
-                  isDark
-                    ? 'bg-green-600 hover:bg-green-500 text-white'
-                    : 'bg-green-500 hover:bg-green-600 text-white'
-                }`}
+                isDark={isDark}
               >
                 ✓ Save All Changes & Close
-              </button>
+              </FullWidthSuccessButton>
             </div>
           </div>
         )}

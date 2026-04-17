@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import CarouselViewer from '../components/CarouselViewer';
 import FormatSelector from '../components/FormatSelector';
 import { useTheme } from '../context/ThemeContext';
+import { SecondaryButton, PrimaryButton } from '../styles/ModernButtons';
 
 const ViewerPage = () => {
   const navigate = useNavigate();
@@ -135,31 +136,23 @@ const ViewerPage = () => {
 
         {/* Action Buttons */}
         <div className="flex items-center justify-center gap-4 flex-wrap">
-          <button
+          <SecondaryButton
             onClick={() => navigate('/')}
-            className={`px-8 py-3 rounded-xl font-semibold transition duration-200 border flex items-center gap-2 ${
-              isDark
-                ? 'bg-gradient-to-r from-slate-900/60 to-slate-800/60 hover:from-slate-800/60 hover:to-slate-700/60 text-white border-slate-700'
-                : 'bg-gradient-to-r from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-gray-900 border-gray-300'
-            }`}
+            isDark={isDark}
           >
             <span>←</span>
             <span>Create New</span>
-          </button>
-          <button
+          </SecondaryButton>
+          <PrimaryButton
             onClick={() => {
               if (carouselRef.current && carouselRef.current.downloadAll) {
                 carouselRef.current.downloadAll();
               }
             }}
-            className={`px-8 py-3 rounded-xl font-semibold transition duration-200 shadow-lg text-white flex items-center gap-2 ${
-              isDark
-                ? 'bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 hover:shadow-cyan-500/50'
-                : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 hover:shadow-blue-400/50'
-            }`}
+            isDark={isDark}
           >
             <span>📥 Download All Slides as ZIP</span>
-          </button>
+          </PrimaryButton>
         </div>
 
         {/* Tips */}

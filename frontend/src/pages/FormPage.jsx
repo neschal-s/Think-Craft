@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { generateCarouselStructure, generateImages } from '../services/api';
 import { useTheme } from '../context/ThemeContext';
+import { SelectionButton, ColorPaletteButton, FullWidthButton } from '../styles/ModernButtons';
 
 const FormPage = () => {
   const navigate = useNavigate();
@@ -67,18 +68,6 @@ const FormPage = () => {
     }
   };
 
-  const getButtonStyle = (selected) => {
-    if (isDark) {
-      return selected
-        ? 'border-cyan-400 bg-cyan-400/10 shadow-lg shadow-cyan-400/20'
-        : 'border-slate-700 bg-slate-900/40 hover:border-slate-600';
-    } else {
-      return selected
-        ? 'border-blue-600 bg-blue-50 shadow-lg shadow-blue-200'
-        : 'border-gray-300 bg-gray-50 hover:border-gray-400';
-    }
-  };
-
   return (
     <div className={`min-h-screen flex items-center justify-center p-4 py-12 transition-colors duration-300 bg-transparent`}>
       <div className="w-full max-w-2xl">
@@ -117,15 +106,16 @@ const FormPage = () => {
               <label className={`block text-lg font-semibold ${theme.colors.text.primary} mb-4`}>Tone & Style</label>
               <div className="grid grid-cols-3 gap-3">
                 {tones.map((t) => (
-                  <button
+                  <SelectionButton
                     key={t.value}
                     type="button"
                     onClick={() => setTone(t.value)}
                     disabled={loading}
-                    className={`p-4 rounded-xl border-2 transition duration-200 ${getButtonStyle(tone === t.value)} ${theme.colors.text.primary}`}
+                    isDark={isDark}
+                    isSelected={tone === t.value}
                   >
                     <p className="font-semibold text-sm">{t.label}</p>
-                  </button>
+                  </SelectionButton>
                 ))}
               </div>
             </div>
@@ -139,23 +129,15 @@ const FormPage = () => {
                 <p className={`text-sm ${theme.colors.text.secondary} mb-3`}>Quick Presets</p>
                 <div className="grid grid-cols-5 gap-3">
                   {Object.entries(palettes).map(([key, pal]) => (
-                    <button
+                    <ColorPaletteButton
                       key={key}
-                      type="button"
                       onClick={() => {
                         setPalette(key);
                         setCustomColor(pal.bg);
                       }}
                       disabled={loading}
-                      className={`h-16 rounded-xl border-2 transition duration-200 transform hover:scale-105 ${
-                        palette === key 
-                          ? isDark 
-                            ? 'border-cyan-300 ring-2 ring-cyan-400/50 scale-105'
-                            : 'border-blue-600 ring-2 ring-blue-300 scale-105'
-                          : isDark
-                            ? 'border-slate-600'
-                            : 'border-gray-300'
-                      }`}
+                      isDark={isDark}
+                      className={palette === key ? 'selected' : ''}
                       style={{ backgroundColor: pal.bg }}
                       title={pal.name}
                     />
@@ -211,18 +193,10 @@ const FormPage = () => {
             )}
 
             {/* Submit Button */}
-            <button
+            <FullWidthButton
               type="submit"
               disabled={loading}
-              className={`w-full py-4 px-6 rounded-xl font-semibold text-lg transition duration-200 transform ${
-                loading
-                  ? isDark 
-                    ? 'bg-slate-600 cursor-not-allowed opacity-70'
-                    : 'bg-gray-400 cursor-not-allowed opacity-70'
-                  : isDark
-                    ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white hover:from-cyan-400 hover:to-blue-500 active:scale-95 shadow-lg hover:shadow-cyan-500/50'
-                    : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-500 hover:to-purple-500 active:scale-95 shadow-lg hover:shadow-blue-400/50'
-              }`}
+              isDark={isDark}
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-3">
@@ -235,7 +209,7 @@ const FormPage = () => {
               ) : (
                 <span>Generate My Carousel</span>
               )}
-            </button>
+            </FullWidthButton>
 
             {/* Info */}
             <div className={`grid grid-cols-3 gap-4 pt-4 border-t ${theme.colors.border}`}>

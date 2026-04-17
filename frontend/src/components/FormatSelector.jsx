@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTheme } from '../context/ThemeContext';
+import { SelectionButton } from '../styles/ModernButtons';
 
 const FormatSelector = ({ selectedFormat, onFormatChange }) => {
   const { isDark, theme } = useTheme();
@@ -19,21 +20,14 @@ const FormatSelector = ({ selectedFormat, onFormatChange }) => {
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {formats.map((format) => (
-          <button
+          <SelectionButton
             key={format.id}
             onClick={() => onFormatChange(format.id)}
-            className={`relative p-5 rounded-xl border-2 transition duration-200 transform hover:scale-105 ${
-              selectedFormat === format.id
-                ? isDark
-                  ? 'border-cyan-400 bg-cyan-400/10 shadow-lg shadow-cyan-400/20'
-                  : 'border-blue-600 bg-blue-50 shadow-lg shadow-blue-200'
-                : isDark
-                  ? 'border-slate-700 bg-slate-900/40 hover:border-slate-600'
-                  : 'border-gray-300 bg-gray-50 hover:border-gray-400'
-            }`}
+            isDark={isDark}
+            isSelected={selectedFormat === format.id}
           >
             <div className="text-left">
-              <h4 className={`font-bold text-lg ${theme.colors.text.primary}`}>{format.label}</h4>
+              <h4 className={`font-bold text-lg`}>{format.label}</h4>
               <p className={`${theme.colors.text.tertiary} text-xs mb-2`}>{format.ratio}</p>
               <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-500'}`}>{format.description}</p>
             </div>
@@ -42,7 +36,7 @@ const FormatSelector = ({ selectedFormat, onFormatChange }) => {
                 <span className="text-sm font-bold">✓</span>
               </div>
             )}
-          </button>
+          </SelectionButton>
         ))}
       </div>
     </div>
