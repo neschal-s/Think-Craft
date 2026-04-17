@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { generateCarouselStructure, generateImages } from '../services/api';
 import { useTheme } from '../context/ThemeContext';
 import { SelectionButton, ColorPaletteButton, FullWidthButton } from '../styles/ModernButtons';
+import FactPopup from '../components/FactPopup';
 
 const FormPage = () => {
   const navigate = useNavigate();
@@ -11,6 +12,7 @@ const FormPage = () => {
   const [palette, setPalette] = useState('slate');
   const [customColor, setCustomColor] = useState('#475569');
   const [tone, setTone] = useState('professional');
+  const [slideCount, setSlideCount] = useState(5);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -40,7 +42,7 @@ const FormPage = () => {
     setLoading(true);
 
     try {
-      const structureRes = await generateCarouselStructure(prompt, tone, '1:1');
+      const structureRes = await generateCarouselStructure(prompt, tone, '1:1', slideCount);
       const carouselStructure = structureRes.data;
 
       const imagesRes = await generateImages(carouselStructure);
@@ -78,7 +80,7 @@ const FormPage = () => {
               Create Stunning Carousels
             </span>
           </h1>
-          <p className={`font-['Inter'] text-lg md:text-xl ${theme.colors.text.secondary} mb-3 font-medium`}>Powered by AI • 5 Beautiful Slides • Instant Results</p>
+          <p className={`font-['Inter'] text-lg md:text-xl ${theme.colors.text.secondary} mb-3 font-medium`}>Powered by AI • {slideCount} Beautiful Slides • Instant Results</p>
           <p className={`font-['Inter'] ${theme.colors.text.tertiary} text-sm font-normal leading-relaxed`}>Transform your ideas into engaging social media content in 30-60 seconds</p>
         </div>
 
@@ -118,6 +120,35 @@ const FormPage = () => {
                   </SelectionButton>
                 ))}
               </div>
+            </div>
+
+            {/* Slide Count Selector */}
+            <div>
+              <label className={`block font-['Inter'] text-lg font-semibold ${theme.colors.text.primary} mb-4`}>Number of Slides</label>
+              <div className="flex items-center gap-4">
+                <div className="flex-1">
+                  <input
+                    type="range"
+                    min="3"
+                    max="12"
+                    value={slideCount}
+                    onChange={(e) => setSlideCount(parseInt(e.target.value))}
+                    disabled={loading}
+                    className={`w-full h-2 rounded-lg appearance-none cursor-pointer accent-[#0055ff]`}
+                    style={{
+                      background: isDark ? '#2a2d35' : '#e5e7eb',
+                    }}
+                  />
+                </div>
+                <div className={`px-4 py-2 rounded-lg font-['Inter'] font-bold text-lg ${
+                  isDark 
+                    ? 'bg-[#1a1d25] border border-[#0055ff]/30 text-[#0088ff]' 
+                    : 'bg-blue-50 border border-[#0055ff]/30 text-[#0055ff]'
+                }`}>
+                  {slideCount}
+                </div>
+              </div>
+              <p className={`mt-2 font-['Inter'] text-sm ${theme.colors.text.tertiary}`}>Choose between 3 and 12 slides for your carousel</p>
             </div>
 
             {/* Color Palette */}
@@ -212,14 +243,10 @@ const FormPage = () => {
             </FullWidthButton>
 
             {/* Info */}
-            <div className={`grid grid-cols-3 gap-4 pt-4 border-t ${theme.colors.border}`}>
+            <div className={`grid grid-cols-2 gap-4 pt-4 border-t ${theme.colors.border}`}>
               <div className="text-center">
                 <p className={`text-sm font-semibold mb-1 ${isDark ? 'text-cyan-400' : 'text-blue-600'}`}>30-60s</p>
                 <p className={`text-xs ${theme.colors.text.tertiary}`}>Generation Time</p>
-              </div>
-              <div className="text-center">
-                <p className={`text-sm font-semibold mb-1 ${isDark ? 'text-cyan-400' : 'text-blue-600'}`}>5 Slides</p>
-                <p className={`text-xs ${theme.colors.text.tertiary}`}>Per Carousel</p>
               </div>
               <div className="text-center">
                 <p className={`text-sm font-semibold mb-1 ${isDark ? 'text-cyan-400' : 'text-blue-600'}`}>AI Powered</p>
@@ -233,6 +260,9 @@ const FormPage = () => {
         <div className={`text-center mt-12 ${theme.colors.text.tertiary} text-sm`}>
           <p>Transform your ideas into engaging content with ThinkCraft</p>
         </div>
+
+        {/* Fact Popup */}
+        <FactPopup />
       </div>
     </div>
   );

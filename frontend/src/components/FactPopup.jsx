@@ -7,6 +7,7 @@ const FactPopup = () => {
   const [isExiting, setIsExiting] = useState(false);
   const [currentFact, setCurrentFact] = useState('');
   const [factIndex, setFactIndex] = useState(0);
+  const [isClosed, setIsClosed] = useState(false);
 
   const facts = [
     'AI can now generate realistic images from simple text descriptions in seconds.',
@@ -107,8 +108,14 @@ const FactPopup = () => {
   ];
 
   useEffect(() => {
+    // Don't show facts if user has closed the popup
+    if (isClosed) return;
+
     // Function to show a new fact
     const showNewFact = () => {
+      // Double check isClosed hasn't changed
+      if (isClosed) return;
+
       setIsExiting(false);
       const randomIndex = Math.floor(Math.random() * facts.length);
       setFactIndex(randomIndex);
@@ -122,7 +129,9 @@ const FactPopup = () => {
 
       // After exit animation completes (0.4s) + 3 second delay, show next fact
       const nextFactTimer = setTimeout(() => {
-        showNewFact();
+        if (!isClosed) {
+          showNewFact();
+        }
       }, 11400); // 8000 + 400 (animation) + 3000
 
       return () => {
@@ -133,9 +142,10 @@ const FactPopup = () => {
 
     // Show first fact immediately
     showNewFact();
-  }, []);
+  }, [isClosed]);
 
   const handleClose = () => {
+    setIsClosed(true);
     setIsExiting(true);
     setTimeout(() => {
       setIsVisible(false);

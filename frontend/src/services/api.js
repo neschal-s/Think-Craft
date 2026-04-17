@@ -7,8 +7,8 @@ export const api = axios.create({
   timeout: 120000, // 2-minute timeout for long-running image generation
 });
 
-export const generateCarouselStructure = (prompt, tone, format = '1:1') =>
-  api.post('/generate/carousel-structure', { prompt, tone, format });
+export const generateCarouselStructure = (prompt, tone, format = '1:1', slideCount = 5) =>
+  api.post('/generate/carousel-structure', { prompt, tone, format, slideCount });
 
 export const generateImages = (carouselStructure) =>
   api.post('/generate/images', { carouselStructure });

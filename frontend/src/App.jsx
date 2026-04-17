@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import FormPage from './pages/FormPage';
 import ViewerPage from './pages/ViewerPage';
 import Footer from './components/Footer';
-import FactPopup from './components/FactPopup';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { IconButton } from './styles/ModernButtons';
 import './index.css';
@@ -43,9 +42,6 @@ function AppContent() {
             </div>
           </div>
         </header>
-
-        {/* Fact Popup */}
-        <FactPopup />
 
         {/* Routes */}
         <main>

@@ -27,27 +27,29 @@ const generatePlaceholderImageUrl = (slideNumber, imagePrompt, format = '1:1') =
 
 /**
  * POST /api/generate/carousel-structure
- * Generate 5-slide carousel structure for 1:1 format
+ * Generate carousel structure with dynamic slide count
  */
 router.post('/carousel-structure', async (req, res, next) => {
   try {
-    const { prompt, tone, format = '1:1' } = req.body;
+    const { prompt, tone, format = '1:1', slideCount = 5 } = req.body;
 
     if (!prompt || !tone) {
       return res.status(400).json({ error: 'Missing prompt or tone' });
     }
 
-    console.log(`[LLM] Generating carousel structure for prompt: "${prompt}", tone: ${tone}, format: ${format}`);
+    const numSlides = Math.max(3, Math.min(12, parseInt(slideCount) || 5));
+
+    console.log(`[LLM] Generating carousel structure for prompt: "${prompt}", tone: ${tone}, format: ${format}, slides: ${numSlides}`);
 
     let carouselStructure;
     if (USE_MOCK) {
       console.log('[MOCK] 🎭 Using mock carousel structure');
-      carouselStructure = generateMockCarouselStructure(prompt, tone, format);
+      carouselStructure = generateMockCarouselStructure(prompt, tone, format, numSlides);
       // Simulate network delay
       await new Promise(r => setTimeout(r, 500));
     } else {
       console.log('[LLM] 🤖 Calling OpenRouter LLM...');
-      carouselStructure = await generateCarouselStructure(prompt, tone, format);
+      carouselStructure = await generateCarouselStructure(prompt, tone, format, numSlides);
     }
 
     console.log(`[LLM] Generated ${carouselStructure.slides.length} slides`);
