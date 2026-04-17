@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import FormPage from './pages/FormPage';
 import ViewerPage from './pages/ViewerPage';
 import Footer from './components/Footer';
+import FactPopup from './components/FactPopup';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { IconButton } from './styles/ModernButtons';
 import './index.css';
@@ -16,14 +17,12 @@ function AppContent() {
         {/* Header */}
         <header className={`border-b ${theme.colors.border} sticky top-0 z-50 ${isDark ? 'bg-[#0f1115]/95' : 'bg-white/80'} backdrop-blur-md transition-colors duration-300`}>
           <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs bg-gradient-to-br from-[#0055ff] to-[#00aaff] text-white`}>
-                TC
-              </div>
+            {/* < className="flex items-center gap-3"> */}
+                    
               <h1 className={`font-['Orbitron'] text-2xl font-bold bg-gradient-to-r ${theme.colors.gradient} bg-clip-text text-transparent tracking-wide`}>
                 ThinkCraft
               </h1>
-            </div>
+            {/* </div> */}
             <div className="flex items-center gap-4">
               <p className={`font-['Inter'] text-sm hidden sm:block ${theme.colors.text.tertiary} font-normal`}>AI-Powered Social Media Carousels</p>
               <IconButton
@@ -44,6 +43,9 @@ function AppContent() {
             </div>
           </div>
         </header>
+
+        {/* Fact Popup */}
+        <FactPopup />
 
         {/* Routes */}
         <main>

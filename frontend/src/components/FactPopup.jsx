@@ -4,6 +4,7 @@ import { useTheme } from '../context/ThemeContext';
 const FactPopup = () => {
   const { isDark, theme } = useTheme();
   const [isVisible, setIsVisible] = useState(false);
+  const [isExiting, setIsExiting] = useState(false);
   const [currentFact, setCurrentFact] = useState('');
   const [factIndex, setFactIndex] = useState(0);
 
@@ -106,34 +107,50 @@ const FactPopup = () => {
   ];
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    // Function to show a new fact
+    const showNewFact = () => {
+      setIsExiting(false);
       const randomIndex = Math.floor(Math.random() * facts.length);
       setFactIndex(randomIndex);
       setCurrentFact(facts[randomIndex]);
       setIsVisible(true);
 
-      // Auto-hide after 8 seconds
-      const timeout = setTimeout(() => {
-        setIsVisible(false);
+      // After 8 seconds, start exit animation
+      const exitTimer = setTimeout(() => {
+        setIsExiting(true);
       }, 8000);
 
-      return () => clearTimeout(timeout);
-    }, 6000);
+      // After exit animation completes (0.4s) + 3 second delay, show next fact
+      const nextFactTimer = setTimeout(() => {
+        showNewFact();
+      }, 11400); // 8000 + 400 (animation) + 3000
 
-    return () => clearInterval(interval);
+      return () => {
+        clearTimeout(exitTimer);
+        clearTimeout(nextFactTimer);
+      };
+    };
+
+    // Show first fact immediately
+    showNewFact();
   }, []);
 
   const handleClose = () => {
-    setIsVisible(false);
+    setIsExiting(true);
+    setTimeout(() => {
+      setIsVisible(false);
+    }, 400);
   };
 
   if (!isVisible) return null;
 
   return (
     <div
-      className={`fixed bottom-20 right-4 max-w-sm z-40 animate-slideInRight transition-all duration-300`}
+      className={`fixed bottom-20 right-4 max-w-sm z-40 transition-all duration-400`}
       style={{
-        animation: 'slideInRight 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
+        animation: isExiting 
+          ? 'slideOutRight 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards'
+          : 'slideInRight 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
       }}
     >
       <style>{`
@@ -145,6 +162,16 @@ const FactPopup = () => {
           to {
             transform: translateX(0);
             opacity: 1;
+          }
+        }
+        @keyframes slideOutRight {
+          from {
+            transform: translateX(0);
+            opacity: 1;
+          }
+          to {
+            transform: translateX(400px);
+            opacity: 0;
           }
         }
       `}</style>
@@ -170,6 +197,11 @@ const FactPopup = () => {
 
           {/* Fact Content */}
           <div className="flex-1">
+            <h4 className={`font-['Orbitron'] text-xs font-bold mb-2 tracking-widest ${
+              isDark ? 'text-[#0055ff]' : 'text-[#0055ff]'
+            }`}>
+              INTERESTING FACT
+            </h4>
             <p
               className={`font-['Inter'] text-sm font-normal leading-relaxed ${
                 isDark ? 'text-[#b0b3b8]' : 'text-gray-700'
