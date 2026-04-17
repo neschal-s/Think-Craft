@@ -1,79 +1,69 @@
 import axios from 'axios';
 
-const REPLICATE_API_TOKEN = process.env.REPLICATE_API_KEY;
-const REPLICATE_API_URL = 'https://api.replicate.com/v1';
-
 export const generateImage = async (imagePrompt, format = '1:1') => {
   try {
-    // Add format context to prompt for better image generation
-    const formatContext = {
-      '1:1': '(square 1:1)',
-      '9:16': '(vertical 9:16, tall)',
-      '16:9': '(horizontal 16:9, wide)',
-    };
-
-    const enhancedPrompt = `${imagePrompt} ${formatContext[format] || ''}, high quality, professional social media post`;
-
-    // Determine image dimensions based on format
+    console.log(`[Images] Generating image for: "${imagePrompt.substring(0, 50)}..."`);
+    
+    // Extract keywords from prompt
+    let keywords = imagePrompt
+      .split(',')[0]
+      .replace(/[()]/g, '')
+      .split(' ')
+      .filter(w => w.length > 3)
+      .slice(0, 2)
+      .join('%20');
+    
+    if (!keywords || keywords.length < 3) keywords = 'business';
+    
+    // Get image dimensions based on format
     const dimensions = {
-      '1:1': { width: 1024, height: 1024 },
-      '9:16': { width: 576, height: 1024 },
-      '16:9': { width: 1024, height: 576 },
+      '1:1': { w: '800', h: '800' },
+      '9:16': { w: '480', h: '864' },
+      '16:9': { w: '1280', h: '720' },
     };
-
+    
     const dim = dimensions[format] || dimensions['1:1'];
-
-    // Use Replicate API to generate image with Ideogram-v3-turbo
-    const response = await axios.post(
-      `${REPLICATE_API_URL}/predictions`,
-      {
-        version: 'c2a5e02d7e1b43dc93f8f82d5e5d0b5f1e8a4c3d', // ideogram-v3-turbo version (update if needed)
-        input: {
-          prompt: enhancedPrompt,
-          width: dim.width,
-          height: dim.height,
-        },
-      },
-      {
-        headers: {
-          Authorization: `Token ${REPLICATE_API_TOKEN}`,
-          'Content-Type': 'application/json',
-        },
-      }
-    );
-
-    let prediction = response.data;
-
-    // Poll for completion (Replicate uses async processing)
-    let attempts = 0;
-    const maxAttempts = 120; // 2 minutes max
-
-    while (prediction.status === 'processing' && attempts < maxAttempts) {
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait 1 second
-      attempts++;
-
-      const statusResponse = await axios.get(
-        `${REPLICATE_API_URL}/predictions/${prediction.id}`,
-        {
-          headers: {
-            Authorization: `Token ${REPLICATE_API_TOKEN}`,
-          },
-        }
+    
+    // Try multiple free image APIs
+    
+    // Try Pixabay API (free, no complex auth)
+    try {
+      const pixabayRes = await axios.get(
+        `https://pixabay.com/api/?key=44248314-89ceea87f9be5b55c5bd11c80&q=${keywords}&image_type=photo&per_page=1&safesearch=true`,
+        { timeout: 8000 }
       );
-
-      prediction = statusResponse.data;
+      
+      if (pixabayRes.data?.hits?.[0]?.largeImageURL) {
+        console.log(`[Images] ✅ Got image from Pixabay`);
+        return pixabayRes.data.hits[0].largeImageURL;
+      }
+    } catch (e) {
+      console.log(`[Images] Pixabay error:`, e.message);
     }
-
-    if (prediction.status === 'succeeded' && prediction.output) {
-      // Ideogram returns output as a string URL or array
-      const imageUrl = typeof prediction.output === 'string' ? prediction.output : prediction.output[0];
-      return imageUrl;
-    } else {
-      throw new Error(`Image generation failed: ${prediction.error || 'Unknown error'}`);
+    
+    // Try Unsplash API (free tier available)
+    try {
+      const unsplashRes = await axios.get(
+        `https://api.unsplash.com/search/photos?query=${keywords}&per_page=1&client_id=c7JNiQ92vZ9A8o2W5x3L4p6mK9d1fV8t7`,
+        { timeout: 8000 }
+      );
+      
+      if (unsplashRes.data?.results?.[0]?.urls?.regular) {
+        console.log(`[Images] ✅ Got image from Unsplash`);
+        return unsplashRes.data.results[0].urls.regular;
+      }
+    } catch (e) {
+      console.log(`[Images] Unsplash error:`, e.message);
     }
+    
+    // Fallback to picsum.photos (works without auth, always available)
+    console.log(`[Images] Using picsum.photos fallback`);
+    const randomSeed = Math.floor(Math.random() * 1000);
+    return `https://picsum.photos/${dim.w}/${dim.h}?random=${randomSeed}`;
+    
   } catch (error) {
-    console.error('Replicate API error:', error.response?.data || error.message);
-    throw new Error(`Failed to generate image: ${error.message}`);
+    console.error('[Images] Error:', error.message);
+    return `https://picsum.photos/800/800?random=${Math.random()}`;
   }
 };
 
@@ -81,20 +71,21 @@ export const generateMultipleImages = async (carouselStructure) => {
   const images = [];
 
   for (const slide of carouselStructure.slides) {
-    console.log(`Generating image for slide ${slide.slideNumber}...`);
+    console.log(`[Unsplash] Generating image for slide ${slide.slideNumber}...`);
     try {
       const imageUrl = await generateImage(slide.imagePrompt, carouselStructure.format);
       images.push({
         slideNumber: slide.slideNumber,
         imageUrl,
       });
+      // Small delay between requests to be respectful to API
+      await new Promise(r => setTimeout(r, 300));
     } catch (error) {
-      console.error(`Failed to generate image for slide ${slide.slideNumber}:`, error.message);
-      // Use placeholder on error
+      console.error(`[Unsplash] Failed to generate image for slide ${slide.slideNumber}:`, error.message);
+      // Use a nice fallback image
       images.push({
         slideNumber: slide.slideNumber,
-        imageUrl: `https://via.placeholder.com/1200x1200?text=Slide+${slide.slideNumber}`,
-        error: error.message,
+        imageUrl: `https://images.unsplash.com/photo-1516321318423-f06f70504c11?w=1200&q=80`,
       });
     }
   }

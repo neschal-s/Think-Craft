@@ -35,31 +35,31 @@ export const mockCarouselStructures = {
   casual: [
     {
       slideNumber: 1,
-      headline: "Your Kid's Brain is Forgetting Stuff 🧠",
+      headline: "Your Kid's Brain is Forgetting Stuff",
       body: "Plot twist: your kid DOES forget stuff they just learned. It's not laziness—it's science! Half of what they learn today is forgotten by tomorrow.",
       imagePrompt: "Funny illustration of child forgetting, playful cartoon style, colorful",
     },
     {
       slideNumber: 2,
-      headline: "Why Cramming = Big Fail ❌",
+      headline: "Why Cramming Doesn't Work",
       body: "Cramming the night before works for ONE night. Then? Gone. Your brain isn't wired to keep stuff it doesn't use. It's like a storage unit you never visit.",
       imagePrompt: "Exhausted student cramming books, humorous illustration, casual style",
     },
     {
       slideNumber: 3,
-      headline: "The Forgetting Curve Hack 🎯",
+      headline: "The Forgetting Curve Hack",
       body: "There's this scientist Ebbinghaus who mapped how fast we forget. Turns out: spacing out reviews = way better than one big cram session.",
       imagePrompt: "Upward trending graph with study breaks, fun infographic, playful colors",
     },
     {
       slideNumber: 4,
-      headline: "Space Out Those Reviews 📅",
+      headline: "Space Out Those Reviews",
       body: "Review stuff at the right times: tomorrow, 3 days later, a week later. Your brain locks it in. No torture, just smart studying.",
       imagePrompt: "Calendar with fun stickers and review dates, playful planner aesthetic",
     },
     {
       slideNumber: 5,
-      headline: "Try It: Spaced Repetition Works 🚀",
+      headline: "Try It: Spaced Repetition Works",
       body: "Next time homework comes home, use spaced review instead of cramming. Watch your kid remember more AND complain less about studying.",
       imagePrompt: "Motivated student with thumbs up, happy and successful, encouraging",
     },
@@ -99,11 +99,52 @@ export const mockCarouselStructures = {
 };
 
 export const generateMockCarouselStructure = (prompt, tone, format = '1:1') => {
+  // Generate prompt-relevant carousel content instead of static content
+  const toneDescriptor = {
+    professional: 'professional, expert, informative',
+    casual: 'friendly, conversational, relatable',
+    creative: 'creative, artistic, inspiring',
+  };
+
   const toneKey = tone.toLowerCase() === 'professional' ? 'professional' 
                 : tone.toLowerCase() === 'casual' ? 'casual' 
                 : 'creative';
 
-  const slides = mockCarouselStructures[toneKey] || mockCarouselStructures.professional;
+  const descriptor = toneDescriptor[toneKey] || toneDescriptor.professional;
+
+  // Create carousel structure based on the prompt
+  const slides = [
+    {
+      slideNumber: 1,
+      headline: `Introduction to ${prompt}`,
+      body: `Discover the essentials of ${prompt}. This carousel explores key insights and practical applications that will change how you think about this topic.`,
+      imagePrompt: `Header image about ${prompt}, ${descriptor} style, for social media`,
+    },
+    {
+      slideNumber: 2,
+      headline: `Why ${prompt} Matters`,
+      body: `Understanding ${prompt} is crucial in today's world. It impacts efficiency, productivity, and success across multiple domains.`,
+      imagePrompt: `Conceptual visualization of ${prompt} impact, ${descriptor} design`,
+    },
+    {
+      slideNumber: 3,
+      headline: `Key Benefits of ${prompt}`,
+      body: `Implementing ${prompt} can lead to significant improvements. From time management to quality outcomes, the benefits are numerous and measurable.`,
+      imagePrompt: `Benefits visualization for ${prompt}, ${descriptor} infographic style`,
+    },
+    {
+      slideNumber: 4,
+      headline: `Getting Started with ${prompt}`,
+      body: `Starting your journey with ${prompt} is easier than you think. Begin with simple steps and gradually build expertise as you gain experience.`,
+      imagePrompt: `Getting started guide for ${prompt}, ${descriptor} tutorial style`,
+    },
+    {
+      slideNumber: 5,
+      headline: `Master ${prompt} Today`,
+      body: `Take action now and become an expert in ${prompt}. Your future self will thank you for investing time in this valuable skill.`,
+      imagePrompt: `Success and achievement related to ${prompt}, ${descriptor} motivational style`,
+    },
+  ];
 
   return {
     title: `Social Media Carousel - ${tone}`,

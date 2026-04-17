@@ -6,12 +6,12 @@ import { generateMockCarouselStructure, generateMockAdaptedStructure } from '../
 const router = express.Router();
 
 // Check if we should use mock mode
-const USE_MOCK = !process.env.OPENROUTER_API_KEY || !process.env.REPLICATE_API_KEY || process.env.MOCK_MODE === 'true';
+const USE_MOCK = !process.env.OPENROUTER_API_KEY || process.env.MOCK_MODE === 'true';
 
 if (USE_MOCK) {
-  console.warn('⚠️  Using MOCK mode - API keys not configured. Set OPENROUTER_API_KEY and REPLICATE_API_KEY to use real APIs.');
+  console.warn('⚠️  Using MOCK mode - API keys not configured. Set OPENROUTER_API_KEY to use real APIs.');
 } else {
-  console.log('✅ Real APIs configured - carousel generation will use OpenRouter + Replicate');
+  console.log('✅ Real APIs configured - carousel generation will use OpenRouter LLM (arcee-ai/trinity-large-preview:free)');
 }
 
 // Generate placeholder image URLs
@@ -41,11 +41,12 @@ router.post('/carousel-structure', async (req, res, next) => {
 
     let carouselStructure;
     if (USE_MOCK) {
-      console.log('[MOCK] Using mock carousel structure');
+      console.log('[MOCK] 🎭 Using mock carousel structure');
       carouselStructure = generateMockCarouselStructure(prompt, tone, format);
       // Simulate network delay
       await new Promise(r => setTimeout(r, 500));
     } else {
+      console.log('[LLM] 🤖 Calling OpenRouter LLM...');
       carouselStructure = await generateCarouselStructure(prompt, tone, format);
     }
 
@@ -66,14 +67,15 @@ router.post('/images', async (req, res, next) => {
     const { carouselStructure } = req.body;
 
     if (!carouselStructure || !carouselStructure.slides) {
+      console.log('[ERROR] Missing carouselStructure in request body');
       return res.status(400).json({ error: 'Missing carouselStructure' });
     }
 
-    console.log(`[Replicate] Generating ${carouselStructure.slides.length} images...`);
+    console.log(`[Images] Generating ${carouselStructure.slides.length} images for format: ${carouselStructure.format}`);
 
     let images;
     if (USE_MOCK) {
-      console.log('[MOCK] Using placeholder images');
+      console.log('[Images] Using placeholder images (MOCK mode)');
       images = carouselStructure.slides.map((slide) => ({
         slideNumber: slide.slideNumber,
         imageUrl: generatePlaceholderImageUrl(slide.slideNumber, slide.imagePrompt, carouselStructure.format),
@@ -81,13 +83,21 @@ router.post('/images', async (req, res, next) => {
       // Simulate network delay
       await new Promise(r => setTimeout(r, 1500));
     } else {
+      console.log('[Images] Calling generateMultipleImages...');
       images = await generateMultipleImages(carouselStructure);
     }
 
-    console.log(`[Replicate] Generated ${images.length} images`);
+    console.log(`[Images] ✅ Generated ${images.length} images`);
 
-    res.json({ images, carouselStructure });
+    const response = { 
+      images, 
+      carouselStructure 
+    };
+    
+    console.log('[Images] Sending response...');
+    res.json(response);
   } catch (error) {
+    console.error('[ERROR] In /images endpoint:', error.message, error.stack);
     next(error);
   }
 });
