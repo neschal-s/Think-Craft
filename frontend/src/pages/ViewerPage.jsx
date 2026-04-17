@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CarouselViewer from '../components/CarouselViewer';
 import FormatSelector from '../components/FormatSelector';
@@ -7,6 +7,7 @@ import { useTheme } from '../context/ThemeContext';
 const ViewerPage = () => {
   const navigate = useNavigate();
   const { isDark, theme } = useTheme();
+  const carouselRef = useRef(null);
   const [carousel, setCarousel] = useState(null);
   const [palette, setPalette] = useState('slate');
   const [customColor, setCustomColor] = useState('#475569');
@@ -75,6 +76,7 @@ const ViewerPage = () => {
         <div className="mb-12">
           <div className={`${theme.colors.bg.card} rounded-2xl border ${theme.colors.border} p-8 shadow-2xl transition-colors duration-300`}>
             <CarouselViewer
+              ref={carouselRef}
               carousel={carousel}
               palette={palette}
               customColor={customColor}
@@ -98,9 +100,9 @@ const ViewerPage = () => {
           </button>
           <button
             onClick={() => {
-              const element = document.getElementById('carousel-container');
-              const btn = element.parentElement.querySelector('[data-download-btn]');
-              if (btn) btn.click();
+              if (carouselRef.current && carouselRef.current.downloadAll) {
+                carouselRef.current.downloadAll();
+              }
             }}
             className={`px-8 py-3 rounded-xl font-semibold transition duration-200 shadow-lg text-white flex items-center gap-2 ${
               isDark
@@ -108,7 +110,7 @@ const ViewerPage = () => {
                 : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 hover:shadow-blue-400/50'
             }`}
           >
-            <span>Download Carousel</span>
+            <span>📥 Download All Slides as ZIP</span>
           </button>
         </div>
 

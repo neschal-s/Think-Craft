@@ -68,6 +68,57 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
     }
   };
 
+  const handleDownloadAll = async () => {
+    setDownloading(true);
+    try {
+      const zip = new JSZip();
+      const timestamp = Date.now();
+
+      for (let i = 0; i < slides.length; i++) {
+        // Temporarily switch to each slide
+        setCurrentSlide(i);
+        
+        // Wait for React to render the new slide
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        const element = document.getElementById('carousel-container');
+        const canvas = await html2canvas(element, {
+          allowTaint: true,
+          useCORS: true,
+          scale: 2,
+          backgroundColor: null,
+        });
+
+        // Convert canvas to blob
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+        
+        // Add to zip with slide number
+        zip.file(`slide-${i + 1}.png`, blob);
+      }
+
+      // Generate zip file
+      const zipBlob = await zip.generateAsync({ type: 'blob' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(zipBlob);
+      link.download = `thinkcraft-carousel-${selectedFormat}-${timestamp}.zip`;
+      link.click();
+      URL.revokeObjectURL(link.href);
+
+      // Return to first slide
+      setCurrentSlide(0);
+    } catch (error) {
+      console.error('Error downloading carousel:', error);
+      alert('Failed to download carousel. Please try again.');
+    } finally {
+      setDownloading(false);
+    }
+  };
+
+  // Expose downloadAll method via ref
+  useImperativeHandle(ref, () => ({
+    downloadAll: handleDownloadAll
+  }));
+
   const currentSlideData = slides[currentSlide];
 
   const getContainerClass = () => {
@@ -226,6 +277,8 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
       </div>
     </div>
   );
-};
+});
+
+CarouselViewer.displayName = 'CarouselViewer';
 
 export default CarouselViewer;
