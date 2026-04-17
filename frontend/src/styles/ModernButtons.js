@@ -33,19 +33,30 @@ const shimmer = keyframes`
 
 const glowPulse = keyframes`
   0%, 100% {
-    filter: drop-shadow(0 0 8px rgba(0, 200, 255, 0.6)) drop-shadow(0 0 16px rgba(255, 102, 0, 0.3));
+    filter: drop-shadow(0 0 8px rgba(0, 85, 255, 0.6)) drop-shadow(0 0 16px rgba(0, 200, 255, 0.3));
   }
   50% {
-    filter: drop-shadow(0 0 12px rgba(0, 200, 255, 0.8)) drop-shadow(0 0 24px rgba(255, 140, 0, 0.6));
+    filter: drop-shadow(0 0 12px rgba(0, 85, 255, 0.8)) drop-shadow(0 0 24px rgba(0, 200, 255, 0.5));
   }
 `;
 
 const orangeGlowPulse = keyframes`
   0%, 100% {
-    filter: drop-shadow(0 0 10px rgba(255, 140, 0, 0.6)) drop-shadow(0 0 20px rgba(255, 100, 0, 0.4));
+    filter: drop-shadow(0 0 10px rgba(255, 85, 0, 0.6)) drop-shadow(0 0 20px rgba(255, 100, 0, 0.4));
   }
   50% {
-    filter: drop-shadow(0 0 16px rgba(255, 160, 20, 0.8)) drop-shadow(0 0 32px rgba(255, 120, 0, 0.6));
+    filter: drop-shadow(0 0 16px rgba(255, 110, 20, 0.8)) drop-shadow(0 0 32px rgba(255, 85, 0, 0.6));
+  }
+`;
+
+const neonBorder = keyframes`
+  0%, 100% {
+    border-color: rgba(0, 85, 255, 0.5);
+    box-shadow: 0 0 10px rgba(0, 85, 255, 0.3), inset 0 0 10px rgba(0, 85, 255, 0.1);
+  }
+  50% {
+    border-color: rgba(0, 85, 255, 0.8);
+    box-shadow: 0 0 20px rgba(0, 85, 255, 0.5), inset 0 0 15px rgba(0, 85, 255, 0.2);
   }
 `;
 
@@ -96,8 +107,10 @@ export const ModernButton = styled.button`
     transform: translateY(0px);
     animation: none;
     box-shadow: inset 0 0 20px ${props => props.isDark 
-      ? 'rgba(100, 200, 255, 0.3)' 
-      : 'rgba(0, 100, 200, 0.3)'};
+      ? 'rgba(255, 140, 0, 0.3)' 
+      : 'rgba(255, 100, 0, 0.25)'}, 0 0 25px ${props => props.isDark 
+      ? 'rgba(255, 120, 0, 0.4)' 
+      : 'rgba(255, 100, 0, 0.3)'};
   }
   
   /* Icon spacing */
@@ -107,19 +120,13 @@ export const ModernButton = styled.button`
   }
 `;
 
-// Primary CTA Button (vibrant cyan-to-blue gradient with orange glow)
+// Primary CTA Button (vibrant cyan-to-blue gradient with orange on click)
 export const PrimaryButton = styled(ModernButton)`
-  background: ${props => props.isDark
-    ? 'linear-gradient(135deg, rgba(34, 197, 255, 0.15) 0%, rgba(59, 130, 246, 0.15) 100%)'
-    : 'linear-gradient(135deg, rgba(100, 220, 255, 0.2) 0%, rgba(100, 150, 255, 0.2) 100%)'};
+  background: linear-gradient(135deg, rgba(0, 85, 255, 0.15) 0%, rgba(0, 170, 255, 0.15) 100%);
   
-  border: 2px solid ${props => props.isDark 
-    ? 'rgba(100, 200, 255, 0.3)' 
-    : 'rgba(0, 150, 200, 0.3)'};
+  border: 2px solid rgba(0, 85, 255, 0.3);
   
-  color: ${props => props.isDark 
-    ? '#00d9ff' 
-    : '#0066cc'};
+  color: #0088ff;
   
   position: relative;
   
@@ -132,8 +139,8 @@ export const PrimaryButton = styled(ModernButton)`
     bottom: 0;
     background: linear-gradient(
       135deg,
-      ${props => props.isDark ? '#0099ff' : '#0066cc'} 0%,
-      ${props => props.isDark ? '#00ccff' : '#0099ff'} 100%
+      #0055ff 0%,
+      #00aaff 100%
     );
     border-radius: 10px;
     opacity: 0;
@@ -145,124 +152,78 @@ export const PrimaryButton = styled(ModernButton)`
     &::before {
       opacity: 0.1;
     }
-    color: ${props => props.isDark ? '#00ffff' : '#0052a3'};
-    animation: ${orangeGlowPulse} 2s ease-in-out infinite;
-    border-color: ${props => props.isDark 
-      ? 'rgba(255, 140, 0, 0.5)' 
-      : 'rgba(255, 100, 0, 0.4)'};
+    color: #00d9ff;
   }
   
   &:active:not(:disabled) {
     &::before {
       opacity: 0.2;
     }
-    box-shadow: inset 0 0 30px ${props => props.isDark 
-      ? 'rgba(255, 140, 0, 0.4)' 
-      : 'rgba(255, 100, 0, 0.3)'}, 0 0 30px ${props => props.isDark 
-      ? 'rgba(255, 120, 0, 0.5)' 
-      : 'rgba(255, 100, 0, 0.4)'};
+    box-shadow: inset 0 0 30px rgba(255, 85, 0, 0.4), 0 0 30px rgba(255, 85, 0, 0.5);
   }
 `;
 
 // Secondary Button (muted, elegant)
 export const SecondaryButton = styled(ModernButton)`
-  background: ${props => props.isDark
-    ? 'rgba(71, 85, 105, 0.5)'
-    : 'rgba(200, 210, 220, 0.4)'};
+  background: rgba(26, 29, 37, 0.6);
   
-  border: 2px solid ${props => props.isDark 
-    ? 'rgba(100, 116, 139, 0.5)' 
-    : 'rgba(150, 160, 170, 0.5)'};
+  border: 2px solid rgba(42, 45, 53, 0.6);
   
-  color: ${props => props.isDark 
-    ? '#cbd5e1' 
-    : '#475569'};
+  color: #b0b3b8;
   
   &:hover:not(:disabled) {
-    background: ${props => props.isDark
-      ? 'rgba(100, 120, 140, 0.6)'
-      : 'rgba(150, 170, 190, 0.5)'};
-    border-color: ${props => props.isDark 
-      ? 'rgba(150, 180, 220, 0.6)' 
-      : 'rgba(100, 150, 200, 0.6)'};
-    color: ${props => props.isDark 
-      ? '#e2e8f0' 
-      : '#334155'};
+    background: rgba(37, 42, 53, 0.7);
+    border-color: rgba(0, 85, 255, 0.4);
+    color: #ffffff;
+  }
+
+  &:active:not(:disabled) {
+    box-shadow: inset 0 0 20px rgba(255, 85, 0, 0.3), 0 0 25px rgba(255, 85, 0, 0.4);
   }
 `;
 
 // Success Button (green accent)
 export const SuccessButton = styled(ModernButton)`
-  background: ${props => props.isDark
-    ? 'linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(20, 184, 166, 0.15) 100%)'
-    : 'linear-gradient(135deg, rgba(100, 220, 150, 0.2) 0%, rgba(80, 200, 140, 0.2) 100%)'};
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(20, 184, 166, 0.15) 100%);
   
-  border: 2px solid ${props => props.isDark 
-    ? 'rgba(74, 222, 128, 0.3)' 
-    : 'rgba(50, 180, 100, 0.3)'};
+  border: 2px solid rgba(74, 222, 128, 0.3);
   
-  color: ${props => props.isDark 
-    ? '#86efac' 
-    : '#059669'};
+  color: #86efac;
   
   &:hover:not(:disabled) {
-    border-color: ${props => props.isDark 
-      ? 'rgba(134, 239, 172, 0.6)' 
-      : 'rgba(5, 150, 105, 0.6)'};
-    color: ${props => props.isDark 
-      ? '#bbf7d0' 
-      : '#047857'};
+    border-color: rgba(134, 239, 172, 0.6);
+    color: #bbf7d0;
     animation: ${glowPulse} 2s ease-in-out infinite;
     filter: drop-shadow(0 0 8px rgba(74, 222, 128, 0.4)) drop-shadow(0 0 16px rgba(74, 222, 128, 0.2));
   }
 `;
 
-// Warning Button (amber/orange accent)
+// Warning Button (electric orange accent)
 export const WarningButton = styled(ModernButton)`
-  background: ${props => props.isDark
-    ? 'linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(217, 119, 6, 0.15) 100%)'
-    : 'linear-gradient(135deg, rgba(255, 180, 100, 0.2) 0%, rgba(255, 150, 80, 0.2) 100%)'};
+  background: linear-gradient(135deg, rgba(255, 85, 0, 0.15) 0%, rgba(255, 110, 0, 0.15) 100%);
   
-  border: 2px solid ${props => props.isDark 
-    ? 'rgba(251, 191, 36, 0.3)' 
-    : 'rgba(220, 140, 60, 0.3)'};
+  border: 2px solid rgba(255, 110, 0, 0.3);
   
-  color: ${props => props.isDark 
-    ? '#fbbf24' 
-    : '#d97706'};
+  color: #ff8c34;
   
   &:hover:not(:disabled) {
-    border-color: ${props => props.isDark 
-      ? 'rgba(251, 191, 36, 0.6)' 
-      : 'rgba(217, 119, 6, 0.6)'};
-    color: ${props => props.isDark 
-      ? '#fcd34d' 
-      : '#b45309'};
-    filter: drop-shadow(0 0 8px rgba(251, 146, 60, 0.4)) drop-shadow(0 0 16px rgba(251, 146, 60, 0.2));
+    border-color: rgba(255, 110, 0, 0.6);
+    color: #ffaa55;
+    filter: drop-shadow(0 0 8px rgba(255, 110, 0, 0.4)) drop-shadow(0 0 16px rgba(255, 110, 0, 0.2));
   }
 `;
 
 // Danger Button (red accent)
 export const DangerButton = styled(ModernButton)`
-  background: ${props => props.isDark
-    ? 'linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(220, 38, 38, 0.15) 100%)'
-    : 'linear-gradient(135deg, rgba(255, 120, 120, 0.2) 0%, rgba(255, 80, 80, 0.2) 100%)'};
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(220, 38, 38, 0.15) 100%);
   
-  border: 2px solid ${props => props.isDark 
-    ? 'rgba(248, 113, 113, 0.3)' 
-    : 'rgba(220, 38, 38, 0.3)'};
+  border: 2px solid rgba(248, 113, 113, 0.3);
   
-  color: ${props => props.isDark 
-    ? '#f87171' 
-    : '#dc2626'};
+  color: #f87171;
   
   &:hover:not(:disabled) {
-    border-color: ${props => props.isDark 
-      ? 'rgba(248, 113, 113, 0.6)' 
-      : 'rgba(185, 28, 28, 0.6)'};
-    color: ${props => props.isDark 
-      ? '#fca5a5' 
-      : '#991b1b'};
+    border-color: rgba(248, 113, 113, 0.6);
+    color: #fca5a5;
     filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.4)) drop-shadow(0 0 16px rgba(239, 68, 68, 0.2));
   }
 `;
@@ -334,6 +295,14 @@ export const SelectionButton = styled(ModernButton)`
       ? 'rgba(100, 220, 255, 0.7)' 
       : 'rgba(0, 120, 200, 0.7)'};
   }
+
+  &:active:not(:disabled) {
+    box-shadow: inset 0 0 20px ${props => props.isDark 
+      ? 'rgba(255, 140, 0, 0.3)' 
+      : 'rgba(255, 100, 0, 0.25)'}, 0 0 25px ${props => props.isDark 
+      ? 'rgba(255, 140, 0, 0.4)' 
+      : 'rgba(255, 100, 0, 0.3)'};
+  }
 `;
 
 // Color Palette Button (square)
@@ -376,6 +345,11 @@ export const ColorPaletteButton = styled.button`
   
   &:active {
     transform: translateY(-1px) scale(1.03);
+    box-shadow: inset 0 0 20px ${props => props.isDark 
+      ? 'rgba(255, 140, 0, 0.3)' 
+      : 'rgba(255, 100, 0, 0.25)'}, 0 0 25px ${props => props.isDark 
+      ? 'rgba(255, 140, 0, 0.4)' 
+      : 'rgba(255, 100, 0, 0.3)'};
   }
   
   &.selected {
@@ -424,6 +398,14 @@ export const LinkButton = styled.a`
       : 'rgba(0, 120, 200, 0.6)'};
     transform: translateY(-2px);
     animation: ${glowPulse} 2s ease-in-out infinite;
+  }
+
+  &:active {
+    box-shadow: inset 0 0 20px ${props => props.isDark 
+      ? 'rgba(255, 140, 0, 0.3)' 
+      : 'rgba(255, 100, 0, 0.25)'}, 0 0 25px ${props => props.isDark 
+      ? 'rgba(255, 140, 0, 0.4)' 
+      : 'rgba(255, 100, 0, 0.3)'};
   }
 `;
 

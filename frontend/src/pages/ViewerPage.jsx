@@ -102,12 +102,12 @@ const ViewerPage = () => {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-12 text-center">
-          <h1 className="text-6xl font-bold mb-4">
-            <span className={`bg-gradient-to-r ${theme.colors.gradient} bg-clip-text text-transparent`}>
+          <h1 className="font-['Orbitron'] text-6xl font-black mb-4 tracking-wider">
+            <span className={`font-['Orbitron'] bg-gradient-to-r ${theme.colors.gradient} bg-clip-text text-transparent`}>
               Your Carousel
             </span>
           </h1>
-          <p className={`text-lg ${theme.colors.text.tertiary}`}>
+          <p className={`font-['Inter'] text-lg ${theme.colors.text.tertiary} font-normal`}>
             {tone.charAt(0).toUpperCase() + tone.slice(1)} Tone • {selectedFormat} Format • Ready to Download
           </p>
         </div>

@@ -263,14 +263,14 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
                   <textarea
                     value={currentSlideData?.headline || ''}
                     onChange={(e) => updateSlideText('headline', e.target.value)}
-                    className="w-full text-4xl font-bold leading-tight drop-shadow-lg text-center p-2 rounded bg-black/50 border-2 border-cyan-400 resize-none"
+                    className="w-full text-4xl font-black leading-tight drop-shadow-lg text-center p-2 rounded bg-black/50 border-2 border-[#0055ff] resize-none font-['Orbitron']"
                     style={{ color: currentTextColor }}
                     rows={2}
                   />
                   <textarea
                     value={currentSlideData?.body || ''}
                     onChange={(e) => updateSlideText('body', e.target.value)}
-                    className="w-full text-lg leading-relaxed drop-shadow-md opacity-95 p-2 rounded bg-black/50 border-2 border-cyan-400 resize-none"
+                    className="w-full text-lg leading-relaxed drop-shadow-md opacity-95 p-2 rounded bg-black/50 border-2 border-[#0055ff] resize-none font-['Inter']"
                     style={{ color: currentTextColor }}
                     rows={3}
                   />
@@ -278,13 +278,13 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
               ) : (
                 <>
                   <h2
-                    className="text-4xl font-bold leading-tight drop-shadow-lg w-full text-center"
+                    className="font-['Orbitron'] text-4xl font-black leading-tight drop-shadow-lg w-full text-center tracking-wide"
                     style={{ color: currentTextColor }}
                   >
                     {currentSlideData?.headline}
                   </h2>
                   <p
-                    className="text-lg leading-relaxed drop-shadow-md opacity-95 w-full text-center"
+                    className="font-['Inter'] text-lg leading-relaxed drop-shadow-md opacity-95 w-full text-center font-normal"
                     style={{ color: currentTextColor }}
                   >
                     {currentSlideData?.body}

@@ -73,13 +73,13 @@ const FormPage = () => {
       <div className="w-full max-w-2xl">
         {/* Hero Section */}
         <div className="text-center mb-16">
-          <h1 className="text-6xl font-bold mb-6 leading-tight">
-            <span className={`bg-gradient-to-r ${theme.colors.gradient} bg-clip-text text-transparent`}>
+          <h1 className="font-['Orbitron'] text-6xl md:text-7xl font-black mb-6 leading-tight tracking-wider">
+            <span className={`font-['Orbitron'] bg-gradient-to-r ${theme.colors.gradient} bg-clip-text text-transparent`}>
               Create Stunning Carousels
             </span>
           </h1>
-          <p className={`text-xl ${theme.colors.text.secondary} mb-3`}>Powered by AI • 5 Beautiful Slides • Instant Results</p>
-          <p className={`${theme.colors.text.tertiary} text-sm`}>Transform your ideas into engaging social media content in 30-60 seconds</p>
+          <p className={`font-['Inter'] text-lg md:text-xl ${theme.colors.text.secondary} mb-3 font-medium`}>Powered by AI • 5 Beautiful Slides • Instant Results</p>
+          <p className={`font-['Inter'] ${theme.colors.text.tertiary} text-sm font-normal leading-relaxed`}>Transform your ideas into engaging social media content in 30-60 seconds</p>
         </div>
 
         {/* Main Card */}
@@ -87,23 +87,23 @@ const FormPage = () => {
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Prompt Section */}
             <div>
-              <label className={`block text-lg font-semibold ${theme.colors.text.primary} mb-4`}>Your Idea</label>
+              <label className={`block font-['Inter'] text-lg font-semibold ${theme.colors.text.primary} mb-4`}>Your Idea</label>
               <textarea
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 placeholder="What would you like to create? E.g., A carousel about productivity tips for remote workers, benefits of meditation, marketing strategies, etc."
-                className={`w-full h-28 p-4 rounded-xl resize-none transition focus:outline-none focus:ring-2 ${isDark 
-                  ? 'bg-slate-900/50 border border-slate-800 text-white placeholder-slate-500 focus:border-cyan-400 focus:ring-cyan-400/20'
-                  : 'bg-white border border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500/20'
+                className={`w-full h-28 p-4 rounded-xl resize-none transition focus:outline-none focus:ring-2 font-['Inter'] ${isDark 
+                  ? 'bg-[#1a1d25] border border-[#2a2d35] text-white placeholder-[#8a8d93] focus:border-[#0055ff] focus:ring-[#0055ff]/20'
+                  : 'bg-white border border-gray-300 text-gray-900 placeholder-gray-500 focus:border-[#0055ff] focus:ring-[#0055ff]/20'
                 }`}
                 disabled={loading}
               />
-              <p className={`mt-2 text-sm ${theme.colors.text.tertiary}`}>Be specific about the topic or theme you want to explore</p>
+              <p className={`mt-2 font-['Inter'] text-sm ${theme.colors.text.tertiary}`}>Be specific about the topic or theme you want to explore</p>
             </div>
 
             {/* Tone Selector */}
             <div>
-              <label className={`block text-lg font-semibold ${theme.colors.text.primary} mb-4`}>Tone & Style</label>
+              <label className={`block font-['Inter'] text-lg font-semibold ${theme.colors.text.primary} mb-4`}>Tone & Style</label>
               <div className="grid grid-cols-3 gap-3">
                 {tones.map((t) => (
                   <SelectionButton
@@ -122,11 +122,11 @@ const FormPage = () => {
 
             {/* Color Palette */}
             <div>
-              <label className={`block text-lg font-semibold ${theme.colors.text.primary} mb-4`}>Color Palette</label>
+              <label className={`block font-['Inter'] text-lg font-semibold ${theme.colors.text.primary} mb-4`}>Color Palette</label>
               
               {/* Preset Colors */}
               <div className="mb-6">
-                <p className={`text-sm ${theme.colors.text.secondary} mb-3`}>Quick Presets</p>
+                <p className={`font-['Inter'] text-sm ${theme.colors.text.secondary} mb-3`}>Quick Presets</p>
                 <div className="grid grid-cols-5 gap-3">
                   {Object.entries(palettes).map(([key, pal]) => (
                     <ColorPaletteButton
@@ -147,7 +147,7 @@ const FormPage = () => {
 
               {/* Custom Color Picker */}
               <div>
-                <p className={`text-sm ${theme.colors.text.secondary} mb-3`}>Or Choose Any Color</p>
+                <p className={`font-['Inter'] text-sm ${theme.colors.text.secondary} mb-3`}>Or Choose Any Color</p>
                 <div className="flex items-center gap-4">
                   <input
                     type="color"
@@ -157,7 +157,7 @@ const FormPage = () => {
                       setPalette('custom');
                     }}
                     disabled={loading}
-                    className="w-20 h-16 rounded-xl border-2 border-slate-400 cursor-pointer"
+                    className="w-20 h-16 rounded-xl border-2 border-[#0055ff] cursor-pointer"
                   />
                   <div className="flex-1">
                     <input
@@ -171,20 +171,20 @@ const FormPage = () => {
                       }}
                       placeholder="#000000"
                       disabled={loading}
-                      className={`w-full px-4 py-3 rounded-xl border-2 transition focus:outline-none focus:ring-2 ${isDark 
-                        ? 'bg-slate-900/50 border-slate-800 text-white placeholder-slate-500 focus:border-cyan-400 focus:ring-cyan-400/20'
-                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500/20'
+                      className={`w-full px-4 py-3 rounded-xl border-2 transition focus:outline-none focus:ring-2 font-['Inter'] ${isDark 
+                        ? 'bg-[#1a1d25] border-[#2a2d35] text-white placeholder-[#8a8d93] focus:border-[#0055ff] focus:ring-[#0055ff]/20'
+                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-[#0055ff] focus:ring-[#0055ff]/20'
                       }`}
                     />
                   </div>
                 </div>
-                <p className={`text-xs ${theme.colors.text.tertiary} mt-2`}>You can paste hex codes like #FF5733 or use the color picker</p>
+                <p className={`font-['Inter'] text-xs ${theme.colors.text.tertiary} mt-2`}>You can paste hex codes like #FF5733 or use the color picker</p>
               </div>
             </div>
 
             {/* Error Message */}
             {error && (
-              <div className={`p-4 rounded-xl text-sm ${isDark 
+              <div className={`p-4 rounded-xl text-sm font-['Inter'] ${isDark 
                 ? 'bg-red-900/30 border border-red-700 text-red-200'
                 : 'bg-red-50 border border-red-200 text-red-800'
               }`}>

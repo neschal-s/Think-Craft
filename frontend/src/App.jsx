@@ -14,18 +14,18 @@ function AppContent() {
     <Router>
       <div className={`min-h-screen transition-colors duration-300 bg-transparent`}>
         {/* Header */}
-        <header className={`border-b ${theme.colors.border} sticky top-0 z-50 ${isDark ? 'bg-slate-950/95' : 'bg-white/80'} backdrop-blur-md transition-colors duration-300`}>
+        <header className={`border-b ${theme.colors.border} sticky top-0 z-50 ${isDark ? 'bg-[#0f1115]/95' : 'bg-white/80'} backdrop-blur-md transition-colors duration-300`}>
           <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs ${isDark ? 'bg-gradient-to-br from-cyan-400 to-blue-500 text-white' : 'bg-gradient-to-br from-blue-600 to-purple-600 text-white'}`}>
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs bg-gradient-to-br from-[#0055ff] to-[#00aaff] text-white`}>
                 TC
               </div>
-              <h1 className={`text-2xl font-bold bg-gradient-to-r ${theme.colors.gradient} bg-clip-text text-transparent`}>
+              <h1 className={`font-['Orbitron'] text-2xl font-bold bg-gradient-to-r ${theme.colors.gradient} bg-clip-text text-transparent tracking-wide`}>
                 ThinkCraft
               </h1>
             </div>
             <div className="flex items-center gap-4">
-              <p className={`text-sm hidden sm:block ${theme.colors.text.tertiary}`}>AI-Powered Social Media Carousels</p>
+              <p className={`font-['Inter'] text-sm hidden sm:block ${theme.colors.text.tertiary} font-normal`}>AI-Powered Social Media Carousels</p>
               <IconButton
                 onClick={toggleTheme}
                 isDark={isDark}

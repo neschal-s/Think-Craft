@@ -21,37 +21,41 @@ export const ThemeProvider = ({ children }) => {
     isDark,
     toggleTheme,
     colors: isDark ? {
-      // Dark mode - darker to match #0a0a0a background
+      // Dark mode - deep dark background (#0f1115)
       bg: {
-        primary: 'bg-slate-950',
-        secondary: 'bg-slate-900/60',
-        tertiary: 'bg-slate-800/50',
-        card: 'bg-gradient-to-br from-slate-950 to-black/40',
+        primary: 'bg-[#0f1115]',
+        secondary: 'bg-[#1a1d25]',
+        tertiary: 'bg-[#252a35]',
+        card: 'bg-gradient-to-br from-[#0f1115] to-[#1a1d25]/40',
       },
-      border: 'border-slate-800',
+      border: 'border-[#2a2d35]',
       text: {
         primary: 'text-white',
-        secondary: 'text-slate-300',
-        tertiary: 'text-slate-400',
+        secondary: 'text-[#b0b3b8]',
+        tertiary: 'text-[#8a8d93]',
       },
-      accent: 'text-cyan-400',
-      gradient: 'from-cyan-400 via-blue-400 to-purple-400',
+      accent: 'text-[#0055ff]',
+      accentOrange: 'text-[#ff5500]',
+      gradient: 'from-[#0055ff] via-[#00aaff] to-[#ff5500]',
+      gradientNeon: 'from-[#0055ff] to-[#ff5500]',
     } : {
       // Light mode
       bg: {
-        primary: 'bg-white/70',
-        secondary: 'bg-white/50',
-        tertiary: 'bg-white/40',
-        card: 'bg-white/80 backdrop-blur-sm',
+        primary: 'bg-white',
+        secondary: 'bg-gray-50',
+        tertiary: 'bg-gray-100',
+        card: 'bg-white/90 backdrop-blur-sm',
       },
-      border: 'border-gray-300',
+      border: 'border-gray-200',
       text: {
         primary: 'text-gray-900',
-        secondary: 'text-gray-700',
-        tertiary: 'text-gray-600',
+        secondary: 'text-gray-600',
+        tertiary: 'text-gray-500',
       },
-      accent: 'text-blue-600',
-      gradient: 'from-blue-600 via-blue-500 to-purple-600',
+      accent: 'text-[#0055ff]',
+      accentOrange: 'text-[#ff5500]',
+      gradient: 'from-[#0055ff] via-[#00aaff] to-[#ff5500]',
+      gradientNeon: 'from-[#0055ff] to-[#ff5500]',
     }
   };
 

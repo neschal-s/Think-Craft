@@ -1,18 +1,61 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
+
+/* Global Typography */
+@layer base {
+  /* Hero and Major Headings */
+  h1, h2, h3 {
+    @apply font-['Orbitron'];
+    letter-spacing: 0.05em;
+    font-weight: 900;
+  }
+
+  h1 {
+    @apply text-4xl md:text-6xl font-black;
+    letter-spacing: 0.08em;
+  }
+
+  h2 {
+    @apply text-3xl md:text-4xl font-bold;
+    letter-spacing: 0.06em;
+  }
+
+  h3 {
+    @apply text-xl md:text-2xl font-bold;
+    letter-spacing: 0.05em;
+  }
+
+  /* Body Text */
+  body, p, span, a, button {
+    @apply font-['Inter'];
+  }
+
+  body {
+    @apply tracking-normal;
+  }
+
+  p {
+    @apply text-base leading-relaxed;
+    letter-spacing: 0.01em;
+  }
+
+  button {
+    @apply font-semibold tracking-wide;
+  }
+}
 
 * {
   @apply transition-colors duration-300;
 }
 
 body {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Inter', sans-serif;
   @apply text-white;
-  background-color: #050505;
+  background-color: #0f1115;
   background-image:
-    radial-gradient(circle at center, rgba(255,255,255,0.12) 1px, transparent 1px);
+    radial-gradient(circle at center, rgba(255,255,255,0.15) 1px, transparent 1px);
   background-size: 26px 26px;
   background-position: center;
   background-attachment: fixed;
@@ -26,18 +69,18 @@ html, body, #root {
 body:not(.dark) {
   background-color: #f8f8f8;
   background-image:
-    radial-gradient(circle at center, rgba(0,0,0,0.25) 1px, transparent 1px);
+    radial-gradient(circle at center, rgba(0,0,0,0.20) 1px, transparent 1px);
   background-size: 26px 26px;
   background-position: center;
   background-attachment: fixed;
   @apply text-gray-900;
 }
 
-/* Dark mode support - brighter grid */
+/* Dark mode support - deep dark background */
 .dark body {
-  background-color: #0a0a0a;
+  background-color: #0f1115;
   background-image:
-    radial-gradient(circle at center, rgba(255,255,255,0.12) 1px, transparent 1px);
+    radial-gradient(circle at center, rgba(255,255,255,0.15) 1px, transparent 1px);
   background-size: 26px 26px;
   background-position: center;
   background-attachment: fixed;

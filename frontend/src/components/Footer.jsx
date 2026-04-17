@@ -25,10 +25,10 @@ const Footer = () => {
   ];
 
   return (
-    <footer className={`border-t ${theme.colors.border} transition-colors duration-300 mt-4 py-4 ${isDark ? 'bg-slate-950/50 backdrop-blur-md' : 'bg-white/60 backdrop-blur-md'}`}>
+    <footer className={`border-t ${theme.colors.border} transition-colors duration-300 mt-4 py-4 ${isDark ? 'bg-[#0f1115]/50 backdrop-blur-md' : 'bg-white/60 backdrop-blur-md'}`}>
       <div className="max-w-7xl mx-auto px-2">
         <div className="text-center">
-          <h3 className={`text-2xl font-bold mb-4 ${theme.colors.text.primary} font-['Poppins']`}>
+          <h3 className={`font-['Orbitron'] text-2xl font-bold mb-4 ${theme.colors.text.primary} tracking-wide`}>
             Connect with Developer
           </h3>
           
@@ -47,11 +47,11 @@ const Footer = () => {
             ))}
           </div>
 
-          <div className={`space-y-1 max-w-lg mx-auto font-['Poppins']`}>
-            <p className={`${theme.colors.text.secondary} font-small`}>
+          <div className={`space-y-1 max-w-lg mx-auto font-['Inter']`}>
+            <p className={`${theme.colors.text.secondary} font-small font-normal`}>
               Built with passion
             </p>
-            <p className={`${theme.colors.text.tertiary} text-xs mt-4`}>
+            <p className={`${theme.colors.text.tertiary} text-xs mt-4 font-normal`}>
               © 2026 ThinkCraft. All rights reserved.
             </p>
           </div>

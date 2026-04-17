@@ -14,8 +14,8 @@ const FormatSelector = ({ selectedFormat, onFormatChange }) => {
   return (
     <div className={`${theme.colors.bg.card} rounded-xl border ${theme.colors.border} p-6 shadow-xl transition-colors duration-300`}>
       <div className="mb-6">
-        <h3 className={`text-xl font-bold ${theme.colors.text.primary} mb-1`}>Choose Your Format</h3>
-        <p className={`${theme.colors.text.tertiary} text-sm`}>Change aspect ratio instantly - content stays the same</p>
+        <h3 className={`font-['Orbitron'] text-xl font-bold ${theme.colors.text.primary} mb-1 tracking-wide`}>Choose Your Format</h3>
+        <p className={`font-['Inter'] ${theme.colors.text.tertiary} text-sm font-normal`}>Change aspect ratio instantly - content stays the same</p>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
