@@ -22,10 +22,13 @@ const CarouselViewer = ({ carousel, palette, customColor, selectedFormat }) => {
 
   // Use customColor if provided, otherwise fall back to palette
   const bgColor = customColor || paletteColors[palette]?.bg || paletteColors.vibrant.bg;
+  const textColor = paletteColors[palette]?.text || '#FFF';
+  const secondaryColor = paletteColors[palette]?.secondary || '#FFD93D';
+  
   const colors = {
     bg: bgColor,
-    text: '#FFF',
-    secondary: '#FFD93D'
+    text: textColor,
+    secondary: secondaryColor
   };
   const slides = carousel.slides || [];
   const totalSlides = slides.length;
@@ -47,8 +50,10 @@ const CarouselViewer = ({ carousel, palette, customColor, selectedFormat }) => {
     try {
       const element = document.getElementById('carousel-container');
       const canvas = await html2canvas(element, {
-        backgroundColor: colors.bg,
+        allowTaint: true,
+        useCORS: true,
         scale: 2,
+        backgroundColor: null,
       });
       const link = document.createElement('a');
       link.href = canvas.toDataURL('image/png');
@@ -83,33 +88,56 @@ const CarouselViewer = ({ carousel, palette, customColor, selectedFormat }) => {
       <div className="flex justify-center">
         <div
           id="carousel-container"
-          className={`${getContainerClass()} rounded-2xl shadow-2xl overflow-hidden`}
-          style={{ backgroundColor: colors.bg }}
+          className={`${getContainerClass()} rounded-2xl shadow-2xl overflow-hidden relative`}
         >
-          <div className="w-full h-full flex flex-col">
-            {/* Image Section */}
-            <div className={`flex-1 overflow-hidden ${isDark ? 'bg-gradient-to-br from-gray-800 to-gray-900' : 'bg-gradient-to-br from-gray-200 to-gray-300'}`}>
-              {currentSlideData?.imageUrl ? (
-                <img
-                  src={currentSlideData.imageUrl}
-                  alt={`Slide ${currentSlideData.slideNumber}`}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                  <div className="text-center opacity-50" style={{ color: colors.text }}>
-                    <div className="text-4xl mb-2">📸</div>
-                    <span className="text-sm">Image loading...</span>
-                  </div>
-                </div>
-              )}
-            </div>
+          {/* Background Image */}
+          <div
+            className="w-full h-full absolute inset-0 bg-cover bg-center"
+            style={{
+              backgroundImage: currentSlideData?.imageUrl
+                ? `url('${currentSlideData.imageUrl}')`
+                : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }}
+          />
 
-            {/* Text Section */}
-            <div className="flex-1 p-6 flex flex-col justify-center" style={{ color: colors.text }}>
-              <h2 className="text-3xl font-bold mb-3 leading-tight">{currentSlideData?.headline}</h2>
-              <p className="text-base leading-relaxed opacity-95">{currentSlideData?.body}</p>
+          {/* Light Shadow Overlay for Text Readability */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background: 'linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.5) 100%)',
+            }}
+          />
+
+          {/* Text Content */}
+          <div className="w-full h-full flex flex-col items-center justify-center p-6 relative z-10">
+            <div className="text-center space-y-4">
+              <h2
+                className="text-4xl font-bold leading-tight drop-shadow-lg"
+                style={{ color: colors.text }}
+              >
+                {currentSlideData?.headline}
+              </h2>
+              <p
+                className="text-lg leading-relaxed drop-shadow-md opacity-95 max-w-xs"
+                style={{ color: colors.text }}
+              >
+                {currentSlideData?.body}
+              </p>
             </div>
+          </div>
+
+          {/* Slide Number Badge */}
+          <div
+            className="absolute top-4 right-4 px-4 py-2 rounded-full font-semibold drop-shadow-lg z-20"
+            style={{
+              backgroundColor: `${colors.secondary}20`,
+              color: colors.secondary,
+              border: `2px solid ${colors.secondary}`,
+            }}
+          >
+            {currentSlide + 1}/{totalSlides}
           </div>
         </div>
       </div>
