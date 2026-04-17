@@ -12,9 +12,8 @@ body {
   @apply text-white;
   background-color: #050505;
   background-image:
-    radial-gradient(circle at center, rgba(255,255,255,0.12) 1px, transparent 1px),
-    linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px);
-  background-size: 26px 26px, 140px 100%;
+    radial-gradient(circle at center, rgba(255,255,255,0.12) 1px, transparent 1px);
+  background-size: 26px 26px;
   background-position: center;
   background-attachment: fixed;
 }
@@ -27,9 +26,8 @@ html, body, #root {
 body:not(.dark) {
   background-color: #f8f8f8;
   background-image:
-    radial-gradient(circle at center, rgba(0,0,0,0.12) 1px, transparent 1px),
-    linear-gradient(to right, rgba(0,0,0,0.05) 1px, transparent 1px);
-  background-size: 26px 26px, 140px 100%;
+    radial-gradient(circle at center, rgba(0,0,0,0.25) 1px, transparent 1px);
+  background-size: 26px 26px;
   background-position: center;
   background-attachment: fixed;
   @apply text-gray-900;
@@ -39,9 +37,8 @@ body:not(.dark) {
 .dark body {
   background-color: #0a0a0a;
   background-image:
-    radial-gradient(circle at center, rgba(255,255,255,0.12) 1px, transparent 1px),
-    linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px);
-  background-size: 26px 26px, 140px 100%;
+    radial-gradient(circle at center, rgba(255,255,255,0.12) 1px, transparent 1px);
+  background-size: 26px 26px;
   background-position: center;
   background-attachment: fixed;
 }

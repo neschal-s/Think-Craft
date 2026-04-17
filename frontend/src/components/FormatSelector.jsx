@@ -29,7 +29,7 @@ const FormatSelector = ({ selectedFormat, onFormatChange, loading }) => {
                   ? 'border-cyan-400 bg-cyan-400/10 shadow-lg shadow-cyan-400/20'
                   : 'border-blue-600 bg-blue-50 shadow-lg shadow-blue-200'
                 : isDark
-                  ? 'border-slate-600 bg-slate-700/30 hover:border-slate-500'
+                  ? 'border-slate-700 bg-slate-900/40 hover:border-slate-600'
                   : 'border-gray-300 bg-gray-50 hover:border-gray-400'
             }`}
           >

@@ -71,7 +71,7 @@ const FormPage = () => {
     if (isDark) {
       return selected
         ? 'border-cyan-400 bg-cyan-400/10 shadow-lg shadow-cyan-400/20'
-        : 'border-slate-600 bg-slate-700/30 hover:border-slate-500';
+        : 'border-slate-700 bg-slate-900/40 hover:border-slate-600';
     } else {
       return selected
         ? 'border-blue-600 bg-blue-50 shadow-lg shadow-blue-200'
@@ -104,7 +104,7 @@ const FormPage = () => {
                 onChange={(e) => setPrompt(e.target.value)}
                 placeholder="What would you like to create? E.g., A carousel about productivity tips for remote workers, benefits of meditation, marketing strategies, etc."
                 className={`w-full h-28 p-4 rounded-xl resize-none transition focus:outline-none focus:ring-2 ${isDark 
-                  ? 'bg-slate-700/50 border border-slate-600 text-white placeholder-slate-400 focus:border-cyan-400 focus:ring-cyan-400/20'
+                  ? 'bg-slate-900/50 border border-slate-800 text-white placeholder-slate-500 focus:border-cyan-400 focus:ring-cyan-400/20'
                   : 'bg-white border border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500/20'
                 }`}
                 disabled={loading}
@@ -190,7 +190,7 @@ const FormPage = () => {
                       placeholder="#000000"
                       disabled={loading}
                       className={`w-full px-4 py-3 rounded-xl border-2 transition focus:outline-none focus:ring-2 ${isDark 
-                        ? 'bg-slate-700/50 border-slate-600 text-white placeholder-slate-400 focus:border-cyan-400 focus:ring-cyan-400/20'
+                        ? 'bg-slate-900/50 border-slate-800 text-white placeholder-slate-500 focus:border-cyan-400 focus:ring-cyan-400/20'
                         : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500/20'
                       }`}
                     />

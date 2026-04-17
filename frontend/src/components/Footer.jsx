@@ -24,7 +24,7 @@ const Footer = () => {
   ];
 
   return (
-    <footer className={`border-t ${theme.colors.border} transition-colors duration-300 mt-4 py-4 ${isDark ? 'bg-slate-800/40 backdrop-blur-md' : 'bg-white/60 backdrop-blur-md'}`}>
+    <footer className={`border-t ${theme.colors.border} transition-colors duration-300 mt-4 py-4 ${isDark ? 'bg-slate-950/50 backdrop-blur-md' : 'bg-white/60 backdrop-blur-md'}`}>
       <div className="max-w-7xl mx-auto px-2">
         <div className="text-center">
           <h3 className={`text-2xl font-bold mb-4 ${theme.colors.text.primary} font-['Poppins']`}>

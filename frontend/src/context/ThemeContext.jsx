@@ -21,14 +21,14 @@ export const ThemeProvider = ({ children }) => {
     isDark,
     toggleTheme,
     colors: isDark ? {
-      // Dark mode
+      // Dark mode - darker to match #0a0a0a background
       bg: {
-        primary: 'bg-slate-900',
-        secondary: 'bg-slate-800',
-        tertiary: 'bg-slate-700',
-        card: 'bg-gradient-to-br from-slate-800 to-slate-900',
+        primary: 'bg-slate-950',
+        secondary: 'bg-slate-900/60',
+        tertiary: 'bg-slate-800/50',
+        card: 'bg-gradient-to-br from-slate-950 to-black/40',
       },
-      border: 'border-slate-700',
+      border: 'border-slate-800',
       text: {
         primary: 'text-white',
         secondary: 'text-slate-300',

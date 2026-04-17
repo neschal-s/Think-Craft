@@ -115,13 +115,13 @@ const CarouselViewer = ({ carousel, palette, customColor, selectedFormat }) => {
       </div>
 
       {/* Controls Container */}
-      <div className={`border ${theme.colors.border} rounded-xl p-6 space-y-6 transition-colors duration-300 ${isDark ? 'bg-slate-800/50' : 'bg-gray-100'}`}>
+      <div className={`border ${theme.colors.border} rounded-xl p-6 space-y-6 transition-colors duration-300 ${isDark ? 'bg-slate-900/40' : 'bg-gray-100'}`}>
         {/* Navigation Buttons */}
         <div className="flex items-center justify-center gap-4">
           <button
             onClick={handlePrev}
             disabled={currentSlide === 0}
-            className={`p-3 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed transition duration-200 ${isDark ? 'bg-slate-700 hover:bg-slate-600' : 'bg-gray-300 hover:bg-gray-400'}`}
+            className={`p-3 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed transition duration-200 ${isDark ? 'bg-slate-800/60 hover:bg-slate-700/60' : 'bg-gray-300 hover:bg-gray-400'}`}
             title="Previous slide"
           >
             <span className={`text-lg ${isDark ? 'text-white' : 'text-gray-900'}`}>←</span>
@@ -139,7 +139,7 @@ const CarouselViewer = ({ carousel, palette, customColor, selectedFormat }) => {
                       ? 'bg-cyan-400 w-8 h-3'
                       : 'bg-blue-600 w-8 h-3'
                     : isDark
-                      ? 'bg-slate-600 hover:bg-slate-500 w-3 h-3'
+                      ? 'bg-slate-700/60 hover:bg-slate-600/60 w-3 h-3'
                       : 'bg-gray-400 hover:bg-gray-500 w-3 h-3'
                 }`}
                 title={`Go to slide ${idx + 1}`}
@@ -150,7 +150,7 @@ const CarouselViewer = ({ carousel, palette, customColor, selectedFormat }) => {
           <button
             onClick={handleNext}
             disabled={currentSlide === totalSlides - 1}
-            className={`p-3 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed transition duration-200 ${isDark ? 'bg-slate-700 hover:bg-slate-600' : 'bg-gray-300 hover:bg-gray-400'}`}
+            className={`p-3 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed transition duration-200 ${isDark ? 'bg-slate-800/60 hover:bg-slate-700/60' : 'bg-gray-300 hover:bg-gray-400'}`}
             title="Next slide"
           >
             <span className={`text-lg ${isDark ? 'text-white' : 'text-gray-900'}`}>→</span>

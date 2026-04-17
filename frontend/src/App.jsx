@@ -13,7 +13,7 @@ function AppContent() {
     <Router>
       <div className={`min-h-screen transition-colors duration-300 bg-transparent`}>
         {/* Header */}
-        <header className={`border-b ${theme.colors.border} sticky top-0 z-50 ${isDark ? 'bg-slate-900/95' : 'bg-white/80'} backdrop-blur-md transition-colors duration-300`}>
+        <header className={`border-b ${theme.colors.border} sticky top-0 z-50 ${isDark ? 'bg-slate-950/95' : 'bg-white/80'} backdrop-blur-md transition-colors duration-300`}>
           <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs ${isDark ? 'bg-gradient-to-br from-cyan-400 to-blue-500 text-white' : 'bg-gradient-to-br from-blue-600 to-purple-600 text-white'}`}>
