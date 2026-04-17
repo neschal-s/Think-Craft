@@ -12,8 +12,6 @@ const ViewerPage = () => {
   const [customColor, setCustomColor] = useState('#475569');
   const [tone, setTone] = useState('professional');
   const [selectedFormat, setSelectedFormat] = useState('1:1');
-  const [formatCarousels, setFormatCarousels] = useState({});
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem('carousel');
@@ -31,42 +29,12 @@ const ViewerPage = () => {
     setPalette(savedPalette || 'slate');
     setCustomColor(savedCustomColor || '#475569');
     setTone(savedTone || 'professional');
-
-    setFormatCarousels({ '1:1': parsedCarousel });
   }, [navigate]);
 
-  const handleFormatChange = async (format) => {
-    if (formatCarousels[format]) {
-      setSelectedFormat(format);
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const { adaptFormat } = await import('../services/api');
-      const result = await adaptFormat(carousel, format, tone);
-
-      const newCarousel = {
-        ...result.data.carouselStructure,
-        slides: result.data.carouselStructure.slides.map((slide, idx) => ({
-          ...slide,
-          imageUrl: result.data.images[idx]?.imageUrl,
-          imageError: result.data.images[idx]?.error,
-        })),
-      };
-
-      setFormatCarousels((prev) => ({
-        ...prev,
-        [format]: newCarousel,
-      }));
-
-      setSelectedFormat(format);
-    } catch (error) {
-      console.error('Error adapting format:', error);
-      alert('Failed to adapt carousel for ' + format);
-    } finally {
-      setLoading(false);
-    }
+  const handleFormatChange = (format) => {
+    // Just change the format - content and images stay the same
+    // Only the aspect ratio/CSS dimensions change
+    setSelectedFormat(format);
   };
 
   if (!carousel) {
@@ -79,8 +47,6 @@ const ViewerPage = () => {
       </div>
     );
   }
-
-  const currentCarousel = formatCarousels[selectedFormat] || carousel;
 
   return (
     <div className={`min-h-screen py-12 px-4 transition-colors duration-300 bg-transparent`}>
@@ -102,7 +68,6 @@ const ViewerPage = () => {
           <FormatSelector
             selectedFormat={selectedFormat}
             onFormatChange={handleFormatChange}
-            loading={loading}
           />
         </div>
 
@@ -110,7 +75,7 @@ const ViewerPage = () => {
         <div className="mb-12">
           <div className={`${theme.colors.bg.card} rounded-2xl border ${theme.colors.border} p-8 shadow-2xl transition-colors duration-300`}>
             <CarouselViewer
-              carousel={currentCarousel}
+              carousel={carousel}
               palette={palette}
               customColor={customColor}
               selectedFormat={selectedFormat}

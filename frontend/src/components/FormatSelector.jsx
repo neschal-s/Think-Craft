@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTheme } from '../context/ThemeContext';
 
-const FormatSelector = ({ selectedFormat, onFormatChange, loading }) => {
+const FormatSelector = ({ selectedFormat, onFormatChange }) => {
   const { isDark, theme } = useTheme();
 
   const formats = [
@@ -14,7 +14,7 @@ const FormatSelector = ({ selectedFormat, onFormatChange, loading }) => {
     <div className={`${theme.colors.bg.card} rounded-xl border ${theme.colors.border} p-6 shadow-xl transition-colors duration-300`}>
       <div className="mb-6">
         <h3 className={`text-xl font-bold ${theme.colors.text.primary} mb-1`}>Choose Your Format</h3>
-        <p className={`${theme.colors.text.tertiary} text-sm`}>Optimize your carousel for different platforms</p>
+        <p className={`${theme.colors.text.tertiary} text-sm`}>Change aspect ratio instantly - content stays the same</p>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -22,8 +22,7 @@ const FormatSelector = ({ selectedFormat, onFormatChange, loading }) => {
           <button
             key={format.id}
             onClick={() => onFormatChange(format.id)}
-            disabled={loading}
-            className={`relative p-5 rounded-xl border-2 transition duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed ${
+            className={`relative p-5 rounded-xl border-2 transition duration-200 transform hover:scale-105 ${
               selectedFormat === format.id
                 ? isDark
                   ? 'border-cyan-400 bg-cyan-400/10 shadow-lg shadow-cyan-400/20'
@@ -46,16 +45,6 @@ const FormatSelector = ({ selectedFormat, onFormatChange, loading }) => {
           </button>
         ))}
       </div>
-
-      {loading && (
-        <div className={`mt-4 p-3 rounded-lg text-sm flex items-center gap-2 ${isDark ? 'bg-blue-900/30 border border-blue-700 text-blue-300' : 'bg-blue-50 border border-blue-300 text-blue-700'}`}>
-          <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth="4" />
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-          </svg>
-          <span>Adapting carousel to new format...</span>
-        </div>
-      )}
     </div>
   );
 };
