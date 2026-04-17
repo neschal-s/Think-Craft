@@ -39,7 +39,7 @@ const CarouselViewer = ({ carousel, palette, selectedFormat }) => {
       });
       const link = document.createElement('a');
       link.href = canvas.toDataURL('image/png');
-      link.download = `carousel-${selectedFormat}-${Date.now()}.png`;
+      link.download = `thinkcraft-carousel-${selectedFormat}-${Date.now()}.png`;
       link.click();
     } catch (error) {
       console.error('Error downloading carousel:', error);
@@ -51,94 +51,131 @@ const CarouselViewer = ({ carousel, palette, selectedFormat }) => {
 
   const currentSlideData = slides[currentSlide];
 
+  const getContainerClass = () => {
+    switch(selectedFormat) {
+      case '1:1':
+        return 'w-full max-w-md mx-auto aspect-square';
+      case '9:16':
+        return 'w-full max-w-xs mx-auto aspect-[9/16]';
+      case '16:9':
+        return 'w-full max-w-3xl mx-auto aspect-video';
+      default:
+        return 'w-full max-w-md mx-auto aspect-square';
+    }
+  };
+
   return (
     <div className="space-y-8">
       {/* Carousel Display */}
-      <div
-        id="carousel-container"
-        className={`rounded-2xl shadow-2xl overflow-hidden ${
-          selectedFormat === '1:1'
-            ? 'w-full max-w-md mx-auto aspect-square'
-            : selectedFormat === '9:16'
-            ? 'w-full max-w-xs mx-auto aspect-video'
-            : 'w-full max-w-2xl mx-auto aspect-video'
-        }`}
-        style={{ backgroundColor: colors.bg }}
-      >
-        <div className="w-full h-full flex flex-col">
-          {/* Image Section */}
-          <div className="flex-1 overflow-hidden bg-gray-200">
-            {currentSlideData?.imageUrl ? (
-              <img
-                src={currentSlideData.imageUrl}
-                alt={`Slide ${currentSlideData.slideNumber}`}
-                className="w-full h-full object-cover"
+      <div className="flex justify-center">
+        <div
+          id="carousel-container"
+          className={`${getContainerClass()} rounded-2xl shadow-2xl overflow-hidden`}
+          style={{ backgroundColor: colors.bg }}
+        >
+          <div className="w-full h-full flex flex-col">
+            {/* Image Section */}
+            <div className="flex-1 overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900">
+              {currentSlideData?.imageUrl ? (
+                <img
+                  src={currentSlideData.imageUrl}
+                  alt={`Slide ${currentSlideData.slideNumber}`}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <div className="text-center opacity-50" style={{ color: colors.text }}>
+                    <div className="text-4xl mb-2">📸</div>
+                    <span className="text-sm">Image loading...</span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Text Section */}
+            <div className="flex-1 p-6 flex flex-col justify-center" style={{ color: colors.text }}>
+              <h2 className="text-3xl font-bold mb-3 leading-tight">{currentSlideData?.headline}</h2>
+              <p className="text-base leading-relaxed opacity-95">{currentSlideData?.body}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Controls Container */}
+      <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6 space-y-6">
+        {/* Navigation Buttons */}
+        <div className="flex items-center justify-center gap-4">
+          <button
+            onClick={handlePrev}
+            disabled={currentSlide === 0}
+            className="p-3 rounded-lg bg-slate-700 hover:bg-slate-600 disabled:opacity-30 disabled:cursor-not-allowed transition duration-200"
+            title="Previous slide"
+          >
+            <span className="text-white text-lg">←</span>
+          </button>
+
+          {/* Slide Indicators */}
+          <div className="flex gap-2 items-center">
+            {slides.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => setCurrentSlide(idx)}
+                className={`rounded-full transition duration-200 ${
+                  idx === currentSlide
+                    ? 'bg-cyan-400 w-8 h-3'
+                    : 'bg-slate-600 hover:bg-slate-500 w-3 h-3'
+                }`}
+                title={`Go to slide ${idx + 1}`}
               />
+            ))}
+          </div>
+
+          <button
+            onClick={handleNext}
+            disabled={currentSlide === totalSlides - 1}
+            className="p-3 rounded-lg bg-slate-700 hover:bg-slate-600 disabled:opacity-30 disabled:cursor-not-allowed transition duration-200"
+            title="Next slide"
+          >
+            <span className="text-white text-lg">→</span>
+          </button>
+        </div>
+
+        {/* Slide Counter */}
+        <div className="text-center">
+          <p className="text-slate-300 text-sm font-medium">
+            Slide <span className="text-cyan-400">{currentSlide + 1}</span> of{' '}
+            <span className="text-cyan-400">{totalSlides}</span>
+          </p>
+        </div>
+
+        {/* Download Button */}
+        <div className="text-center">
+          <button
+            onClick={handleDownload}
+            disabled={downloading}
+            data-download-btn
+            className={`px-8 py-3 rounded-xl font-semibold transition duration-200 transform ${
+              downloading
+                ? 'bg-slate-600 text-slate-400 cursor-not-allowed opacity-50'
+                : 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white hover:from-cyan-400 hover:to-blue-500 active:scale-95 shadow-lg hover:shadow-cyan-500/50'
+            }`}
+          >
+            {downloading ? (
+              <span className="flex items-center justify-center gap-2">
+                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                Downloading...
+              </span>
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-gray-400">
-                <span>Loading image...</span>
-              </div>
+              <span className="flex items-center justify-center gap-2">
+                <span>⬇️</span>
+                <span>Download Slide as PNG</span>
+              </span>
             )}
-          </div>
-
-          {/* Text Section */}
-          <div className="flex-1 p-6 flex flex-col justify-center" style={{ color: colors.text }}>
-            <h2 className="text-2xl font-bold mb-3">{currentSlideData?.headline}</h2>
-            <p className="text-base leading-relaxed">{currentSlideData?.body}</p>
-          </div>
+          </button>
         </div>
-      </div>
-
-      {/* Controls */}
-      <div className="flex items-center justify-center gap-6">
-        <button
-          onClick={handlePrev}
-          disabled={currentSlide === 0}
-          className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition"
-        >
-          ← Prev
-        </button>
-
-        {/* Slide Indicators */}
-        <div className="flex gap-2">
-          {slides.map((_, idx) => (
-            <button
-              key={idx}
-              onClick={() => setCurrentSlide(idx)}
-              className={`w-3 h-3 rounded-full transition ${
-                idx === currentSlide ? 'bg-primary-500 w-8' : 'bg-gray-300'
-              }`}
-            />
-          ))}
-        </div>
-
-        <button
-          onClick={handleNext}
-          disabled={currentSlide === totalSlides - 1}
-          className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition"
-        >
-          Next →
-        </button>
-      </div>
-
-      {/* Slide Counter */}
-      <div className="text-center text-gray-600">
-        Slide {currentSlide + 1} of {totalSlides}
-      </div>
-
-      {/* Download Button */}
-      <div className="text-center">
-        <button
-          onClick={handleDownload}
-          disabled={downloading}
-          className={`px-8 py-3 rounded-lg font-semibold text-white transition ${
-            downloading
-              ? 'bg-gray-400 cursor-not-allowed'
-              : 'bg-secondary-500 hover:bg-secondary-600 active:scale-95'
-          }`}
-        >
-          {downloading ? 'Downloading...' : '⬇️ Download as PNG'}
-        </button>
       </div>
     </div>
   );

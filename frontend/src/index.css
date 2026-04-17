@@ -2,12 +2,34 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
-body {
-  @apply font-sans;
+* {
+  @apply transition-colors duration-200;
 }
 
+body {
+  @apply font-sans bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white;
+}
+
+html, body, #root {
+  @apply w-full h-full;
+}
+
+/* Modern scrollbar */
+::-webkit-scrollbar {
+  @apply w-2 h-2;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-slate-900;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-700 rounded-full hover:bg-slate-600;
+}
+
+/* Carousel components */
 .carousel-slide {
-  @apply w-full flex flex-col bg-white rounded-lg shadow-md overflow-hidden;
+  @apply w-full flex flex-col bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl shadow-xl overflow-hidden border border-slate-700;
 }
 
 .carousel-image {
@@ -15,17 +37,18 @@ body {
 }
 
 .carousel-text {
-  @apply p-4 flex flex-col justify-center;
+  @apply p-6 flex flex-col justify-center text-white;
 }
 
 .carousel-headline {
-  @apply text-lg font-bold text-primary-900 mb-2;
+  @apply text-2xl font-bold mb-3 text-white;
 }
 
 .carousel-body {
-  @apply text-sm text-gray-700;
+  @apply text-base text-slate-200 leading-relaxed;
 }
 
+/* Animations */
 @keyframes pulse-glow {
   0%, 100% {
     opacity: 1;
@@ -35,6 +58,33 @@ body {
   }
 }
 
+@keyframes gradient-shimmer {
+  0% {
+    background-position: 200% center;
+  }
+  100% {
+    background-position: -200% center;
+  }
+}
+
 .loading-pulse {
   animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
+
+.gradient-shimmer {
+  background-size: 200% auto;
+  animation: gradient-shimmer 3s linear infinite;
+}
+
+/* Gradient text utility */
+.gradient-text {
+  @apply bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent;
+}
+
+/* Focus states */
+input:focus,
+textarea:focus,
+select:focus {
+  @apply outline-none ring-2 ring-cyan-400/50 border-cyan-400;
+}
+
