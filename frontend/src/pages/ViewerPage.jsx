@@ -38,6 +38,53 @@ const ViewerPage = () => {
     setSelectedFormat(format);
   };
 
+  const handleRegenerateSlide = async (slideIndex, type) => {
+    // type can be 'text', 'image', or 'both'
+    try {
+      const endpoint = type === 'image' 
+        ? '/api/generate/slide-image'
+        : type === 'both'
+        ? '/api/generate/slide-full'
+        : '/api/generate/slide-text';
+
+      const response = await fetch(`http://localhost:5000${endpoint}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          slideIndex,
+          currentSlide: carousel.slides[slideIndex],
+          format: carousel.format || '1:1',
+          tone,
+          prompt: carousel.prompt || 'Generate educational content'
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to regenerate: ${response.statusText}`);
+      }
+
+      const updated = await response.json();
+      
+      // Update carousel with regenerated content
+      setCarousel(prev => {
+        const newCarousel = { ...prev };
+        if (updated.slides && updated.slides[slideIndex]) {
+          newCarousel.slides[slideIndex] = {
+            ...newCarousel.slides[slideIndex],
+            ...updated.slides[slideIndex]
+          };
+        }
+        localStorage.setItem('carousel', JSON.stringify(newCarousel));
+        return newCarousel;
+      });
+
+      alert(`Slide regenerated successfully!`);
+    } catch (error) {
+      console.error('Regeneration error:', error);
+      throw error;
+    }
+  };
+
   if (!carousel) {
     return (
       <div className={`flex items-center justify-center min-h-screen transition-colors duration-300 bg-transparent`}>
@@ -81,6 +128,7 @@ const ViewerPage = () => {
               palette={palette}
               customColor={customColor}
               selectedFormat={selectedFormat}
+              onRegenerateSlide={handleRegenerateSlide}
             />
           </div>
         </div>

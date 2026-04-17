@@ -3,10 +3,14 @@ import html2canvas from 'html2canvas';
 import JSZip from 'jszip';
 import { useTheme } from '../context/ThemeContext';
 
-const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFormat }, ref) => {
+const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFormat, onRegenerateSlide }, ref) => {
   const { isDark, theme } = useTheme();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [downloading, setDownloading] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [editedSlides, setEditedSlides] = useState({});
+  const [slideColors, setSlideColors] = useState({});
+  const [regenerating, setRegenerating] = useState(false);
 
   const paletteColors = {
     vibrant: { bg: '#FF6B6B', text: '#FFF', secondary: '#FFD93D' },
@@ -34,11 +38,18 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
   
   const secondaryColor = customColor || paletteColors[palette]?.secondary || '#FFD93D';
   
-  const colors = {
-    bg: bgColor,
-    text: textColor,
-    secondary: secondaryColor
+  // Get color for current slide - Define early to use below
+  const getCurrentSlideColor = () => {
+    if (slideColors[currentSlide]) {
+      return slideColors[currentSlide];
+    }
+    return customColor || paletteColors[palette]?.bg || paletteColors.vibrant.bg;
   };
+  
+  // Dynamic color for current slide
+  const currentColor = getCurrentSlideColor();
+  const currentTextColor = currentColor === customColor ? currentColor : (customColor || paletteColors[palette]?.text || '#FFF');
+  const currentSecondaryColor = currentColor;
   const slides = carousel.slides || [];
   const totalSlides = slides.length;
 
@@ -124,10 +135,69 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
 
   // Expose downloadAll method via ref
   useImperativeHandle(ref, () => ({
-    downloadAll: handleDownloadAll
+    downloadAll: handleDownloadAll,
+    getEditedSlides: () => editedSlides,
+    getSlideColors: () => slideColors
   }));
 
-  const currentSlideData = slides[currentSlide];
+  // Get edited or original slide data
+  const getSlideData = (slideIndex) => {
+    const edited = editedSlides[slideIndex];
+    const original = slides[slideIndex];
+    return {
+      headline: edited?.headline || original?.headline || '',
+      body: edited?.body || original?.body || '',
+      imageUrl: edited?.imageUrl || original?.imageUrl || ''
+    };
+  };
+
+  const currentSlideData = getSlideData(currentSlide);
+
+  // Update edited slide text
+  const updateSlideText = (field, value) => {
+    setEditedSlides(prev => ({
+      ...prev,
+      [currentSlide]: {
+        ...prev[currentSlide],
+        [field]: value
+      }
+    }));
+  };
+
+  // Update slide color
+  const updateSlideColor = (color) => {
+    setSlideColors(prev => ({
+      ...prev,
+      [currentSlide]: color
+    }));
+  };
+
+  // Regenerate slide content
+  const handleRegenerateSlide = async (type) => {
+    // type can be 'text', 'image', or 'both'
+    if (!onRegenerateSlide) {
+      alert('Regeneration not available');
+      return;
+    }
+    
+    setRegenerating(true);
+    try {
+      await onRegenerateSlide(currentSlide, type);
+      // Clear edited content for this slide so updated content shows
+      if (type === 'text' || type === 'both') {
+        setEditedSlides(prev => {
+          const updated = { ...prev };
+          delete updated[currentSlide];
+          return updated;
+        });
+      }
+    } catch (error) {
+      console.error('Error regenerating slide:', error);
+      alert('Failed to regenerate slide');
+    } finally {
+      setRegenerating(false);
+    }
+  };
 
   const getContainerClass = () => {
     switch(selectedFormat) {
@@ -173,18 +243,39 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
           {/* Text Content */}
           <div className="w-full h-full flex flex-col items-center justify-center p-6 relative z-10">
             <div className="w-full text-center space-y-4 flex flex-col items-center">
-              <h2
-                className="text-4xl font-bold leading-tight drop-shadow-lg w-full text-center"
-                style={{ color: colors.text }}
-              >
-                {currentSlideData?.headline}
-              </h2>
-              <p
-                className="text-lg leading-relaxed drop-shadow-md opacity-95 w-full text-center"
-                style={{ color: colors.text }}
-              >
-                {currentSlideData?.body}
-              </p>
+              {editMode ? (
+                <>
+                  <textarea
+                    value={currentSlideData?.headline || ''}
+                    onChange={(e) => updateSlideText('headline', e.target.value)}
+                    className="w-full text-4xl font-bold leading-tight drop-shadow-lg text-center p-2 rounded bg-black/50 text-white border-2 border-cyan-400 resize-none"
+                    style={{ color: currentTextColor }}
+                    rows={2}
+                  />
+                  <textarea
+                    value={currentSlideData?.body || ''}
+                    onChange={(e) => updateSlideText('body', e.target.value)}
+                    className="w-full text-lg leading-relaxed drop-shadow-md opacity-95 p-2 rounded bg-black/50 text-white border-2 border-cyan-400 resize-none"
+                    style={{ color: currentTextColor }}
+                    rows={3}
+                  />
+                </>
+              ) : (
+                <>
+                  <h2
+                    className="text-4xl font-bold leading-tight drop-shadow-lg w-full text-center"
+                    style={{ color: currentTextColor }}
+                  >
+                    {currentSlideData?.headline}
+                  </h2>
+                  <p
+                    className="text-lg leading-relaxed drop-shadow-md opacity-95 w-full text-center"
+                    style={{ color: currentTextColor }}
+                  >
+                    {currentSlideData?.body}
+                  </p>
+                </>
+              )}
             </div>
           </div>
 
@@ -287,6 +378,119 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
             )}
           </button>
         </div>
+
+        {/* Edit Mode Toggle */}
+        <div className="text-center">
+          <button
+            onClick={() => setEditMode(!editMode)}
+            className={`px-6 py-3 rounded-xl font-semibold transition duration-200 ${
+              editMode
+                ? isDark
+                  ? 'bg-green-600 text-white hover:bg-green-500'
+                  : 'bg-green-500 text-white hover:bg-green-600'
+                : isDark
+                  ? 'bg-slate-700 text-white hover:bg-slate-600'
+                  : 'bg-gray-400 text-white hover:bg-gray-500'
+            }`}
+          >
+            {editMode ? '✓ Editing Mode (Click to Close)' : '✎ Edit Slide'}
+          </button>
+        </div>
+
+        {/* Edit Controls (Show when edit mode is on) */}
+        {editMode && (
+          <div className={`space-y-4 p-4 rounded-lg ${isDark ? 'bg-slate-800/50' : 'bg-gray-200'}`}>
+            <h3 className={`font-semibold text-lg ${isDark ? 'text-cyan-400' : 'text-blue-600'}`}>
+              Edit Slide {currentSlide + 1}
+            </h3>
+
+            {/* Slide Color Picker */}
+            <div className="space-y-2">
+              <label className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                Slide Background Color
+              </label>
+              <div className="flex gap-2 items-center">
+                <input
+                  type="color"
+                  value={getCurrentSlideColor()}
+                  onChange={(e) => updateSlideColor(e.target.value)}
+                  className="w-12 h-12 rounded cursor-pointer border-2 border-gray-400"
+                />
+                <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                  {getCurrentSlideColor()}
+                </span>
+                <button
+                  onClick={() => {
+                    const newColor = {};
+                    delete newColor[currentSlide];
+                    setSlideColors(newColor);
+                  }}
+                  className={`ml-auto px-3 py-1 text-sm rounded transition ${
+                    isDark
+                      ? 'bg-slate-700 hover:bg-slate-600 text-gray-300'
+                      : 'bg-gray-300 hover:bg-gray-400 text-gray-700'
+                  }`}
+                >
+                  Reset
+                </button>
+              </div>
+            </div>
+
+            {/* Regenerate Content */}
+            <div className="space-y-2">
+              <label className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                Regenerate Content
+              </label>
+              <div className="flex flex-col gap-2">
+                <button
+                  onClick={() => handleRegenerateSlide('text')}
+                  disabled={regenerating}
+                  className={`px-4 py-2 rounded transition text-sm font-medium ${
+                    regenerating
+                      ? isDark
+                        ? 'bg-slate-600 text-slate-400 cursor-not-allowed opacity-50'
+                        : 'bg-gray-400 text-gray-600 cursor-not-allowed opacity-50'
+                      : isDark
+                        ? 'bg-amber-600 hover:bg-amber-500 text-white'
+                        : 'bg-amber-500 hover:bg-amber-600 text-white'
+                  }`}
+                >
+                  {regenerating ? 'Regenerating...' : '🔄 Regenerate Text Only'}
+                </button>
+                <button
+                  onClick={() => handleRegenerateSlide('image')}
+                  disabled={regenerating}
+                  className={`px-4 py-2 rounded transition text-sm font-medium ${
+                    regenerating
+                      ? isDark
+                        ? 'bg-slate-600 text-slate-400 cursor-not-allowed opacity-50'
+                        : 'bg-gray-400 text-gray-600 cursor-not-allowed opacity-50'
+                      : isDark
+                        ? 'bg-purple-600 hover:bg-purple-500 text-white'
+                        : 'bg-purple-500 hover:bg-purple-600 text-white'
+                  }`}
+                >
+                  {regenerating ? 'Regenerating...' : '🖼️ Regenerate Image Only'}
+                </button>
+                <button
+                  onClick={() => handleRegenerateSlide('both')}
+                  disabled={regenerating}
+                  className={`px-4 py-2 rounded transition text-sm font-medium ${
+                    regenerating
+                      ? isDark
+                        ? 'bg-slate-600 text-slate-400 cursor-not-allowed opacity-50'
+                        : 'bg-gray-400 text-gray-600 cursor-not-allowed opacity-50'
+                      : isDark
+                        ? 'bg-red-600 hover:bg-red-500 text-white'
+                        : 'bg-red-500 hover:bg-red-600 text-white'
+                  }`}
+                >
+                  {regenerating ? 'Regenerating...' : '🔄 Regenerate Both'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

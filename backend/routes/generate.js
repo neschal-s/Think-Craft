@@ -177,4 +177,114 @@ router.post('/regenerate-image', async (req, res, next) => {
   }
 });
 
+/**
+ * POST /api/generate/slide-text
+ * Regenerate only text content for a specific slide
+ */
+router.post('/slide-text', async (req, res, next) => {
+  try {
+    const { slideIndex, currentSlide, format, tone, prompt } = req.body;
+
+    if (slideIndex === undefined || !currentSlide || !tone || !prompt) {
+      return res.status(400).json({ error: 'Missing required parameters' });
+    }
+
+    console.log(`[LLM] Regenerating text for slide ${slideIndex + 1}...`);
+
+    let updatedSlide;
+    if (USE_MOCK) {
+      console.log('[MOCK] Using mock text regeneration');
+      updatedSlide = {
+        ...currentSlide,
+        slideNumber: slideIndex + 1,
+        headline: `${currentSlide.headline} (Regenerated)`,
+        body: 'This content has been regenerated.'
+      };
+      await new Promise(r => setTimeout(r, 800));
+    } else {
+      const { generateSlideText } = await import('../utils/llm.js');
+      updatedSlide = await generateSlideText(prompt, tone, currentSlide);
+    }
+
+    res.json({ slides: { [slideIndex]: updatedSlide } });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * POST /api/generate/slide-image
+ * Regenerate only image for a specific slide
+ */
+router.post('/slide-image', async (req, res, next) => {
+  try {
+    const { slideIndex, currentSlide, format } = req.body;
+
+    if (slideIndex === undefined || !currentSlide) {
+      return res.status(400).json({ error: 'Missing required parameters' });
+    }
+
+    console.log(`[Replicate] Regenerating image for slide ${slideIndex + 1}...`);
+
+    let imageUrl;
+    if (USE_MOCK) {
+      console.log('[MOCK] Using placeholder image');
+      imageUrl = generatePlaceholderImageUrl(slideIndex + 1, currentSlide.imagePrompt, format || '1:1');
+      await new Promise(r => setTimeout(r, 1000));
+    } else {
+      const { generateImage } = await import('../utils/replicate.js');
+      imageUrl = await generateImage(currentSlide.imagePrompt, format || '1:1');
+    }
+
+    const updatedSlide = { ...currentSlide, imageUrl };
+    console.log(`[Replicate] Generated image URL:`, imageUrl.substring(0, 50) + '...');
+    res.json({ slides: { [slideIndex]: updatedSlide } });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * POST /api/generate/slide-full
+ * Regenerate both text and image for a specific slide
+ */
+router.post('/slide-full', async (req, res, next) => {
+  try {
+    const { slideIndex, currentSlide, format, tone, prompt } = req.body;
+
+    if (slideIndex === undefined || !currentSlide || !tone || !prompt) {
+      return res.status(400).json({ error: 'Missing required parameters' });
+    }
+
+    console.log(`[LLM] Regenerating content and image for slide ${slideIndex + 1}...`);
+
+    let updatedSlide;
+    if (USE_MOCK) {
+      console.log('[MOCK] Using mock full regeneration');
+      const imagePrompt = `Regenerated image for slide ${slideIndex + 1}`;
+      updatedSlide = {
+        ...currentSlide,
+        slideNumber: slideIndex + 1,
+        headline: `${currentSlide.headline} (Regenerated)`,
+        body: 'This is regenerated content for both text and image.',
+        imagePrompt: imagePrompt,
+        imageUrl: generatePlaceholderImageUrl(slideIndex + 1, imagePrompt, format || '1:1')
+      };
+      await new Promise(r => setTimeout(r, 1500));
+    } else {
+      const { generateSlideText } = await import('../utils/llm.js');
+      const { generateImage } = await import('../utils/replicate.js');
+      
+      const newSlide = await generateSlideText(prompt, tone, currentSlide);
+      const imageUrl = await generateImage(newSlide.imagePrompt, format || '1:1');
+      updatedSlide = { ...newSlide, imageUrl };
+    }
+
+    console.log(`[LLM] Successfully regenerated slide ${slideIndex + 1}`);
+    res.json({ slides: { [slideIndex]: updatedSlide } });
+  } catch (error) {
+    next(error);
+  }
+});
+
 export default router;
