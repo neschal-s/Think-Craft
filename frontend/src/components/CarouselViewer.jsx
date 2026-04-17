@@ -23,8 +23,16 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
 
   // Use customColor if provided, otherwise fall back to palette
   const bgColor = customColor || paletteColors[palette]?.bg || paletteColors.vibrant.bg;
-  const textColor = paletteColors[palette]?.text || '#FFF';
-  const secondaryColor = paletteColors[palette]?.secondary || '#FFD93D';
+  
+  // Use customColor directly for text if provided, otherwise use palette text color
+  let textColor;
+  if (customColor) {
+    textColor = customColor;
+  } else {
+    textColor = paletteColors[palette]?.text || '#FFF';
+  }
+  
+  const secondaryColor = customColor || paletteColors[palette]?.secondary || '#FFD93D';
   
   const colors = {
     bg: bgColor,
@@ -182,11 +190,13 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
 
           {/* Slide Number Badge */}
           <div
-            className="absolute top-4 right-4 px-4 py-2 rounded-full font-semibold drop-shadow-lg z-20"
+            data-html2canvas-ignore="true"
+            className="absolute top-4 right-4 px-3 py-1 rounded-full font-semibold z-20 text-sm"
             style={{
-              backgroundColor: `${colors.secondary}20`,
-              color: colors.secondary,
-              border: `2px solid ${colors.secondary}`,
+              backgroundColor: 'rgba(255, 255, 255, 0.3)',
+              color: '#000000',
+              border: '2px solid rgba(255, 255, 255, 0.9)',
+              boxShadow: '0 4px 12px rgba(255, 255, 255, 0.4)',
             }}
           >
             {currentSlide + 1}/{totalSlides}
@@ -195,7 +205,10 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
       </div>
 
       {/* Controls Container */}
-      <div className={`border ${theme.colors.border} rounded-xl p-6 space-y-6 transition-colors duration-300 ${isDark ? 'bg-slate-900/40' : 'bg-gray-100'}`}>
+      <div
+        data-html2canvas-ignore="true"
+        className={`border ${theme.colors.border} rounded-xl p-6 space-y-6 transition-colors duration-300 ${isDark ? 'bg-slate-900/40' : 'bg-gray-100'}`}
+      >
         {/* Navigation Buttons */}
         <div className="flex items-center justify-center gap-4">
           <button
