@@ -75,17 +75,17 @@ export const ModernButton = styled.button`
   letter-spacing: 0.5px;
   
   /* Glassmorphism effect */
-  background: ${props => props.isDark 
+  background: ${props => props.$isDark 
     ? 'rgba(30, 41, 59, 0.7)' 
     : 'rgba(255, 255, 255, 0.7)'};
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   
   /* Default text color */
-  color: ${props => props.isDark ? '#ffffff' : '#111215'};
+  color: ${props => props.$isDark ? '#ffffff' : '#111215'};
   
   /* Subtle border */
-  border: 2px solid ${props => props.isDark 
+  border: 2px solid ${props => props.$isDark 
     ? 'rgba(100, 200, 255, 0.2)' 
     : 'rgba(0, 100, 200, 0.2)'};
   
@@ -98,7 +98,7 @@ export const ModernButton = styled.button`
   &:hover:not(:disabled) {
     animation: ${glowPulse} 2s ease-in-out infinite;
     transform: translateY(-2px);
-    border-color: ${props => props.isDark 
+    border-color: ${props => props.$isDark 
       ? 'rgba(100, 220, 255, 0.5)' 
       : 'rgba(0, 120, 200, 0.5)'};
   }
@@ -106,9 +106,9 @@ export const ModernButton = styled.button`
   &:active:not(:disabled) {
     transform: translateY(0px);
     animation: none;
-    box-shadow: inset 0 0 20px ${props => props.isDark 
+    box-shadow: inset 0 0 20px ${props => props.$isDark 
       ? 'rgba(255, 140, 0, 0.3)' 
-      : 'rgba(255, 100, 0, 0.25)'}, 0 0 25px ${props => props.isDark 
+      : 'rgba(255, 100, 0, 0.25)'}, 0 0 25px ${props => props.$isDark 
       ? 'rgba(255, 120, 0, 0.4)' 
       : 'rgba(255, 100, 0, 0.3)'};
   }
@@ -263,27 +263,27 @@ export const CompactButton = styled(ModernButton)`
 // Selection Button (for choosing options like tone, format)
 export const SelectionButton = styled(ModernButton)`
   padding: 16px 20px;
-  background: ${props => props.isSelected
-    ? props.isDark
+  background: ${props => props.$isSelected
+    ? props.$isDark
       ? 'linear-gradient(135deg, rgba(34, 197, 255, 0.25) 0%, rgba(59, 130, 246, 0.25) 100%)'
       : 'linear-gradient(135deg, rgba(100, 220, 255, 0.3) 0%, rgba(100, 150, 255, 0.3) 100%)'
-    : props.isDark
+    : props.$isDark
       ? 'rgba(30, 41, 59, 0.7)'
       : 'rgba(255, 255, 255, 0.7)'};
   
-  border: 2px solid ${props => props.isSelected
-    ? props.isDark 
+  border: 2px solid ${props => props.$isSelected
+    ? props.$isDark 
       ? 'rgba(100, 220, 255, 0.6)' 
       : 'rgba(0, 120, 200, 0.6)'
-    : props.isDark 
+    : props.$isDark 
       ? 'rgba(100, 116, 139, 0.4)' 
       : 'rgba(150, 160, 170, 0.4)'};
   
-  color: ${props => props.isSelected
-    ? props.isDark 
+  color: ${props => props.$isSelected
+    ? props.$isDark 
       ? '#00ffff' 
       : '#0066cc'
-    : props.isDark 
+    : props.$isDark 
       ? '#cbd5e1' 
       : '#475569'};
   
@@ -291,15 +291,15 @@ export const SelectionButton = styled(ModernButton)`
   
   &:hover:not(:disabled) {
     transform: translateY(-2px) scale(1.02);
-    border-color: ${props => props.isDark 
+    border-color: ${props => props.$isDark 
       ? 'rgba(100, 220, 255, 0.7)' 
       : 'rgba(0, 120, 200, 0.7)'};
   }
 
   &:active:not(:disabled) {
-    box-shadow: inset 0 0 20px ${props => props.isDark 
+    box-shadow: inset 0 0 20px ${props => props.$isDark 
       ? 'rgba(255, 140, 0, 0.3)' 
-      : 'rgba(255, 100, 0, 0.25)'}, 0 0 25px ${props => props.isDark 
+      : 'rgba(255, 100, 0, 0.25)'}, 0 0 25px ${props => props.$isDark 
       ? 'rgba(255, 140, 0, 0.4)' 
       : 'rgba(255, 100, 0, 0.3)'};
   }
@@ -320,7 +320,7 @@ export const ColorPaletteButton = styled.button`
     content: '';
     position: absolute;
     inset: 0;
-    background: ${props => props.isDark 
+    background: ${props => props.$isDark 
       ? 'linear-gradient(135deg, rgba(0, 200, 255, 0.1), rgba(100, 150, 255, 0.1))' 
       : 'linear-gradient(135deg, rgba(0, 150, 255, 0.08), rgba(100, 200, 255, 0.08))'};
     opacity: 0;
@@ -331,10 +331,10 @@ export const ColorPaletteButton = styled.button`
   
   &:hover {
     transform: translateY(-3px) scale(1.05);
-    box-shadow: 0 8px 20px ${props => props.isDark 
+    box-shadow: 0 8px 20px ${props => props.$isDark 
       ? 'rgba(0, 200, 255, 0.2)' 
       : 'rgba(0, 100, 200, 0.15)'};
-    border-color: ${props => props.isDark 
+    border-color: ${props => props.$isDark 
       ? 'rgba(0, 220, 255, 0.6)' 
       : 'rgba(0, 120, 200, 0.5)'};
     
@@ -345,21 +345,21 @@ export const ColorPaletteButton = styled.button`
   
   &:active {
     transform: translateY(-1px) scale(1.03);
-    box-shadow: inset 0 0 20px ${props => props.isDark 
+    box-shadow: inset 0 0 20px ${props => props.$isDark 
       ? 'rgba(255, 140, 0, 0.3)' 
-      : 'rgba(255, 100, 0, 0.25)'}, 0 0 25px ${props => props.isDark 
+      : 'rgba(255, 100, 0, 0.25)'}, 0 0 25px ${props => props.$isDark 
       ? 'rgba(255, 140, 0, 0.4)' 
       : 'rgba(255, 100, 0, 0.3)'};
   }
   
   &.selected {
-    border-color: ${props => props.isDark 
+    border-color: ${props => props.$isDark 
       ? 'rgba(0, 220, 255, 0.8)' 
       : 'rgba(0, 100, 200, 0.8)'};
-    box-shadow: 0 0 20px ${props => props.isDark 
+    box-shadow: 0 0 20px ${props => props.$isDark 
       ? 'rgba(0, 220, 255, 0.4)' 
       : 'rgba(0, 100, 200, 0.3)'},
-                inset 0 0 15px ${props => props.isDark 
+                inset 0 0 15px ${props => props.$isDark 
       ? 'rgba(0, 220, 255, 0.2)' 
       : 'rgba(0, 100, 200, 0.15)'};
   }
@@ -376,24 +376,24 @@ export const LinkButton = styled.a`
   font-weight: 600;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
-  border: 2px solid ${props => props.isDark 
+  border: 2px solid ${props => props.$isDark 
     ? 'rgba(100, 116, 139, 0.4)' 
     : 'rgba(150, 160, 170, 0.4)'};
-  color: ${props => props.isDark 
+  color: ${props => props.$isDark 
     ? '#cbd5e1' 
     : '#475569'};
   
-  background: ${props => props.isDark
+  background: ${props => props.$isDark
     ? 'rgba(30, 41, 59, 0.7)'
     : 'rgba(255, 255, 255, 0.7)'};
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   
   &:hover {
-    color: ${props => props.isDark 
+    color: ${props => props.$isDark 
       ? '#00ffff' 
       : '#0066cc'};
-    border-color: ${props => props.isDark 
+    border-color: ${props => props.$isDark 
       ? 'rgba(100, 220, 255, 0.6)' 
       : 'rgba(0, 120, 200, 0.6)'};
     transform: translateY(-2px);

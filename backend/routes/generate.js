@@ -37,22 +37,36 @@ router.post('/carousel-structure', async (req, res, next) => {
       return res.status(400).json({ error: 'Missing prompt or tone' });
     }
 
-    const numSlides = Math.max(1, Math.min(12, parseInt(slideCount) || 5));
+    // Ensure slideCount is parsed as base-10 integer and constrained to 1-12
+    const parsedSlideCount = parseInt(slideCount, 10);
+    const numSlides = Math.max(1, Math.min(12, isNaN(parsedSlideCount) ? 5 : parsedSlideCount));
 
-    console.log(`[LLM] Generating carousel structure for prompt: "${prompt}", tone: ${tone}, format: ${format}, slides: ${numSlides}`);
+    console.log('\n========== CAROUSEL GENERATION START ==========');
+    console.log('[GEN] Received slideCount from client:', slideCount, 'Type:', typeof slideCount);
+    console.log('[GEN] Parsed slideCount:', parsedSlideCount, 'isNaN:', isNaN(parsedSlideCount));
+    console.log('[GEN] Calculated numSlides:', numSlides);
+    console.log(`[GEN] Generating carousel: prompt="${prompt.substring(0, 30)}...", tone=${tone}, format=${format}, slideCount=${numSlides}`);
 
     let carouselStructure;
     if (USE_MOCK) {
-      console.log('[MOCK] 🎭 Using mock carousel structure');
+      console.log('[GEN] Using MOCK mode');
       carouselStructure = generateMockCarouselStructure(prompt, tone, format, numSlides);
-      // Simulate network delay
       await new Promise(r => setTimeout(r, 500));
     } else {
-      console.log('[LLM] 🤖 Calling OpenRouter LLM...');
+      console.log('[GEN] Using REAL LLM mode');
       carouselStructure = await generateCarouselStructure(prompt, tone, format, numSlides);
     }
 
-    console.log(`[LLM] Generated ${carouselStructure.slides.length} slides`);
+    console.log(`[GEN] ✅ Generated carousel with ${carouselStructure.slides.length} slides`);
+    console.log('[GEN] Expected:', numSlides, 'Got:', carouselStructure.slides.length);
+    if (carouselStructure.slides.length !== numSlides) {
+      console.warn('[GEN] ⚠️  MISMATCH: Expected', numSlides, 'slides but got', carouselStructure.slides.length);
+      // Defensive fix: ensure we return exactly numSlides
+      console.log('[GEN] 🔧 Enforcing slide count to', numSlides);
+      carouselStructure.slides = carouselStructure.slides.slice(0, numSlides);
+      console.log('[GEN] After enforcement:', carouselStructure.slides.length, 'slides');
+    }
+    console.log('========== CAROUSEL GENERATION END ==========\n');
 
     res.json(carouselStructure);
   } catch (error) {

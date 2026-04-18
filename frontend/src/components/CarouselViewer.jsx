@@ -256,35 +256,33 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
           />
 
           {/* Text Content */}
-          <div className="w-full h-full flex flex-col items-center justify-center p-6 relative z-10">
-            <div className="w-full text-center space-y-4 flex flex-col items-center">
+          <div className="w-full h-full flex flex-col items-center justify-center p-8 relative z-10">
+            <div className="w-full max-w-xl text-center space-y-4 flex flex-col items-center justify-center">
               {editMode ? (
                 <>
                   <textarea
                     value={currentSlideData?.headline || ''}
                     onChange={(e) => updateSlideText('headline', e.target.value)}
-                    className="w-full text-4xl font-black leading-tight drop-shadow-lg text-center p-2 rounded bg-black/50 border-2 border-[#0055ff] resize-none font-['Orbitron']"
+                    className="w-full text-2xl font-black leading-tight drop-shadow-lg text-center p-3 rounded bg-black/50 border-2 border-[#0055ff] resize-none font-['Orbitron']"
                     style={{ color: currentTextColor }}
-                    rows={2}
                   />
                   <textarea
                     value={currentSlideData?.body || ''}
                     onChange={(e) => updateSlideText('body', e.target.value)}
-                    className="w-full text-lg leading-relaxed drop-shadow-md opacity-95 p-2 rounded bg-black/50 border-2 border-[#0055ff] resize-none font-['Inter']"
+                    className="w-full text-sm leading-relaxed drop-shadow-md opacity-95 p-3 rounded bg-black/50 border-2 border-[#0055ff] resize-none font-['Inter']"
                     style={{ color: currentTextColor }}
-                    rows={3}
                   />
                 </>
               ) : (
                 <>
                   <h2
-                    className="font-['Orbitron'] text-4xl font-black leading-tight drop-shadow-lg w-full text-center tracking-wide"
+                    className="font-['Orbitron'] text-2xl font-black leading-tight drop-shadow-lg w-full text-center tracking-wide"
                     style={{ color: currentTextColor }}
                   >
                     {currentSlideData?.headline}
                   </h2>
                   <p
-                    className="font-['Inter'] text-lg leading-relaxed drop-shadow-md opacity-95 w-full text-center font-normal"
+                    className="font-['Inter'] text-sm leading-relaxed drop-shadow-md opacity-95 w-full text-center font-normal"
                     style={{ color: currentTextColor }}
                   >
                     {currentSlideData?.body}
@@ -320,7 +318,7 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
           <IconButton
             onClick={handlePrev}
             disabled={currentSlide === 0}
-            isDark={isDark}
+            $isDark={isDark}
             title="Previous slide"
           >
             <span className="text-lg">←</span>
@@ -349,7 +347,7 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
           <IconButton
             onClick={handleNext}
             disabled={currentSlide === totalSlides - 1}
-            isDark={isDark}
+            $isDark={isDark}
             title="Next slide"
           >
             <span className="text-lg">→</span>
@@ -369,7 +367,7 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
           <PrimaryButton
             onClick={handleDownload}
             disabled={downloading}
-            isDark={isDark}
+            $isDark={isDark}
             data-download-btn
           >
             {downloading ? (
@@ -390,7 +388,7 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
         <div className="text-center">
           <SuccessButton
             onClick={() => setEditMode(!editMode)}
-            isDark={isDark}
+            $isDark={isDark}
           >
             {editMode ? '✓ Editing Mode (Click to Close)' : '✎ Edit Slide'}
           </SuccessButton>
@@ -424,7 +422,7 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
                     delete newColor[currentSlide];
                     setSlideColors(newColor);
                   }}
-                  isDark={isDark}
+                  $isDark={isDark}
                 >
                   Reset
                 </CompactButton>
@@ -441,21 +439,21 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
                 <WarningButton
                   onClick={() => handleRegenerateSlide('text')}
                   disabled={regenerating}
-                  isDark={isDark}
+                  $isDark={isDark}
                 >
                   {regenerating ? 'Regenerating...' : '🔄 Regenerate Text Only'}
                 </WarningButton>
                 <WarningButton
                   onClick={() => handleRegenerateSlide('image')}
                   disabled={regenerating}
-                  isDark={isDark}
+                  $isDark={isDark}
                 >
                   {regenerating ? 'Regenerating...' : '🖼️ Regenerate Image Only'}
                 </WarningButton>
                 <DangerButton
                   onClick={() => handleRegenerateSlide('both')}
                   disabled={regenerating}
-                  isDark={isDark}
+                  $isDark={isDark}
                 >
                   {regenerating ? 'Regenerating...' : '🔄 Regenerate Both'}
                 </DangerButton>
@@ -466,7 +464,7 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
             <div className="pt-4 border-t border-gray-400/30">
               <FullWidthSuccessButton
                 onClick={() => setEditMode(false)}
-                isDark={isDark}
+                $isDark={isDark}
               >
                 ✓ Save All Changes & Close
               </FullWidthSuccessButton>

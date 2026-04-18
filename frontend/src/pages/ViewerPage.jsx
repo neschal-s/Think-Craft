@@ -138,7 +138,7 @@ const ViewerPage = () => {
         <div className="flex items-center justify-center gap-4 flex-wrap">
           <SecondaryButton
             onClick={() => navigate('/')}
-            isDark={isDark}
+            $isDark={isDark}
           >
             <span>←</span>
             <span>Create New</span>
@@ -149,7 +149,7 @@ const ViewerPage = () => {
                 carouselRef.current.downloadAll();
               }
             }}
-            isDark={isDark}
+            $isDark={isDark}
           >
             <span>📥 Download All Slides as ZIP</span>
           </PrimaryButton>

@@ -113,8 +113,8 @@ const FormPage = () => {
                     type="button"
                     onClick={() => setTone(t.value)}
                     disabled={loading}
-                    isDark={isDark}
-                    isSelected={tone === t.value}
+                    $isDark={isDark}
+                    $isSelected={tone === t.value}
                   >
                     <p className="font-semibold text-sm">{t.label}</p>
                   </SelectionButton>
@@ -167,7 +167,7 @@ const FormPage = () => {
                         setCustomColor(pal.bg);
                       }}
                       disabled={loading}
-                      isDark={isDark}
+                      $isDark={isDark}
                       className={palette === key ? 'selected' : ''}
                       style={{ backgroundColor: pal.bg }}
                       title={pal.name}
@@ -227,7 +227,7 @@ const FormPage = () => {
             <FullWidthButton
               type="submit"
               disabled={loading}
-              isDark={isDark}
+              $isDark={isDark}
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-3">

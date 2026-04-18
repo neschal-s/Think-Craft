@@ -3,8 +3,9 @@ import { generateMockCarouselStructure, generateMockAdaptedStructure } from './m
 
 // Use OpenRouter API with arcee-ai/trinity-large-preview:free model
 export const generateCarouselStructure = async (prompt, tone, format = '1:1', slideCount = 5) => {
-  // Ensure slideCount is between 1 and 12
-  const numSlides = Math.max(1, Math.min(12, slideCount));
+  // Ensure slideCount is between 1 and 12 - explicitly parse to number
+  const numSlides = Math.max(1, Math.min(12, parseInt(slideCount, 10) || 5));
+  console.log('[LLM] Received slideCount:', slideCount, 'Type:', typeof slideCount, 'Parsed numSlides:', numSlides);
 
   const formatInstructions = {
     '1:1': numSlides === 1 
@@ -139,6 +140,19 @@ export const generateCarouselStructure = async (prompt, tone, format = '1:1', sl
     }
     jsonExample += '\n]';
 
+    // Define text length based on slide count
+    const getTextLengthGuidelines = (count) => {
+      if (count === 1) {
+        return 'Headline: 8-12 words max\nBody: 4-5 sentences, comprehensive and detailed';
+      } else if (count === 2) {
+        return 'Headline: 6-10 words max\nBody: 2-3 sentences, concise but impactful';
+      } else if (count <= 5) {
+        return 'Headline: 5-8 words max\nBody: 1-2 sentences ONLY, keep it punchy';
+      } else {
+        return 'Headline: 4-6 words max\nBody: 1 sentence ONLY, ultra-concise and clear';
+      }
+    };
+
     const payload = {
       model: 'arcee-ai/trinity-large-preview:free',
       messages: [
@@ -146,48 +160,54 @@ export const generateCarouselStructure = async (prompt, tone, format = '1:1', sl
           role: 'system',
           content: numSlides === 1
             ? `You are an expert content strategist. Create a SINGLE, COMPREHENSIVE, and DEEPLY INFORMATIVE slide that teaches users EVERYTHING about the topic. This is the ONLY slide, so it must be packed with value: definition, key insights, benefits, real-world examples, and actionable takeaways. Make it impossible for users to ignore. You MUST respond with ONLY a valid JSON array with 1 slide object, no markdown, no explanations.`
-            : `You are a master carousel storyteller. Create ${numSlides}-slide carousels that are SO ENGAGING users can't help but read from start to finish. Each slide must hook the reader and build on the last. Focus on: compelling headlines, surprising facts, practical value, and emotional connection. You MUST respond with ONLY a valid JSON array, no markdown, no explanations.`,
+            : `You are a master carousel storyteller creating a ${numSlides}-slide carousel. Each slide must be SHORT, IMPACTFUL, and leave the user wanting to see the next one. CRITICAL: Keep text extremely concise - headlines are 4-10 words max, body text is 1-3 sentences max depending on slide count. You MUST respond with ONLY a valid JSON array, no markdown, no explanations.`,
         },
         {
           role: 'user',
           content: numSlides === 1
-            ? `Create a SINGLE, COMPREHENSIVE, and POWERFUL slide that teaches about: "${prompt}"
+            ? `Create a SINGLE, COMPREHENSIVE slide that teaches about: "${prompt}"
 
 Tone: ${tone}
 Format: ${format} aspect ratio
 
-CRITICAL: This is the ONLY slide. Pack it with valuable information:
+TEXT LENGTH GUIDELINES:
+Headline: 8-12 words max
+Body: 4-5 sentences, comprehensive and detailed
+
+Requirements:
 - Compelling headline that captures the essence
-- Comprehensive body text (3-5 sentences) covering: definition, key benefits, real-world impact, and actionable insight
-- Make it impossible to ignore - this slide must deliver complete understanding of the topic
-- Use tone: ${tone}
+- Body text covering: definition, key benefits, real-world impact, and actionable insight
+- Make it impossible to ignore - this slide must deliver complete understanding
+- Use ${tone} tone
 
 For the slide, provide EXACTLY this JSON structure (no markdown):
 ${jsonExample}`
-            : `Create an ENGAGING ${numSlides}-slide carousel that teaches about: "${prompt}"
+            : `Create a TIGHT, PUNCHY ${numSlides}-slide carousel about: "${prompt}"
 
 Tone: ${tone}
 Format: ${format} aspect ratio
 
-CRITICAL: Make each headline irresistible. Make users WANT to read the next slide.
+TEXT LENGTH GUIDELINES (STRICT):
+${getTextLengthGuidelines(numSlides)}
+
+CRITICAL RULES:
+1. Headlines MUST be short and punchy - curiosity-driven, not descriptive
+2. Body text MUST match the length guidelines above - NO EXCEPTIONS
+3. Each slide stands alone but builds on the previous one
+4. Use ${tone} tone throughout
+5. Make readers want to swipe to the next slide
 
 For each slide, provide EXACTLY this JSON structure (no markdown):
 ${jsonExample}
 
-NARRATIVE STRUCTURE (Must follow this arc):
+NARRATIVE STRUCTURE (Follow this arc):
 ${narrativeArc.join('\n')}
 
-GUIDELINES FOR MAXIMUM ENGAGEMENT:
-- Slide 1 headline: Use curiosity gap (e.g., "The ${prompt} Secret Nobody Tells You", "Why You've Been Wrong About ${prompt}")
-- Headlines: 5-10 words max, direct, intriguing, promise value
-- Body: 2-3 sentences MAX. Short, punchy, conversational. NO JARGON.
-- Each slide must end with a reason to read the next one (curiosity or "here's how")
-- imagePrompt: Specific, vivid scenes matching ${tone} style and ${format} ratio
+EXAMPLES OF GOOD VS BAD:
+❌ WRONG: "Headline: Introduction to Productivity Tips for Remote Workers | Body: Productivity is important in today's fast-paced world. Remote work has become increasingly popular..."
+✅ RIGHT: "Headline: The Remote Worker's Secret | Body: Most remote workers lose 2 hours daily. Here's how to reclaim them."
 
-Example good headline: "The Hidden Truth About Marketing" (curiosity, promise)
-Example bad headline: "Introduction to Marketing Concepts" (boring, generic)
-
-Make it impossible for readers to stop swiping. Go! Remember: only JSON, no markdown.`,
+Remember: Tight, punchy, engaging. No fluff. Only JSON response.`,
         },
       ],
       temperature: 0.7,
@@ -222,12 +242,16 @@ Make it impossible for readers to stop swiping. Go! Remember: only JSON, no mark
     
     const slides = JSON.parse(jsonMatch[0]);
     
-    console.log('[LLM] ✅ Successfully parsed', slides.length, 'slides');
+    console.log('[LLM] ✅ Successfully parsed', slides.length, 'slides from response');
+    console.log('[LLM] numSlides requested:', numSlides, 'slides parsed:', slides.length);
+    
+    const finalSlides = slides.slice(0, numSlides);
+    console.log('[LLM] After slice - finalSlides count:', finalSlides.length);
     
     return {
       title: `Educational Carousel - ${tone}`,
       format,
-      slides: slides.slice(0, numSlides),
+      slides: finalSlides,
     };
   } catch (error) {
     console.error('[LLM] ❌ ERROR:', {

@@ -23,8 +23,8 @@ const FormatSelector = ({ selectedFormat, onFormatChange }) => {
           <SelectionButton
             key={format.id}
             onClick={() => onFormatChange(format.id)}
-            isDark={isDark}
-            isSelected={selectedFormat === format.id}
+            $isDark={isDark}
+            $isSelected={selectedFormat === format.id}
           >
             <div className="text-left">
               <h4 className={`font-bold text-lg`}>{format.label}</h4>

@@ -26,7 +26,7 @@ function AppContent() {
               <p className={`font-['Inter'] text-sm hidden sm:block ${theme.colors.text.tertiary} font-normal`}>AI-Powered Social Media Carousels</p>
               <IconButton
                 onClick={toggleTheme}
-                isDark={isDark}
+                $isDark={isDark}
                 title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
               >
                 {isDark ? (

@@ -39,7 +39,7 @@ const Footer = () => {
                 href={link.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                isDark={isDark}
+                $isDark={isDark}
               >
                 <span className="mr-2">{link.icon}</span>
                 {link.label}
