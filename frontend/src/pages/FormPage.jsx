@@ -129,7 +129,7 @@ const FormPage = () => {
                 <div className="flex-1">
                   <input
                     type="range"
-                    min="3"
+                    min="1"
                     max="12"
                     value={slideCount}
                     onChange={(e) => setSlideCount(parseInt(e.target.value))}
@@ -148,7 +148,7 @@ const FormPage = () => {
                   {slideCount}
                 </div>
               </div>
-              <p className={`mt-2 font-['Inter'] text-sm ${theme.colors.text.tertiary}`}>Choose between 3 and 12 slides for your carousel</p>
+              <p className={`mt-2 font-['Inter'] text-sm ${theme.colors.text.tertiary}`}>Choose between 1 and 12 slides for your carousel</p>
             </div>
 
             {/* Color Palette */}

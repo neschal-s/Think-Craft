@@ -3,17 +3,30 @@ import { generateMockCarouselStructure, generateMockAdaptedStructure } from './m
 
 // Use OpenRouter API with arcee-ai/trinity-large-preview:free model
 export const generateCarouselStructure = async (prompt, tone, format = '1:1', slideCount = 5) => {
-  // Ensure slideCount is between 3 and 12
-  const numSlides = Math.max(3, Math.min(12, slideCount));
+  // Ensure slideCount is between 1 and 12
+  const numSlides = Math.max(1, Math.min(12, slideCount));
 
   const formatInstructions = {
-    '1:1': `Generate a ${numSlides}-slide carousel for social media (1:1 square ratio).`,
-    '9:16': `Generate a ${numSlides}-slide carousel for social media (9:16 vertical ratio, taller). Adjust text to fit vertical layout.`,
-    '16:9': `Generate a ${numSlides}-slide carousel for social media (16:9 horizontal ratio, wider). Keep text concise for horizontal layout.`,
+    '1:1': numSlides === 1 
+      ? `Generate a SINGLE COMPREHENSIVE slide that teaches the entire topic about "${prompt}". This is the ONLY slide, so include all essential information, key insights, and actionable takeaways on this one slide.`
+      : `Generate a ${numSlides}-slide carousel for social media (1:1 square ratio).`,
+    '9:16': numSlides === 1
+      ? `Generate a SINGLE COMPREHENSIVE slide that teaches the entire topic about "${prompt}". This is the ONLY slide, so include all essential information, key insights, and actionable takeaways. Optimize for 9:16 vertical ratio.`
+      : `Generate a ${numSlides}-slide carousel for social media (9:16 vertical ratio, taller). Adjust text to fit vertical layout.`,
+    '16:9': numSlides === 1
+      ? `Generate a SINGLE COMPREHENSIVE slide that teaches the entire topic about "${prompt}". This is the ONLY slide, so include all essential information, key insights, and actionable takeaways. Optimize for 16:9 horizontal ratio.`
+      : `Generate a ${numSlides}-slide carousel for social media (16:9 horizontal ratio, wider). Keep text concise for horizontal layout.`,
   };
 
   // Generate narrative structure based on slide count
   const narrativeStructures = {
+    1: [
+      'Slide 1: COMPLETE OVERVIEW - This is your ONLY slide. Include: compelling hook, clear definition of ' + prompt + ', key benefits/insights, real-world impact/examples, and actionable takeaway. Make it comprehensive, valuable, and impossible to ignore.',
+    ],
+    2: [
+      'Slide 1: HOOK - Start with the most important fact about ' + prompt + '. Make them want to keep reading.',
+      'Slide 2: ACTION - Practical application and key takeaway. Tell them exactly what to do.',
+    ],
     3: [
       'Slide 1: HOOK - Start with a surprising fact or problem. Make them curious.',
       'Slide 2: INSIGHT - Reveal the key truth or solution about ' + prompt + '.',
@@ -111,7 +124,7 @@ export const generateCarouselStructure = async (prompt, tone, format = '1:1', sl
     ],
   };
 
-  const narrativeArc = narrativeStructures[numSlides] || narrativeStructures[5];
+  const narrativeArc = narrativeStructures[numSlides] || narrativeStructures[numSlides <= 3 ? 3 : 5];
 
   try {
     console.log('[LLM] 📡 Calling OpenRouter API with prompt:', prompt.substring(0, 50) + '...');
@@ -131,11 +144,27 @@ export const generateCarouselStructure = async (prompt, tone, format = '1:1', sl
       messages: [
         {
           role: 'system',
-          content: `You are a master carousel storyteller. Create ${numSlides}-slide carousels that are SO ENGAGING users can't help but read from start to finish. Each slide must hook the reader and build on the last. Focus on: compelling headlines, surprising facts, practical value, and emotional connection. You MUST respond with ONLY a valid JSON array, no markdown, no explanations.`,
+          content: numSlides === 1
+            ? `You are an expert content strategist. Create a SINGLE, COMPREHENSIVE, and DEEPLY INFORMATIVE slide that teaches users EVERYTHING about the topic. This is the ONLY slide, so it must be packed with value: definition, key insights, benefits, real-world examples, and actionable takeaways. Make it impossible for users to ignore. You MUST respond with ONLY a valid JSON array with 1 slide object, no markdown, no explanations.`
+            : `You are a master carousel storyteller. Create ${numSlides}-slide carousels that are SO ENGAGING users can't help but read from start to finish. Each slide must hook the reader and build on the last. Focus on: compelling headlines, surprising facts, practical value, and emotional connection. You MUST respond with ONLY a valid JSON array, no markdown, no explanations.`,
         },
         {
           role: 'user',
-          content: `Create an ENGAGING ${numSlides}-slide carousel that teaches about: "${prompt}"
+          content: numSlides === 1
+            ? `Create a SINGLE, COMPREHENSIVE, and POWERFUL slide that teaches about: "${prompt}"
+
+Tone: ${tone}
+Format: ${format} aspect ratio
+
+CRITICAL: This is the ONLY slide. Pack it with valuable information:
+- Compelling headline that captures the essence
+- Comprehensive body text (3-5 sentences) covering: definition, key benefits, real-world impact, and actionable insight
+- Make it impossible to ignore - this slide must deliver complete understanding of the topic
+- Use tone: ${tone}
+
+For the slide, provide EXACTLY this JSON structure (no markdown):
+${jsonExample}`
+            : `Create an ENGAGING ${numSlides}-slide carousel that teaches about: "${prompt}"
 
 Tone: ${tone}
 Format: ${format} aspect ratio

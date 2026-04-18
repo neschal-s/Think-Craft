@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useTheme } from '../context/ThemeContext';
 
 const FactPopup = () => {
@@ -8,6 +8,7 @@ const FactPopup = () => {
   const [currentFact, setCurrentFact] = useState('');
   const [factIndex, setFactIndex] = useState(0);
   const [isClosed, setIsClosed] = useState(false);
+  const timersRef = useRef([]);
 
   const facts = [
     'AI can now generate realistic images from simple text descriptions in seconds.',
@@ -108,14 +109,17 @@ const FactPopup = () => {
   ];
 
   useEffect(() => {
-    // Don't show facts if user has closed the popup
-    if (isClosed) return;
+    // If user closed the popup, don't show anything
+    if (isClosed) {
+      setIsVisible(false);
+      // Clear all pending timers
+      timersRef.current.forEach(timer => clearTimeout(timer));
+      timersRef.current = [];
+      return;
+    }
 
     // Function to show a new fact
     const showNewFact = () => {
-      // Double check isClosed hasn't changed
-      if (isClosed) return;
-
       setIsExiting(false);
       const randomIndex = Math.floor(Math.random() * facts.length);
       setFactIndex(randomIndex);
@@ -126,22 +130,26 @@ const FactPopup = () => {
       const exitTimer = setTimeout(() => {
         setIsExiting(true);
       }, 8000);
+      timersRef.current.push(exitTimer);
 
       // After exit animation completes (0.4s) + 3 second delay, show next fact
       const nextFactTimer = setTimeout(() => {
+        // Only show next fact if not closed
         if (!isClosed) {
           showNewFact();
         }
       }, 11400); // 8000 + 400 (animation) + 3000
-
-      return () => {
-        clearTimeout(exitTimer);
-        clearTimeout(nextFactTimer);
-      };
+      timersRef.current.push(nextFactTimer);
     };
 
     // Show first fact immediately
     showNewFact();
+
+    // Cleanup: clear all timers when component unmounts or when isClosed changes
+    return () => {
+      timersRef.current.forEach(timer => clearTimeout(timer));
+      timersRef.current = [];
+    };
   }, [isClosed]);
 
   const handleClose = () => {

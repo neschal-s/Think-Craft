@@ -37,7 +37,7 @@ router.post('/carousel-structure', async (req, res, next) => {
       return res.status(400).json({ error: 'Missing prompt or tone' });
     }
 
-    const numSlides = Math.max(3, Math.min(12, parseInt(slideCount) || 5));
+    const numSlides = Math.max(1, Math.min(12, parseInt(slideCount) || 5));
 
     console.log(`[LLM] Generating carousel structure for prompt: "${prompt}", tone: ${tone}, format: ${format}, slides: ${numSlides}`);
 

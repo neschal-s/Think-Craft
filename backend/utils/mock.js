@@ -15,11 +15,15 @@ export const generateMockCarouselStructure = (prompt, tone, format = '1:1', slid
 
   const descriptor = toneDescriptor[toneKey] || toneDescriptor.informative;
 
-  // Ensure slideCount is between 3 and 12
-  const numSlides = Math.max(3, Math.min(12, slideCount));
+  // Ensure slideCount is between 1 and 12
+  const numSlides = Math.max(1, Math.min(12, slideCount));
 
   // Create narrative structure based on slide count
   const narrativeArcs = {
+    1: ['Complete Overview - Everything about ' + prompt],
+    2: ['Hook - Most important fact', 'Action - Practical takeaway'],
+    1: ['Complete Overview - Everything about ' + prompt],
+    2: ['Hook - Most important fact', 'Action - Practical takeaway'],
     3: ['Hook - Start with a surprising fact', 'Why It Matters - Show the impact', 'Action - End with takeaway'],
     4: ['Hook', 'Context', 'Deep Dive', 'Action'],
     5: ['Hook', 'Why It Matters', 'The Insight', 'Practical Use', 'Action'],
@@ -30,9 +34,9 @@ export const generateMockCarouselStructure = (prompt, tone, format = '1:1', slid
     10: ['Hook', 'Background', 'Current Trend', 'Challenge', 'Solution Overview', 'Deep Dive 1', 'Deep Dive 2', 'Practical Tips', 'Results', 'Action'],
     11: ['Hook', 'History', 'Current State', 'Problem', 'Myth-Busting', 'Solution', 'Strategy 1', 'Strategy 2', 'Real Examples', 'Application', 'Action'],
     12: ['Hook', 'Background', 'History', 'Current Trend', 'Challenge 1', 'Challenge 2', 'Solution', 'Strategy 1', 'Strategy 2', 'Real Examples', 'Application', 'Action'],
-  };
+  };numSlides <= 3 ? 3 : 
 
-  const arc = narrativeArcs[numSlides] || narrativeArcs[5];
+  const arc = narrativeArcs[numSlides] || narrativeArcs[numSlides <= 3 ? 3 : 5];
 
   // Generate slides based on narrative arc
   const slideHeadlines = [
