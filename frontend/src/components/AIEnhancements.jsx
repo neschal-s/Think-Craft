@@ -96,22 +96,24 @@ const CaptionOption = styled.div`
   background: ${props => props.$isDark ? 'rgba(30, 41, 59, 0.5)' : 'rgba(245, 245, 245, 0.8)'};
   border: 1px solid ${props => props.$isDark ? 'rgba(100, 200, 255, 0.15)' : 'rgba(0, 100, 200, 0.15)'};
   border-radius: 8px;
-  padding: 12px;
+  padding: 16px;
   margin-bottom: 12px;
-  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
 `;
 
 const CaptionText = styled.p`
   font-size: 13px;
   color: ${props => props.$isDark ? '#ffffff' : '#333333'};
   line-height: 1.6;
-  margin-bottom: 8px;
+  margin: 0;
+  flex: 1;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 `;
 
 const CopyButton = styled.button`
-  position: absolute;
-  top: 8px;
-  right: 8px;
   padding: 6px 12px;
   border: 1px solid ${props => props.$isDark ? 'rgba(100, 200, 255, 0.3)' : 'rgba(0, 100, 200, 0.3)'};
   border-radius: 6px;
@@ -121,6 +123,8 @@ const CopyButton = styled.button`
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
+  flex-shrink: 0;
+  white-space: nowrap;
 
   &:hover {
     background: ${props => props.$isDark ? 'rgba(0, 85, 255, 0.2)' : 'rgba(0, 85, 255, 0.1)'};
@@ -328,7 +332,7 @@ const AIEnhancements = ({ prompt, carouselContent, isDark }) => {
                 <OutputContainer $isDark={themeDark}>
                   {captions.map((caption, idx) => (
                     <CaptionOption key={idx} $isDark={themeDark}>
-                      <CaptionText>{caption}</CaptionText>
+                      <CaptionText $isDark={themeDark}>{caption}</CaptionText>
                       <CopyButton
                         $isDark={themeDark}
                         onClick={() => copyToClipboard(caption)}
