@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useTheme } from '../context/ThemeContext';
+import { googleFonts, formatFontForCSS } from '../utils/fontLoader';
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -219,12 +220,6 @@ const EditingModal = ({
   const [selectedHeadingFont, setSelectedHeadingFont] = useState(headingFont);
   const [selectedBodyFont, setSelectedBodyFont] = useState(bodyFont);
 
-  const googleFonts = [
-    'Inter', 'Orbitron', 'Playfair Display', 'Merriweather', 'Roboto',
-    'Open Sans', 'Lato', 'Montserrat', 'Poppins', 'Raleway',
-    'Ubuntu', 'IBM Plex Sans', 'Bitter', 'Crimson Text', 'Dosis',
-  ];
-
   const aspectRatios = {
     '1:1': '1/1',
     '4:5': '4/5',
@@ -260,7 +255,7 @@ const EditingModal = ({
                     fontSize: '28px',
                     fontWeight: 900,
                     color: '#ffffff',
-                    fontFamily: `"${selectedHeadingFont}", sans-serif`,
+                    fontFamily: formatFontForCSS(selectedHeadingFont),
                     textShadow: '0 2px 8px rgba(0,0,0,0.5)',
                     margin: 0,
                   }}
@@ -271,7 +266,7 @@ const EditingModal = ({
                   style={{
                     fontSize: '14px',
                     color: '#ffffff',
-                    fontFamily: `"${selectedBodyFont}", sans-serif`,
+                    fontFamily: formatFontForCSS(selectedBodyFont),
                     textShadow: '0 1px 4px rgba(0,0,0,0.5)',
                     margin: 0,
                     lineHeight: '1.4',

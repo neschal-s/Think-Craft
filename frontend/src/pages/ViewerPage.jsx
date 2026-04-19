@@ -23,9 +23,8 @@ const ViewerPage = () => {
   // UI State
   const [editMode, setEditMode] = useState(false);
   const [showDownloadMenu, setShowDownloadMenu] = useState(false);
-  const [showFontSelector, setShowFontSelector] = useState(false);
   const [showToneAdjustment, setShowToneAdjustment] = useState(false);
-  const [editingSlideIndex, setEditingSlideIndex] = useState(null);
+  const [editingSlideIndex, setEditingSlideIndex] = useState(0);
   
   // Font State
   const [headingFont, setHeadingFont] = useState('Orbitron');
@@ -60,9 +59,9 @@ const ViewerPage = () => {
     setSelectedFormat(format);
   };
 
-  const handleEditSlide = (slideIndex) => {
-    const slide = carousel.slides[slideIndex];
-    setEditingSlideIndex(slideIndex);
+  const handleEditSlide = () => {
+    if (!carousel || carousel.slides.length === 0) return;
+    const slide = carousel.slides[0];
     setEditingHeadline(slide.headline);
     setEditingBody(slide.body);
     setEditMode(true);
@@ -81,14 +80,18 @@ const ViewerPage = () => {
     setCarousel(updatedCarousel);
     localStorage.setItem('carousel', JSON.stringify(updatedCarousel));
     setEditMode(false);
-    setEditingSlideIndex(null);
   };
 
-  const handleCancelEdit = () => {
+  const handleCloseEditModal = () => {
     setEditMode(false);
-    setEditingSlideIndex(null);
-    setEditingHeadline('');
-    setEditingBody('');
+  };
+
+  const handleFontChange = (type, font) => {
+    if (type === 'heading') {
+      setHeadingFont(font);
+    } else {
+      setBodyFont(font);
+    }
   };
 
   const handleDownloadPNG = async () => {
@@ -259,76 +262,55 @@ const ViewerPage = () => {
           </div>
 
           <SecondaryButton
-            onClick={() => setShowFontSelector(!showFontSelector)}
+            onClick={handleEditSlide}
             $isDark={isDark}
           >
-            <span>🎨 Fonts</span>
-          </SecondaryButton>
-
-          <SecondaryButton
-            onClick={() => setEditMode(!editMode)}
-            $isDark={isDark}
-          >
-            <span>✏️ Edit</span>
+            <span>✏️ Edit Slide</span>
           </SecondaryButton>
 
           <SecondaryButton
             onClick={() => setShowToneAdjustment(!showToneAdjustment)}
             $isDark={isDark}
           >
-            <span>🔄 Tone</span>
+            <span>🔄 Adjust Tone</span>
           </SecondaryButton>
+
+          {/* Tone Adjustment Panel */}
+          {showToneAdjustment && (
+            <div className="mb-8 w-full">
+              <TonePromptAdjustment
+                currentPrompt={originalPrompt}
+                currentTone={tone}
+                onRegenerateWithChanges={handleRegenerateWithChanges}
+                onCancel={() => setShowToneAdjustment(false)}
+                isLoading={isRegenerating}
+              />
+            </div>
+          )}
         </div>
 
-        {/* Font Selector Panel */}
-        {showFontSelector && (
-          <div className="mb-8">
-            <FontSelector
-              headingFont={headingFont}
-              bodyFont={bodyFont}
-              onHeadingFontChange={setHeadingFont}
-              onBodyFontChange={setBodyFont}
-            />
-          </div>
-        )}
-
-        {/* Edit Mode Panel */}
-        {editMode && editingSlideIndex !== null && (
-          <div className="mb-8">
-            <EditSlidePanel
-              slideNumber={editingSlideIndex + 1}
-              headline={editingHeadline}
-              body={editingBody}
-              onHeadlineChange={setEditingHeadline}
-              onBodyChange={setEditingBody}
-              onSave={handleSaveSlideEdit}
-              onCancel={handleCancelEdit}
-            />
-          </div>
-        )}
-
-        {/* Tone Adjustment Panel */}
-        {showToneAdjustment && (
-          <div className="mb-8">
-            <TonePromptAdjustment
-              currentPrompt={originalPrompt}
-              currentTone={tone}
-              onRegenerateWithChanges={handleRegenerateWithChanges}
-              onCancel={() => setShowToneAdjustment(false)}
-              isLoading={isRegenerating}
-            />
-          </div>
-        )}
+        {/* Editing Modal */}
+        <EditingModal
+          isOpen={editMode}
+          onClose={handleCloseEditModal}
+          currentSlide={carousel?.slides[editingSlideIndex] || carousel?.slides[0]}
+          slides={carousel?.slides || []}
+          headingFont={headingFont}
+          bodyFont={bodyFont}
+          editingHeadline={editingHeadline}
+          editingBody={editingBody}
+          onHeadlineChange={setEditingHeadline}
+          onBodyChange={setEditingBody}
+          onFontChange={handleFontChange}
+          onSave={handleSaveSlideEdit}
+          selectedFormat={selectedFormat}
+        />
 
         {/* Tips */}
-        <div className="mt-16 grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className={`${theme.colors.bg.secondary} border ${theme.colors.border} rounded-xl p-6 text-center hover:border-opacity-100 transition-colors duration-300 ${isDark ? 'hover:border-slate-700' : 'hover:border-gray-400'}`}>
-            <h3 className={`font-semibold mb-2 text-lg ${isDark ? 'text-cyan-400' : 'text-blue-600'}`}>✏️ Edit</h3>
-            <p className={`${theme.colors.text.tertiary} text-sm`}>Customize headlines and body text directly on slides</p>
-          </div>
-          <div className={`${theme.colors.bg.secondary} border ${theme.colors.border} rounded-xl p-6 text-center hover:border-opacity-100 transition-colors duration-300 ${isDark ? 'hover:border-slate-700' : 'hover:border-gray-400'}`}>
-            <h3 className={`font-semibold mb-2 text-lg ${isDark ? 'text-cyan-400' : 'text-blue-600'}`}>🎨 Fonts</h3>
-            <p className={`${theme.colors.text.tertiary} text-sm`}>Choose from 15+ Google Fonts for headings and body</p>
+            <h3 className={`font-semibold mb-2 text-lg ${isDark ? 'text-cyan-400' : 'text-blue-600'}`}>✏️ Edit Slide</h3>
+            <p className={`${theme.colors.text.tertiary} text-sm`}>Customize text, fonts, and more in real-time with live preview</p>
           </div>
           <div className={`${theme.colors.bg.secondary} border ${theme.colors.border} rounded-xl p-6 text-center hover:border-opacity-100 transition-colors duration-300 ${isDark ? 'hover:border-slate-700' : 'hover:border-gray-400'}`}>
             <h3 className={`font-semibold mb-2 text-lg ${isDark ? 'text-cyan-400' : 'text-blue-600'}`}>🔄 Tone</h3>

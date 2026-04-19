@@ -3,6 +3,7 @@ import html2canvas from 'html2canvas';
 import JSZip from 'jszip';
 import { useTheme } from '../context/ThemeContext';
 import { IconButton, PrimaryButton, SuccessButton, WarningButton, DangerButton, CompactButton, FullWidthSuccessButton } from '../styles/ModernButtons';
+import { formatFontForCSS } from '../utils/fontLoader';
 
 const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFormat, onRegenerateSlide, headingFont, bodyFont }, ref) => {
   const { isDark, theme } = useTheme();
@@ -271,7 +272,7 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
                     className="w-full text-2xl font-black leading-tight drop-shadow-lg text-center p-3 rounded bg-black/50 border-2 border-[#0055ff] resize-none"
                     style={{ 
                       color: currentTextColor,
-                      fontFamily: `"${activeHeadingFont}", sans-serif`
+                      fontFamily: formatFontForCSS(activeHeadingFont)
                     }}
                   />
                   <textarea
@@ -280,7 +281,7 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
                     className="w-full text-sm leading-relaxed drop-shadow-md opacity-95 p-3 rounded bg-black/50 border-2 border-[#0055ff] resize-none"
                     style={{ 
                       color: currentTextColor,
-                      fontFamily: `"${activeBodyFont}", sans-serif`
+                      fontFamily: formatFontForCSS(activeBodyFont)
                     }}
                   />
                 </>
@@ -290,7 +291,7 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
                     className="text-2xl font-black leading-tight drop-shadow-lg w-full text-center tracking-wide"
                     style={{ 
                       color: currentTextColor,
-                      fontFamily: `"${activeHeadingFont}", sans-serif`
+                      fontFamily: formatFontForCSS(activeHeadingFont)
                     }}
                   >
                     {currentSlideData?.headline}
@@ -299,7 +300,7 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
                     className="text-sm leading-relaxed drop-shadow-md opacity-95 w-full text-center font-normal"
                     style={{ 
                       color: currentTextColor,
-                      fontFamily: `"${activeBodyFont}", sans-serif`
+                      fontFamily: formatFontForCSS(activeBodyFont)
                     }}
                   >
                     {currentSlideData?.body}

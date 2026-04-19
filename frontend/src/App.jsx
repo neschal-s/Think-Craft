@@ -5,7 +5,11 @@ import ViewerPage from './pages/ViewerPage';
 import Footer from './components/Footer';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { IconButton } from './styles/ModernButtons';
+import { preloadGoogleFonts } from './utils/fontLoader';
 import './index.css';
+
+// Preload Google Fonts on app init
+preloadGoogleFonts();
 
 function AppContent() {
   const { isDark, toggleTheme, theme } = useTheme();

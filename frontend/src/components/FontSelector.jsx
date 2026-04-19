@@ -1,24 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useTheme } from '../context/ThemeContext';
-
-const googleFonts = [
-  'Inter',
-  'Orbitron',
-  'Playfair Display',
-  'Merriweather',
-  'Roboto',
-  'Open Sans',
-  'Lato',
-  'Montserrat',
-  'Poppins',
-  'Raleway',
-  'Ubuntu',
-  'IBM Plex Sans',
-  'Bitter',
-  'Crimson Text',
-  'Dosis',
-];
+import { googleFonts, formatFontForCSS } from '../utils/fontLoader';
 
 const SelectorContainer = styled.div`
   background: ${props => props.$isDark ? 'rgba(26, 29, 37, 0.7)' : 'rgba(255, 255, 255, 0.7)'};
@@ -44,7 +27,7 @@ const Select = styled.select`
   border-radius: 8px;
   background: ${props => props.$isDark ? '#1a1d25' : '#ffffff'};
   color: ${props => props.$isDark ? '#ffffff' : '#111215'};
-  font-family: ${props => props.$fontFamily};
+  font-family: ${props => `"${props.$fontFamily}", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`};
   font-size: 14px;
   cursor: pointer;
   transition: all 0.3s;
@@ -65,7 +48,7 @@ const Preview = styled.div`
   padding: 12px;
   border-radius: 8px;
   background: ${props => props.$isDark ? 'rgba(0, 0, 0, 0.2)' : 'rgba(0, 0, 0, 0.05)'};
-  font-family: ${props => props.$fontFamily};
+  font-family: ${props => `"${props.$fontFamily}", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`};
   font-size: 14px;
   color: ${props => props.$isDark ? '#cbd5e1' : '#475569'};
   text-align: center;
