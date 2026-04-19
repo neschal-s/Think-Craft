@@ -3,20 +3,20 @@ import html2canvas from 'html2canvas';
 import JSZip from 'jszip';
 import { useTheme } from '../context/ThemeContext';
 import { IconButton, PrimaryButton, SuccessButton, WarningButton, DangerButton, CompactButton, FullWidthSuccessButton } from '../styles/ModernButtons';
-import { formatFontForCSS } from '../utils/fontLoader';
+import { formatFontForCSS, googleFonts } from '../utils/fontLoader';
 
 const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFormat, onRegenerateSlide, headingFont, bodyFont }, ref) => {
   const { isDark, theme } = useTheme();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [downloading, setDownloading] = useState(false);
-  const [editMode, setEditMode] = useState(false);
   const [editedSlides, setEditedSlides] = useState({});
-  const [slideColors, setSlideColors] = useState({});
   const [regenerating, setRegenerating] = useState(false);
-  
-  // Default fonts if not provided
-  const activeHeadingFont = headingFont || 'Orbitron';
-  const activeBodyFont = bodyFont || 'Inter';
+  // Store per-slide fonts and colors
+  const [slideStyles, setSlideStyles] = useState({});
+
+  // Default fonts - using per-slide fonts from slideStyles
+  const activeHeadingFont = slideStyles[currentSlide]?.headingFont || headingFont || 'Orbitron';
+  const activeBodyFont = slideStyles[currentSlide]?.bodyFont || bodyFont || 'Inter';
 
   const paletteColors = {
     vibrant: { bg: '#FF6B6B', text: '#FFF', secondary: '#FFD93D' },
@@ -60,8 +60,8 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
   
   // Get color for current slide - Define early to use below
   const getCurrentSlideColor = () => {
-    if (slideColors[currentSlide]) {
-      return slideColors[currentSlide];
+    if (slideStyles[currentSlide]?.textColor) {
+      return slideStyles[currentSlide].textColor;
     }
     return customColor || paletteColors[palette]?.bg || paletteColors.vibrant.bg;
   };
@@ -153,11 +153,18 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
     }
   };
 
-  // Expose downloadAll method via ref
+  // Expose methods and data via ref
   useImperativeHandle(ref, () => ({
     downloadAll: handleDownloadAll,
     getEditedSlides: () => editedSlides,
-    getSlideColors: () => slideColors
+    getSlideStyles: () => slideStyles,
+    getCurrentSlide: () => currentSlide,
+    updateHeadingFont,
+    updateBodyFont,
+    updateSlideColor,
+    getCurrentSlideColor,
+    getActiveHeadingFont: () => activeHeadingFont,
+    getActiveBodyFont: () => activeBodyFont
   }));
 
   // Get edited or original slide data
@@ -186,9 +193,34 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
 
   // Update slide color
   const updateSlideColor = (color) => {
-    setSlideColors(prev => ({
+    setSlideStyles(prev => ({
       ...prev,
-      [currentSlide]: color
+      [currentSlide]: {
+        ...prev[currentSlide],
+        textColor: color
+      }
+    }));
+  };
+
+  // Update slide heading font
+  const updateHeadingFont = (font) => {
+    setSlideStyles(prev => ({
+      ...prev,
+      [currentSlide]: {
+        ...prev[currentSlide],
+        headingFont: font
+      }
+    }));
+  };
+
+  // Update slide body font
+  const updateBodyFont = (font) => {
+    setSlideStyles(prev => ({
+      ...prev,
+      [currentSlide]: {
+        ...prev[currentSlide],
+        bodyFont: font
+      }
     }));
   };
 
@@ -402,22 +434,51 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
           </PrimaryButton>
         </div>
 
-        {/* Edit Mode Toggle */}
-        <div className="text-center">
-          <SuccessButton
-            onClick={() => setEditMode(!editMode)}
-            $isDark={isDark}
-          >
-            {editMode ? '✓ Editing Mode (Click to Close)' : '✎ Edit Slide'}
-          </SuccessButton>
-        </div>
-
         {/* Edit Controls (Show when edit mode is on) */}
         {editMode && (
           <div className={`space-y-4 p-4 rounded-lg ${isDark ? 'bg-slate-800/50' : 'bg-gray-200'}`}>
             <h3 className={`font-semibold text-lg ${isDark ? 'text-cyan-400' : 'text-blue-600'}`}>
               Edit Slide {currentSlide + 1}
             </h3>
+
+            {/* Font Selectors */}
+            <div className="space-y-3">
+              <div>
+                <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                  🎨 Heading Font
+                </label>
+                <select
+                  value={currentHeadingFont}
+                  onChange={(e) => setCurrentHeadingFont(e.target.value)}
+                  className={`w-full p-2 rounded border text-sm ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
+                  style={{ fontFamily: formatFontForCSS(currentHeadingFont) }}
+                >
+                  {googleFonts.map((font) => (
+                    <option key={font} value={font}>
+                      {font}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                  📄 Body Font
+                </label>
+                <select
+                  value={currentBodyFont}
+                  onChange={(e) => setCurrentBodyFont(e.target.value)}
+                  className={`w-full p-2 rounded border text-sm ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
+                  style={{ fontFamily: formatFontForCSS(currentBodyFont) }}
+                >
+                  {googleFonts.map((font) => (
+                    <option key={font} value={font}>
+                      {font}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
 
             {/* Text Color Picker */}
             <div className="space-y-2">
