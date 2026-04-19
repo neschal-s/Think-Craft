@@ -81,6 +81,11 @@ export const ModernButton = styled.button`
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   
+  /* Soft shadows for light mode */
+  box-shadow: ${props => props.$isDark 
+    ? '0 4px 15px rgba(0, 100, 200, 0.3)' 
+    : '0 4px 12px rgba(0, 0, 0, 0.06)'};
+  
   /* Default text color */
   color: ${props => props.$isDark ? '#ffffff' : '#111215'};
   
@@ -101,6 +106,9 @@ export const ModernButton = styled.button`
     border-color: ${props => props.$isDark 
       ? 'rgba(100, 220, 255, 0.5)' 
       : 'rgba(0, 120, 200, 0.5)'};
+    box-shadow: ${props => props.$isDark 
+      ? '0 8px 20px rgba(0, 150, 255, 0.4)' 
+      : '0 8px 16px rgba(0, 0, 0, 0.1)'};
   }
   
   &:active:not(:disabled) {
@@ -401,9 +409,9 @@ export const LinkButton = styled.a`
   }
 
   &:active {
-    box-shadow: inset 0 0 20px ${props => props.isDark 
+    box-shadow: inset 0 0 20px ${props => props.$isDark 
       ? 'rgba(255, 140, 0, 0.3)' 
-      : 'rgba(255, 100, 0, 0.25)'}, 0 0 25px ${props => props.isDark 
+      : 'rgba(255, 100, 0, 0.25)'}, 0 0 25px ${props => props.$isDark 
       ? 'rgba(255, 140, 0, 0.4)' 
       : 'rgba(255, 100, 0, 0.3)'};
   }

@@ -145,11 +145,15 @@ export const generateCarouselStructure = async (prompt, tone, format = '1:1', sl
       if (count === 1) {
         return 'Headline: 8-12 words max\nBody: 4-5 sentences, comprehensive and detailed';
       } else if (count === 2) {
-        return 'Headline: 6-10 words max\nBody: 2-3 sentences, concise but impactful';
-      } else if (count <= 5) {
-        return 'Headline: 5-8 words max\nBody: 1-2 sentences ONLY, keep it punchy';
+        return 'Headline: 6-10 words max\nBody: 2-3 sentences, well-developed and impactful';
+      } else if (count === 3) {
+        return 'Headline: 6-8 words max\nBody: 2-3 sentences, balanced detail';
+      } else if (count <= 6) {
+        return 'Headline: 5-8 words max\nBody: 2 sentences, punchy but informative';
+      } else if (count <= 9) {
+        return 'Headline: 5-8 words max\nBody: 2 sentences, clear and focused';
       } else {
-        return 'Headline: 4-6 words max\nBody: 1 sentence ONLY, ultra-concise and clear';
+        return 'Headline: 5-8 words max\nBody: 2-3 sentences, detailed and engaging (longer carousels have room for depth)';
       }
     };
 
@@ -179,10 +183,11 @@ Requirements:
 - Body text covering: definition, key benefits, real-world impact, and actionable insight
 - Make it impossible to ignore - this slide must deliver complete understanding
 - Use ${tone} tone
+- Write in an engaging, conversational style
 
 For the slide, provide EXACTLY this JSON structure (no markdown):
 ${jsonExample}`
-            : `Create a TIGHT, PUNCHY ${numSlides}-slide carousel about: "${prompt}"
+            : `Create an ENGAGING, DETAILED ${numSlides}-slide carousel about: "${prompt}"
 
 Tone: ${tone}
 Format: ${format} aspect ratio
@@ -190,24 +195,48 @@ Format: ${format} aspect ratio
 TEXT LENGTH GUIDELINES (STRICT):
 ${getTextLengthGuidelines(numSlides)}
 
-CRITICAL RULES:
-1. Headlines MUST be short and punchy - curiosity-driven, not descriptive
-2. Body text MUST match the length guidelines above - NO EXCEPTIONS
-3. Each slide stands alone but builds on the previous one
-4. Use ${tone} tone throughout
-5. Make readers want to swipe to the next slide
+KEY PRINCIPLES:
+1. MORE SLIDES = MORE ROOM FOR DEPTH AND EXAMPLES
+   - With ${numSlides} slides, we can explore the topic thoroughly
+   - Don't make it too sparse - use the space available
+   - Include specific examples, data points, and actionable insights
+   - Balance between being punchy AND being informative
 
-For each slide, provide EXACTLY this JSON structure (no markdown):
-${jsonExample}
+2. Headlines MUST be short and punchy
+   - Use curiosity, questions, or surprising statements
+   - Make readers want to read the body text
+   - Examples: "The 72-Hour Window", "Why Most People Get This Wrong", "The Hidden Cost"
 
-NARRATIVE STRUCTURE (Follow this arc):
+3. Body text is your chance to deliver VALUE
+   - Be specific with examples and real-world applications
+   - Use numbers, statistics, or concrete details when possible
+   - Make each point memorable and actionable
+   - Don't waste space with generic statements
+
+4. Each slide should feel complete but build toward a conclusion
+5. Use ${tone} tone - keep it conversational and engaging
+6. Make readers want to swipe to the next slide BECAUSE they're learning something valuable
+
+NARRATIVE STRUCTURE (Follow this arc for natural flow):
 ${narrativeArc.join('\n')}
 
-EXAMPLES OF GOOD VS BAD:
-❌ WRONG: "Headline: Introduction to Productivity Tips for Remote Workers | Body: Productivity is important in today's fast-paced world. Remote work has become increasingly popular..."
-✅ RIGHT: "Headline: The Remote Worker's Secret | Body: Most remote workers lose 2 hours daily. Here's how to reclaim them."
+CONTENT QUALITY EXAMPLES:
+❌ WEAK: "Headline: Sleep Tips | Body: Sleep is important. Getting more sleep helps you be productive."
+✅ STRONG: "Headline: The 72-Hour Sleep Rule | Body: Research shows that staying consistent with sleep schedules boosts productivity by 40%. Even 7 hours at the same time daily outperforms 8 random hours."
 
-Remember: Tight, punchy, engaging. No fluff. Only JSON response.`,
+❌ WEAK: "Headline: Remote Work Benefits | Body: Remote work is flexible. You can work from anywhere."
+✅ STRONG: "Headline: Remote Work Truth Bomb | Body: Remote workers save 2-3 hours daily commuting. That's an extra 520 hours per year - enough for a full side project."
+
+For each slide, provide EXACTLY this JSON structure (no markdown, no extra text):
+${jsonExample}
+
+Remember: 
+- Be SPECIFIC not generic
+- Include DATA or EXAMPLES wherever possible
+- Make content MEMORABLE
+- Write in an ENGAGING, CONVERSATIONAL style
+- Deliver clear VALUE in each slide
+- Only respond with the JSON array, nothing else`,
         },
       ],
       temperature: 0.7,

@@ -85,7 +85,7 @@ const FormPage = () => {
         </div>
 
         {/* Main Card */}
-        <div className={`${theme.colors.bg.card} rounded-2xl border ${theme.colors.border} p-8 shadow-2xl backdrop-blur-sm transition-colors duration-300`}>
+        <div className={`${theme.colors.bg.card} rounded-2xl border ${theme.colors.border} p-8 backdrop-blur-sm transition-colors duration-300 ${isDark ? 'shadow-2xl' : 'shadow-lg'}`}>
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Prompt Section */}
             <div>

@@ -68,43 +68,61 @@ export const generateMockCarouselStructure = (prompt, tone, format = '1:1', slid
     // For 2-3 slides: medium text
     if (totalSlides <= 3) {
       const medium = [
-        `${topic} isn't just theory—it's a proven framework for success. Here's what really works.`,
-        `Understanding the "why" behind ${topic} changes everything. Most people miss this crucial insight.`,
-        `The secret to mastering ${topic} is focusing on these core principles and applying them strategically.`,
-        `Real results come from implementing ${topic} the right way. Here's exactly how to do it.`,
-        `Don't let myths about ${topic} hold you back. Here's the truth that actually matters.`,
+        `${topic} isn't just theory—it's a proven framework for success. Here's what really works and why it matters for your goals.`,
+        `Understanding the "why" behind ${topic} changes everything. Most people miss this crucial insight that separates success from mediocrity.`,
+        `The secret to mastering ${topic} is focusing on these core principles and applying them strategically to your unique situation.`,
+        `Real results come from implementing ${topic} the right way. Here's exactly how to do it and what to avoid.`,
+        `Don't let myths about ${topic} hold you back. Here's the truth that actually matters for getting results.`,
       ];
       return medium[slideIndex % medium.length];
     }
     
-    // For 4-5 slides: shorter text
+    // For 4-5 slides: medium-short text (2 sentences)
     if (totalSlides <= 5) {
-      const short = [
-        `${topic} works when you understand this key principle.`,
-        `Most people miss this critical aspect of ${topic}.`,
-        `Here's how to actually apply ${topic} effectively.`,
-        `The real secret to ${topic} success is simpler than you think.`,
-        `This one shift in how you approach ${topic} changes everything.`,
+      const mediumShort = [
+        `${topic} works when you understand this key principle. Apply it consistently and you'll see measurable improvements.`,
+        `Most people miss this critical aspect of ${topic}. That's exactly why they don't get the results they expect.`,
+        `Here's how to actually apply ${topic} effectively in your daily life. It's simpler than most people think.`,
+        `The real secret to ${topic} success is consistency combined with this specific approach. Start implementing it today.`,
+        `This one shift in how you approach ${topic} changes everything about your results and outcomes.`,
+        `Understanding this principle of ${topic} separates top performers from everyone else. Here's why it works.`,
+        `Most experts agree on this core ${topic} strategy because it's proven and reproducible across different scenarios.`,
       ];
-      return short[slideIndex % short.length];
+      return mediumShort[slideIndex % mediumShort.length];
     }
     
-    // For 6+ slides: ultra-concise text
-    const ultraShort = [
-      `The core principle that makes ${topic} work.`,
-      `Why this matters for ${topic} mastery.`,
-      `The practical way to use ${topic} today.`,
-      `The secret most people miss about ${topic}.`,
-      `How top performers approach ${topic}.`,
-      `The ${topic} strategy that actually works.`,
-      `Transform your ${topic} understanding right now.`,
-      `Master this ${topic} skill immediately.`,
-      `The ${topic} truth nobody talks about.`,
-      `Your ${topic} breakthrough starts here.`,
-      `The ${topic} principle that changes games.`,
-      `Why understanding ${topic} matters now.`,
+    // For 6-9 slides: balanced text (2 sentences - we have enough slides, so be more detailed)
+    if (totalSlides <= 9) {
+      const balanced = [
+        `The core principle of ${topic} that drives results is understanding this fundamental concept. When you master it, everything else becomes easier.`,
+        `This proven ${topic} strategy has helped thousands achieve breakthrough results. The key is implementation consistency and focus.`,
+        `Here's the practical way to use ${topic} that actually works in the real world. Stop overthinking and apply this.`,
+        `The secret most people miss about ${topic} is this often-overlooked factor. It's what separates success from failure.`,
+        `How top performers approach ${topic} is by focusing on these actionable steps. You can start today with immediate results.`,
+        `The ${topic} strategy that actually works combines simplicity with strategic thinking. This is exactly how to execute it.`,
+        `Transform your ${topic} understanding by grasping this counterintuitive principle. It changes how you see everything.`,
+        `Master this ${topic} skill immediately by following these proven steps. The results speak for themselves.`,
+        `The ${topic} truth nobody talks about is simpler than the complex theories you've heard. Here's what really matters.`,
+      ];
+      return balanced[slideIndex % balanced.length];
+    }
+    
+    // For 10-12 slides: detailed text (2-3 sentences - we have plenty of slides)
+    const detailed = [
+      `The core principle that makes ${topic} work is understanding this foundational concept. When you master this, you unlock exponential results. Most people spend years without grasping this key insight.`,
+      `This proven ${topic} strategy has transformed results for thousands of practitioners. The key lies in consistent implementation combined with strategic thinking. Start applying it today to see measurable improvements.`,
+      `Here's the practical way to apply ${topic} in real-world situations with immediate impact. It's based on proven methodologies that work across industries. The competitive advantage comes from doing this consistently.`,
+      `The secret most people miss about ${topic} is this often-overlooked factor that changes everything. Understanding this principle separates success from stagnation. This is where real breakthroughs begin.`,
+      `How top performers approach ${topic} is by focusing on actionable steps that deliver results. You can implement this framework immediately. The outcome is measurable improvement within weeks.`,
+      `The ${topic} strategy that actually works combines elegant simplicity with strategic depth. This is exactly how successful practitioners execute it. The results compound over time with consistent application.`,
+      `Transform your ${topic} understanding by grasping this counterintuitive principle. It fundamentally changes how you approach challenges. This insight alone can reshape your entire perspective.`,
+      `Master this essential ${topic} skill immediately by following these proven, step-by-step instructions. The results are both immediate and long-lasting. This foundation enables all future advancement.`,
+      `The ${topic} truth nobody talks about is simpler than the complex theories you've encountered. Here's what really matters for success. Focus here first before exploring advanced concepts.`,
+      `Understanding this ${topic} principle at a deep level unlocks sustainable competitive advantage. It's the difference between temporary results and lasting success. This is where champions differentiate themselves.`,
+      `The advanced ${topic} approach that separates experts from novices starts with mastering this concept. Apply this framework systematically for exponential growth. This is the foundation of all breakthrough performance.`,
+      `Building lasting ${topic} expertise requires understanding this fundamental principle that underpins everything else. When internalized deeply, it becomes your competitive edge. This knowledge compounds valuable results over time.`,
     ];
-    return ultraShort[slideIndex % ultraShort.length];
+    return detailed[slideIndex % detailed.length];
   };
 
   const slides = [];

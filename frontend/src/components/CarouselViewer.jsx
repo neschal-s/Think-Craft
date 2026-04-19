@@ -233,7 +233,7 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
       <div className="flex justify-center">
         <div
           id="carousel-container"
-          className={`${getContainerClass()} rounded-2xl shadow-2xl overflow-hidden relative`}
+          className={`${getContainerClass()} rounded-2xl overflow-hidden relative ${isDark ? 'shadow-2xl' : 'shadow-lg'}`}
         >
           {/* Background Image */}
           <div
@@ -311,7 +311,7 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
       {/* Controls Container */}
       <div
         data-html2canvas-ignore="true"
-        className={`border ${theme.colors.border} rounded-xl p-6 space-y-6 transition-colors duration-300 ${isDark ? 'bg-slate-900/40' : 'bg-gray-100'}`}
+        className={`border ${theme.colors.border} rounded-xl p-6 space-y-6 transition-colors duration-300 ${isDark ? 'bg-slate-900/40' : 'bg-white/70'} backdrop-blur-sm ${isDark ? 'shadow-lg' : 'shadow-md'}`}
       >
         {/* Navigation Buttons */}
         <div className="flex items-center justify-center gap-4">

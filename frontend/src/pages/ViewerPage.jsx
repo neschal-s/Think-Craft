@@ -122,7 +122,7 @@ const ViewerPage = () => {
 
         {/* Carousel Viewer */}
         <div className="mb-12">
-          <div className={`${theme.colors.bg.card} rounded-2xl border ${theme.colors.border} p-8 shadow-2xl transition-colors duration-300`}>
+          <div className={`${theme.colors.bg.card} rounded-2xl border ${theme.colors.border} p-8 ${isDark ? 'shadow-2xl' : 'shadow-lg'} transition-colors duration-300`}>
             <CarouselViewer
               ref={carouselRef}
               carousel={carousel}

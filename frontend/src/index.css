@@ -65,15 +65,38 @@ html, body, #root {
   @apply w-full h-full;
 }
 
-/* Light mode support - dark dots on light background */
+/* Light mode support - Premium gradient background with darker dots */
 body:not(.dark) {
-  background-color: #f8f8f8;
-  background-image:
-    radial-gradient(circle at center, rgba(0,0,0,0.20) 1px, transparent 1px);
-  background-size: 26px 26px;
-  background-position: center;
+  background: linear-gradient(135deg, #d6d6d6 0%, #e5e5e5 50%, #f2f2f2 100%);
   background-attachment: fixed;
+  background-image:
+    radial-gradient(circle at 20% 15%, rgba(173, 169, 150, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at center, rgba(0, 0, 0, 0.20) 1px, transparent 1px),
+    linear-gradient(135deg, #d6d6d6 0%, #e5e5e5 50%, #f2f2f2 100%);
+  background-size: 100% 100%, 26px 26px, 100% 100%;
+  background-position: center, center, center;
   @apply text-gray-900;
+}
+
+/* Soft shadows for light mode */
+:not(.dark) * {
+  --tw-shadow-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+:not(.dark) .shadow-2xl {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08) !important;
+}
+
+:not(.dark) .shadow-lg {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06) !important;
+}
+
+:not(.dark) .shadow-md {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+}
+
+:not(.dark) .shadow-sm {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
 }
 
 /* Dark mode support - deep dark background */

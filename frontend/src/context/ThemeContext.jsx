@@ -39,14 +39,14 @@ export const ThemeProvider = ({ children }) => {
       gradient: 'from-[#0055ff] via-[#00aaff] to-[#ff5500]',
       gradientNeon: 'from-[#0055ff] to-[#ff5500]',
     } : {
-      // Light mode
+      // Light mode - Premium SaaS aesthetic
       bg: {
-        primary: 'bg-white',
-        secondary: 'bg-gray-50',
-        tertiary: 'bg-gray-100',
-        card: 'bg-white/90 backdrop-blur-sm',
+        primary: 'bg-gradient-to-br from-[#d6d6d6] via-[#e5e5e5] to-[#f2f2f2]',
+        secondary: 'bg-[#f8f8f8]/90',
+        tertiary: 'bg-[#f0f0f0]',
+        card: 'bg-white/85 backdrop-blur-md shadow-sm',
       },
-      border: 'border-gray-200',
+      border: 'border-gray-300/50',
       text: {
         primary: 'text-gray-900',
         secondary: 'text-gray-600',
