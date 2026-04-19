@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { generateCarouselStructure, generateImages } from '../services/api';
 import { useTheme } from '../context/ThemeContext';
@@ -15,6 +15,42 @@ const FormPage = () => {
   const [slideCount, setSlideCount] = useState(5);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [displayedText, setDisplayedText] = useState('');
+  const [wordIndex, setWordIndex] = useState(0);
+  const [charIndex, setCharIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const words = ['Carousels', 'Stories', 'Posts'];
+
+  // Typewriter effect
+  useEffect(() => {
+    const currentWord = words[wordIndex];
+    const timer = setTimeout(() => {
+      if (!isDeleting) {
+        // Typing forward
+        if (charIndex < currentWord.length) {
+          setDisplayedText(currentWord.substring(0, charIndex + 1));
+          setCharIndex(charIndex + 1);
+        } else {
+          // Finished typing, start deleting after 2 seconds
+          setTimeout(() => setIsDeleting(true), 2000);
+        }
+      } else {
+        // Deleting
+        if (charIndex > 0) {
+          setDisplayedText(currentWord.substring(0, charIndex - 1));
+          setCharIndex(charIndex - 1);
+        } else {
+          // Finished deleting, move to next word
+          setIsDeleting(false);
+          setWordIndex((prev) => (prev + 1) % words.length);
+          setCharIndex(0);
+        }
+      }
+    }, isDeleting ? 80 : 100); // Faster deletion, slower typing
+
+    return () => clearTimeout(timer);
+  }, [charIndex, isDeleting, wordIndex, words]);
 
   const palettes = {
     ocean: { name: 'Ocean Blue', bg: '#1e40af', text: '#FFF' },
@@ -78,7 +114,11 @@ const FormPage = () => {
         <div className="text-center mb-16">
           <h1 className="font-['Orbitron'] text-6xl md:text-7xl font-black mb-6 leading-tight tracking-wider">
             <span className={`font-['Orbitron'] bg-gradient-to-r ${theme.colors.gradient} bg-clip-text text-transparent`}>
-              Create Stunning Carousels
+              Create Stunning{' '}
+              <span className="font-['Orbitron'] inline-block min-w-[400px] md:min-w-[500px] text-center">
+                {displayedText}
+                <span className="animate-pulse">|</span>
+              </span>
             </span>
           </h1>
           <p className={`font-['Inter'] text-lg md:text-xl ${theme.colors.text.secondary} mb-3 font-medium`}>Powered by AI • {slideCount} Beautiful Slides • Instant Results</p>

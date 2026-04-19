@@ -25,9 +25,10 @@ const FormatSelector = ({ selectedFormat, onFormatChange }) => {
             onClick={() => onFormatChange(format.id)}
             $isDark={isDark}
             $isSelected={selectedFormat === format.id}
+            style={{ padding: '20px 16px', minHeight: '140px' }}
           >
-            <div className="flex flex-col items-center justify-center text-center">
-              <h4 className={`font-bold text-lg`}>{format.label}</h4>
+            <div className="flex flex-col items-center justify-center text-center w-full px-6">
+              <h4 className={`font-bold text-base leading-tight break-words`}>{format.label}</h4>
               <p className={`${theme.colors.text.tertiary} text-xs mb-2`}>{format.ratio}</p>
               <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-500'}`}>{format.description}</p>
             </div>
