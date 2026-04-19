@@ -2,12 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CarouselViewer from '../components/CarouselViewer';
 import FormatSelector from '../components/FormatSelector';
-import FontSelector from '../components/FontSelector';
-import EditSlidePanel from '../components/EditSlidePanel';
+import EditingModal from '../components/EditingModal';
 import DownloadOptions from '../components/DownloadOptions';
 import TonePromptAdjustment from '../components/TonePromptAdjustment';
 import { useTheme } from '../context/ThemeContext';
-import { SecondaryButton, PrimaryButton, CompactButton } from '../styles/ModernButtons';
+import { SecondaryButton, PrimaryButton } from '../styles/ModernButtons';
 import { downloadSlideAsPNG, downloadAllSlidesAsPNG, downloadCarouselAsPDF, downloadCarouselAsPPT } from '../utils/downloadUtils';
 
 const ViewerPage = () => {
@@ -100,16 +99,23 @@ const ViewerPage = () => {
   };
 
   const handleDownloadPDF = async () => {
-    const slideContainers = document.querySelectorAll('[data-slide-container]');
-    if (slideContainers.length > 0) {
+    try {
       await downloadCarouselAsPDF(carousel, headingFont, bodyFont);
+      setShowDownloadMenu(false);
+    } catch (error) {
+      console.error('PDF download error:', error);
+      alert('Failed to download PDF. Make sure jsPDF is installed.');
     }
-    setShowDownloadMenu(false);
   };
 
   const handleDownloadPPT = async () => {
-    await downloadCarouselAsPPT(carousel, headingFont, bodyFont);
-    setShowDownloadMenu(false);
+    try {
+      await downloadCarouselAsPPT(carousel, headingFont, bodyFont);
+      setShowDownloadMenu(false);
+    } catch (error) {
+      console.error('PPT download error:', error);
+      alert('Failed to download PowerPoint. Make sure pptxgenjs is installed.');
+    }
   };
 
   const handleRegenerateWithChanges = async (newPrompt, newTone) => {
@@ -218,6 +224,8 @@ const ViewerPage = () => {
               customColor={customColor}
               selectedFormat={selectedFormat}
               onRegenerateSlide={handleRegenerateSlide}
+              headingFont={headingFont}
+              bodyFont={bodyFont}
             />
           </div>
         </div>
@@ -276,8 +284,8 @@ const ViewerPage = () => {
         {showFontSelector && (
           <div className="mb-8">
             <FontSelector
-              selectedHeadingFont={headingFont}
-              selectedBodyFont={bodyFont}
+              headingFont={headingFont}
+              bodyFont={bodyFont}
               onHeadingFontChange={setHeadingFont}
               onBodyFontChange={setBodyFont}
             />

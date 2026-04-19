@@ -4,7 +4,7 @@ import JSZip from 'jszip';
 import { useTheme } from '../context/ThemeContext';
 import { IconButton, PrimaryButton, SuccessButton, WarningButton, DangerButton, CompactButton, FullWidthSuccessButton } from '../styles/ModernButtons';
 
-const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFormat, onRegenerateSlide }, ref) => {
+const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFormat, onRegenerateSlide, headingFont, bodyFont }, ref) => {
   const { isDark, theme } = useTheme();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [downloading, setDownloading] = useState(false);
@@ -12,6 +12,10 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
   const [editedSlides, setEditedSlides] = useState({});
   const [slideColors, setSlideColors] = useState({});
   const [regenerating, setRegenerating] = useState(false);
+  
+  // Default fonts if not provided
+  const activeHeadingFont = headingFont || 'Orbitron';
+  const activeBodyFont = bodyFont || 'Inter';
 
   const paletteColors = {
     vibrant: { bg: '#FF6B6B', text: '#FFF', secondary: '#FFD93D' },
@@ -233,6 +237,7 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
       <div className="flex justify-center">
         <div
           id="carousel-container"
+          data-slide-container
           className={`${getContainerClass()} rounded-2xl overflow-hidden relative ${isDark ? 'shadow-2xl' : 'shadow-lg'}`}
         >
           {/* Background Image */}
@@ -263,27 +268,39 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
                   <textarea
                     value={currentSlideData?.headline || ''}
                     onChange={(e) => updateSlideText('headline', e.target.value)}
-                    className="w-full text-2xl font-black leading-tight drop-shadow-lg text-center p-3 rounded bg-black/50 border-2 border-[#0055ff] resize-none font-['Orbitron']"
-                    style={{ color: currentTextColor }}
+                    className="w-full text-2xl font-black leading-tight drop-shadow-lg text-center p-3 rounded bg-black/50 border-2 border-[#0055ff] resize-none"
+                    style={{ 
+                      color: currentTextColor,
+                      fontFamily: `"${activeHeadingFont}", sans-serif`
+                    }}
                   />
                   <textarea
                     value={currentSlideData?.body || ''}
                     onChange={(e) => updateSlideText('body', e.target.value)}
-                    className="w-full text-sm leading-relaxed drop-shadow-md opacity-95 p-3 rounded bg-black/50 border-2 border-[#0055ff] resize-none font-['Inter']"
-                    style={{ color: currentTextColor }}
+                    className="w-full text-sm leading-relaxed drop-shadow-md opacity-95 p-3 rounded bg-black/50 border-2 border-[#0055ff] resize-none"
+                    style={{ 
+                      color: currentTextColor,
+                      fontFamily: `"${activeBodyFont}", sans-serif`
+                    }}
                   />
                 </>
               ) : (
                 <>
                   <h2
-                    className="font-['Orbitron'] text-2xl font-black leading-tight drop-shadow-lg w-full text-center tracking-wide"
-                    style={{ color: currentTextColor }}
+                    className="text-2xl font-black leading-tight drop-shadow-lg w-full text-center tracking-wide"
+                    style={{ 
+                      color: currentTextColor,
+                      fontFamily: `"${activeHeadingFont}", sans-serif`
+                    }}
                   >
                     {currentSlideData?.headline}
                   </h2>
                   <p
-                    className="font-['Inter'] text-sm leading-relaxed drop-shadow-md opacity-95 w-full text-center font-normal"
-                    style={{ color: currentTextColor }}
+                    className="text-sm leading-relaxed drop-shadow-md opacity-95 w-full text-center font-normal"
+                    style={{ 
+                      color: currentTextColor,
+                      fontFamily: `"${activeBodyFont}", sans-serif`
+                    }}
                   >
                     {currentSlideData?.body}
                   </p>
