@@ -3,24 +3,28 @@ import { useNavigate } from 'react-router-dom';
 import CarouselViewer from '../components/CarouselViewer';
 import FormatSelector from '../components/FormatSelector';
 import DownloadOptions from '../components/DownloadOptions';
+import DownloadScopeOptions from '../components/DownloadScopeOptions';
 import TonePromptAdjustment from '../components/TonePromptAdjustment';
 import { useTheme } from '../context/ThemeContext';
-import { SecondaryButton, PrimaryButton } from '../styles/ModernButtons';
-import { downloadSlideAsPNG, downloadAllSlidesAsPNG, downloadCarouselAsPDF, downloadCarouselAsPPT } from '../utils/downloadUtils';
+import { SecondaryButton, PrimaryButton, SuccessButton, WarningButton, DangerButton, CompactButton } from '../styles/ModernButtons';
+import { googleFonts, formatFontForCSS } from '../utils/fontLoader';
 
 const ViewerPage = () => {
   const navigate = useNavigate();
   const { isDark, theme } = useTheme();
   const carouselRef = useRef(null);
   const [carousel, setCarousel] = useState(null);
-  const [palette, setPalette] = useState('slate');
-  const [customColor, setCustomColor] = useState('#475569');
+  const [palette, setPalette] = useState('ocean');
+  const [customColor, setCustomColor] = useState('#1e40af');
   const [tone, setTone] = useState('professional');
   const [selectedFormat, setSelectedFormat] = useState('1:1');
   const [originalPrompt, setOriginalPrompt] = useState('');
   
   // UI State
+  const [editMode, setEditMode] = useState(false);
   const [showDownloadMenu, setShowDownloadMenu] = useState(false);
+  const [downloadMode, setDownloadMode] = useState(null); // 'scope' | 'format' | null
+  const [downloadScope, setDownloadScope] = useState('all'); // 'current' | 'all'
   const [showToneAdjustment, setShowToneAdjustment] = useState(false);
   
   // Font State
@@ -41,8 +45,8 @@ const ViewerPage = () => {
 
     const parsedCarousel = JSON.parse(saved);
     setCarousel(parsedCarousel);
-    setPalette(savedPalette || 'slate');
-    setCustomColor(savedCustomColor || '#475569');
+    setPalette(savedPalette || 'ocean');
+    setCustomColor(savedCustomColor || '#1e40af');
     setTone(savedTone || 'professional');
     setOriginalPrompt(savedPrompt || '');
   }, [navigate]);
@@ -60,30 +64,85 @@ const ViewerPage = () => {
   };
 
   const handleDownloadPNG = async () => {
-    if (carouselRef.current && carouselRef.current.downloadAll) {
-      await downloadAllSlidesAsPNG(carousel);
+    try {
+      if (downloadScope === 'current') {
+        if (carouselRef.current && carouselRef.current.downloadSlide) {
+          await carouselRef.current.downloadSlide();
+        }
+      } else {
+        if (carouselRef.current && carouselRef.current.downloadAll) {
+          await carouselRef.current.downloadAll();
+        }
+      }
+    } catch (error) {
+      console.error('PNG download error:', error);
+      alert('Failed to download PNG. Please try again.');
+    } finally {
+      setShowDownloadMenu(false);
+      setDownloadMode(null);
+      setDownloadScope('all');
     }
-    setShowDownloadMenu(false);
   };
 
   const handleDownloadPDF = async () => {
     try {
-      await downloadCarouselAsPDF(carousel, headingFont, bodyFont);
-      setShowDownloadMenu(false);
+      if (downloadScope === 'current') {
+        if (carouselRef.current && carouselRef.current.downloadSlidePDF) {
+          await carouselRef.current.downloadSlidePDF();
+        }
+      } else {
+        if (carouselRef.current && carouselRef.current.downloadAllPDF) {
+          await carouselRef.current.downloadAllPDF();
+        }
+      }
     } catch (error) {
       console.error('PDF download error:', error);
-      alert('Failed to download PDF. Make sure jsPDF is installed.');
+      alert('Failed to download PDF. Please try again.');
+    } finally {
+      setShowDownloadMenu(false);
+      setDownloadMode(null);
+      setDownloadScope('all');
     }
   };
 
   const handleDownloadPPT = async () => {
     try {
-      await downloadCarouselAsPPT(carousel, headingFont, bodyFont);
-      setShowDownloadMenu(false);
+      if (downloadScope === 'current') {
+        if (carouselRef.current && carouselRef.current.downloadSlidePPT) {
+          await carouselRef.current.downloadSlidePPT();
+        }
+      } else {
+        if (carouselRef.current && carouselRef.current.downloadAllPPT) {
+          await carouselRef.current.downloadAllPPT();
+        }
+      }
     } catch (error) {
       console.error('PPT download error:', error);
-      alert('Failed to download PowerPoint. Make sure pptxgenjs is installed.');
+      alert('Failed to download PowerPoint. Please try again.');
+    } finally {
+      setShowDownloadMenu(false);
+      setDownloadMode(null);
+      setDownloadScope('all');
     }
+  };
+
+  const handleDownloadMenuClick = () => {
+    setShowDownloadMenu(!showDownloadMenu);
+    if (showDownloadMenu) {
+      setDownloadMode(null);
+      setDownloadScope('all');
+    } else {
+      setDownloadMode('scope');
+    }
+  };
+
+  const handleScopeSelection = (scope) => {
+    setDownloadScope(scope);
+    setDownloadMode('format');
+  };
+
+  const handleBackToScope = () => {
+    setDownloadMode('scope');
   };
 
   const handleRegenerateWithChanges = async (newPrompt, newTone) => {
@@ -192,81 +251,201 @@ const ViewerPage = () => {
           {/* Right Column - Editing Options (1/3 width) */}
           <div className="lg:col-span-1">
             <div className="space-y-4">
-              {/* Format Selector */}
-              <div className={`${theme.colors.bg.card} rounded-2xl border ${theme.colors.border} p-6 ${isDark ? 'shadow-2xl' : 'shadow-lg'} transition-colors duration-300`}>
-                <h3 className={`font-['Inter'] font-bold text-sm mb-4 ${theme.colors.text.primary}`}>Choose Your Format</h3>
-                <FormatSelector
-                  selectedFormat={selectedFormat}
-                  onFormatChange={handleFormatChange}
-                />
-              </div>
-
-              {/* Download PNG */}
-              <PrimaryButton
-                onClick={handleDownloadPNG}
-                $isDark={isDark}
-                style={{ width: '100%' }}
-              >
-                <span>📥 Download Slide as PNG</span>
-              </PrimaryButton>
-
-              {/* Create New Button */}
-              <SecondaryButton
-                onClick={() => navigate('/')}
-                $isDark={isDark}
-                style={{ width: '100%' }}
-              >
-                <span>← Create New</span>
-              </SecondaryButton>
-
-              {/* Download Menu */}
-              <div className="relative">
-                <PrimaryButton
-                  onClick={() => setShowDownloadMenu(!showDownloadMenu)}
-                  $isDark={isDark}
-                  style={{ width: '100%' }}
-                >
-                  <span>📥 Download</span>
-                </PrimaryButton>
-                {showDownloadMenu && (
-                  <div className="absolute top-full mt-2 right-0 z-50">
-                    <DownloadOptions
-                      onDownloadPNG={handleDownloadPNG}
-                      onDownloadPDF={handleDownloadPDF}
-                      onDownloadPPT={handleDownloadPPT}
+              {!editMode ? (
+                <>
+                  {/* Format Selector */}
+                  <div className={`${theme.colors.bg.card} rounded-2xl border ${theme.colors.border} p-6 ${isDark ? 'shadow-2xl' : 'shadow-lg'} transition-colors duration-300`}>
+                    <h3 className={`font-['Inter'] font-bold text-sm mb-4 ${theme.colors.text.primary}`}>Choose Your Format</h3>
+                    <FormatSelector
+                      selectedFormat={selectedFormat}
+                      onFormatChange={handleFormatChange}
                     />
                   </div>
-                )}
-              </div>
 
-              {/* Edit Slide Button */}
-              <SecondaryButton
-                onClick={() => carouselRef.current?.toggleEditMode?.()}
-                $isDark={isDark}
-                style={{ width: '100%' }}
-              >
-                <span>✏️ Edit Slide</span>
-              </SecondaryButton>
+                  {/* Edit Slide Button */}
+                  <SecondaryButton
+                    onClick={() => setEditMode(true)}
+                    $isDark={isDark}
+                    style={{ width: '100%' }}
+                  >
+                    <span>Edit Slide</span>
+                  </SecondaryButton>
 
-              {/* Adjust Tone Button */}
-              <SecondaryButton
-                onClick={() => setShowToneAdjustment(!showToneAdjustment)}
-                $isDark={isDark}
-                style={{ width: '100%' }}
-              >
-                <span>🔄 Adjust Tone</span>
-              </SecondaryButton>
+                  {/* Adjust Tone Button */}
+                  <SecondaryButton
+                    onClick={() => setShowToneAdjustment(!showToneAdjustment)}
+                    $isDark={isDark}
+                    style={{ width: '100%' }}
+                  >
+                    <span>Adjust Tone</span>
+                  </SecondaryButton>
 
-              {/* Tone Adjustment Panel */}
-              {showToneAdjustment && (
-                <div className={`${theme.colors.bg.secondary} rounded-xl border ${theme.colors.border} p-4`}>
-                  <TonePromptAdjustment
-                    currentPrompt={originalPrompt}
-                    currentTone={tone}
-                    onRegenerateWithChanges={handleRegenerateWithChanges}
-                    onCancel={() => setShowToneAdjustment(false)}
-                    isLoading={false}
-                  />
+                  {/* Tone Adjustment Panel */}
+                  {showToneAdjustment && (
+                    <div className={`${theme.colors.bg.secondary} rounded-xl border ${theme.colors.border} p-4`}>
+                      <TonePromptAdjustment
+                        currentPrompt={originalPrompt}
+                        currentTone={tone}
+                        onRegenerateWithChanges={handleRegenerateWithChanges}
+                        onCancel={() => setShowToneAdjustment(false)}
+                        isLoading={false}
+                      />
+                    </div>
+                  )}
+
+                  {/* Download Menu - Main Button */}
+                  <div className="relative">
+                    <PrimaryButton
+                      onClick={handleDownloadMenuClick}
+                      $isDark={isDark}
+                      style={{ width: '100%' }}
+                    >
+                      <span>Download</span>
+                    </PrimaryButton>
+                    {showDownloadMenu && (
+                      <div className="absolute top-full mt-2 right-0 z-50">
+                        {downloadMode === 'scope' && (
+                          <DownloadScopeOptions
+                            onSelectSlide={() => handleScopeSelection('current')}
+                            onSelectAll={() => handleScopeSelection('all')}
+                            onBack={() => {
+                              setShowDownloadMenu(false);
+                              setDownloadMode(null);
+                            }}
+                          />
+                        )}
+                        {downloadMode === 'format' && (
+                          <DownloadOptions
+                            onDownloadPNG={handleDownloadPNG}
+                            onDownloadPDF={handleDownloadPDF}
+                            onDownloadPPT={handleDownloadPPT}
+                            onBack={handleBackToScope}
+                            hasBack={true}
+                          />
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Create New Button */}
+                  <SecondaryButton
+                    onClick={() => navigate('/')}
+                    $isDark={isDark}
+                    style={{ width: '100%' }}
+                  >
+                    <span>Create New</span>
+                  </SecondaryButton>
+                </>
+              ) : (
+                /* Edit Mode Controls */
+                <div className={`space-y-4 p-4 rounded-lg border ${theme.colors.border} ${isDark ? 'bg-slate-800/50' : 'bg-gray-100'}`}>
+                  <h3 className={`font-semibold text-lg ${isDark ? 'text-cyan-400' : 'text-blue-600'}`}>
+                    Edit Slide {carouselRef.current?.getCurrentSlide?.() + 1 || 1}
+                  </h3>
+
+                  {/* Font Selectors */}
+                  <div className="space-y-3">
+                    <div>
+                      <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Heading Font
+                      </label>
+                      <select
+                        value={carouselRef.current?.getActiveHeadingFont?.() || 'Orbitron'}
+                        onChange={(e) => carouselRef.current?.updateHeadingFont?.(e.target.value)}
+                        className={`w-full p-2 rounded border text-sm ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
+                        style={{ fontFamily: formatFontForCSS(carouselRef.current?.getActiveHeadingFont?.() || 'Orbitron') }}
+                      >
+                        {googleFonts.map((font) => (
+                          <option key={font} value={font}>
+                            {font}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Body Font
+                      </label>
+                      <select
+                        value={carouselRef.current?.getActiveBodyFont?.() || 'Inter'}
+                        onChange={(e) => carouselRef.current?.updateBodyFont?.(e.target.value)}
+                        className={`w-full p-2 rounded border text-sm ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
+                        style={{ fontFamily: formatFontForCSS(carouselRef.current?.getActiveBodyFont?.() || 'Inter') }}
+                      >
+                        {googleFonts.map((font) => (
+                          <option key={font} value={font}>
+                            {font}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Text Color Picker */}
+                  <div className="space-y-2">
+                    <label className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                      Text Color
+                    </label>
+                    <div className="flex gap-2 items-center">
+                      <input
+                        type="color"
+                        value={carouselRef.current?.getCurrentSlideColor?.() || '#ffffff'}
+                        onChange={(e) => carouselRef.current?.updateSlideColor?.(e.target.value)}
+                        className="w-12 h-12 rounded cursor-pointer border-2 border-gray-400"
+                      />
+                      <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                        {carouselRef.current?.getCurrentSlideColor?.() || '#ffffff'}
+                      </span>
+                      <CompactButton
+                        onClick={() => {
+                          carouselRef.current?.updateSlideColor?.(customColor || '#ffffff');
+                        }}
+                        $isDark={isDark}
+                      >
+                        Reset
+                      </CompactButton>
+                    </div>
+                  </div>
+
+                  {/* Regenerate Content */}
+                  <div className="space-y-2">
+                    <label className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                      🔄 Regenerate
+                    </label>
+                    <div className="flex flex-col gap-2">
+                      <WarningButton
+                        onClick={() => handleRegenerateSlide(carouselRef.current?.getCurrentSlide?.() || 0, 'text')}
+                        $isDark={isDark}
+                        style={{ fontSize: '12px', padding: '8px' }}
+                      >
+                        🔄 Text
+                      </WarningButton>
+                      <WarningButton
+                        onClick={() => handleRegenerateSlide(carouselRef.current?.getCurrentSlide?.() || 0, 'image')}
+                        $isDark={isDark}
+                        style={{ fontSize: '12px', padding: '8px' }}
+                      >
+                        🖼️ Image
+                      </WarningButton>
+                      <DangerButton
+                        onClick={() => handleRegenerateSlide(carouselRef.current?.getCurrentSlide?.() || 0, 'both')}
+                        $isDark={isDark}
+                        style={{ fontSize: '12px', padding: '8px' }}
+                      >
+                        🔄 Both
+                      </DangerButton>
+                    </div>
+                  </div>
+
+                  {/* Close Edit Mode */}
+                  <SuccessButton
+                    onClick={() => setEditMode(false)}
+                    $isDark={isDark}
+                    style={{ width: '100%' }}
+                  >
+                    ✓ Done Editing
+                  </SuccessButton>
                 </div>
               )}
             </div>
@@ -276,7 +455,7 @@ const ViewerPage = () => {
         {/* Tips */}
         <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className={`${theme.colors.bg.secondary} border ${theme.colors.border} rounded-xl p-6 text-center hover:border-opacity-100 transition-colors duration-300 ${isDark ? 'hover:border-slate-700' : 'hover:border-gray-400'}`}>
-            <h3 className={`font-semibold mb-2 text-lg ${isDark ? 'text-cyan-400' : 'text-blue-600'}`}>✏️ Edit Slide</h3>
+            <h3 className={`font-semibold mb-2 text-lg ${isDark ? 'text-cyan-400' : 'text-blue-600'}`}>Edit Slide</h3>
             <p className={`${theme.colors.text.tertiary} text-sm`}>Customize text, fonts, and more in real-time with live preview</p>
           </div>
           <div className={`${theme.colors.bg.secondary} border ${theme.colors.border} rounded-xl p-6 text-center hover:border-opacity-100 transition-colors duration-300 ${isDark ? 'hover:border-slate-700' : 'hover:border-gray-400'}`}>
@@ -284,7 +463,7 @@ const ViewerPage = () => {
             <p className={`${theme.colors.text.tertiary} text-sm`}>Adjust tone or prompt and regenerate carousel instantly</p>
           </div>
           <div className={`${theme.colors.bg.secondary} border ${theme.colors.border} rounded-xl p-6 text-center hover:border-opacity-100 transition-colors duration-300 ${isDark ? 'hover:border-slate-700' : 'hover:border-gray-400'}`}>
-            <h3 className={`font-semibold mb-2 text-lg ${isDark ? 'text-cyan-400' : 'text-blue-600'}`}>📥 Download</h3>
+            <h3 className={`font-semibold mb-2 text-lg ${isDark ? 'text-cyan-400' : 'text-blue-600'}`}>Download</h3>
             <p className={`${theme.colors.text.tertiary} text-sm`}>Export as PNG, PDF, or PowerPoint for any use case</p>
           </div>
         </div>

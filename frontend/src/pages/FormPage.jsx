@@ -9,19 +9,19 @@ const FormPage = () => {
   const navigate = useNavigate();
   const { isDark, theme } = useTheme();
   const [prompt, setPrompt] = useState('');
-  const [palette, setPalette] = useState('slate');
-  const [customColor, setCustomColor] = useState('#475569');
+  const [palette, setPalette] = useState('ocean');
+  const [customColor, setCustomColor] = useState('#1e40af');
   const [tone, setTone] = useState('professional');
   const [slideCount, setSlideCount] = useState(5);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   const palettes = {
-    slate: { name: 'Slate', bg: '#475569', text: '#FFF' },
-    sage: { name: 'Sage', bg: '#78716C', text: '#FFF' },
-    stone: { name: 'Stone', bg: '#78716C', text: '#FFF' },
-    mauve: { name: 'Mauve', bg: '#6B5B7A', text: '#FFF' },
-    charcoal: { name: 'Charcoal', bg: '#36393F', text: '#FFF' },
+    ocean: { name: 'Ocean Blue', bg: '#1e40af', text: '#FFF' },
+    emerald: { name: 'Emerald Green', bg: '#047857', text: '#FFF' },
+    purple: { name: 'Deep Purple', bg: '#7c3aed', text: '#FFF' },
+    coral: { name: 'Coral Red', bg: '#dc2626', text: '#FFF' },
+    amber: { name: 'Amber Gold', bg: '#d97706', text: '#FFF' },
   };
 
   const tones = [

@@ -142,7 +142,7 @@ const TonePromptAdjustment = ({
       <div className="space-y-4">
         <div>
           <h3 className={`font-semibold text-lg mb-4 ${isDark ? 'text-cyan-400' : 'text-blue-600'}`}>
-            🔄 Adjust & Regenerate
+            Adjust & Regenerate
           </h3>
           <p className={`text-sm ${isDark ? 'text-slate-300' : 'text-gray-600'} mb-4`}>
             Modify your prompt or change the tone, then regenerate the carousel with new content.

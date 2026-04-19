@@ -117,7 +117,7 @@ const EditSlidePanel = ({
     <PanelContainer $isDark={isDark}>
       <div className="space-y-4">
         <h3 className={`font-semibold text-lg ${isDark ? 'text-cyan-400' : 'text-blue-600'}`}>
-          ✏️ Edit Slide {slideNumber}
+          Edit Slide {slideNumber}
         </h3>
 
         <div>

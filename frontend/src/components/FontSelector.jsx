@@ -60,7 +60,7 @@ const FontSelector = ({ headingFont, bodyFont, onHeadingFontChange, onBodyFontCh
   return (
     <div className="space-y-4">
       <SelectorContainer $isDark={isDark}>
-        <Label $isDark={isDark}>🎨 Heading Font</Label>
+        <Label $isDark={isDark}>Heading Font</Label>
         <Select
           value={headingFont}
           onChange={(e) => onHeadingFontChange(e.target.value)}

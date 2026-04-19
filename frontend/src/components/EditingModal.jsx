@@ -283,7 +283,7 @@ const EditingModal = ({
         <ToolsPanel>
           <div>
             <h2 style={{ fontSize: '16px', fontWeight: 700, color: isDark ? '#ffffff' : '#111215', margin: '0 0 15px 0' }}>
-              ✏️ Edit Slide {slides.indexOf(currentSlide) + 1}
+              Edit Slide {slides.indexOf(currentSlide) + 1}
             </h2>
           </div>
 
@@ -313,7 +313,7 @@ const EditingModal = ({
 
           {/* Font Selection */}
           <ToolSection>
-            <SectionTitle $isDark={isDark}>🎨 Fonts</SectionTitle>
+            <SectionTitle $isDark={isDark}>Fonts</SectionTitle>
             <div>
               <Label $isDark={isDark}>Heading Font</Label>
               <Select

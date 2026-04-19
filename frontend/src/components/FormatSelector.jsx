@@ -26,7 +26,7 @@ const FormatSelector = ({ selectedFormat, onFormatChange }) => {
             $isDark={isDark}
             $isSelected={selectedFormat === format.id}
           >
-            <div className="text-left">
+            <div className="flex flex-col items-center justify-center text-center">
               <h4 className={`font-bold text-lg`}>{format.label}</h4>
               <p className={`${theme.colors.text.tertiary} text-xs mb-2`}>{format.ratio}</p>
               <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-500'}`}>{format.description}</p>

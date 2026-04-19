@@ -9,7 +9,7 @@ const MenuContainer = styled.div`
   padding: 12px;
   backdrop-filter: blur(10px);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  min-width: 200px;
+  min-width: 220px;
 `;
 
 const MenuItem = styled.button`
@@ -41,42 +41,6 @@ const MenuItem = styled.button`
   }
 `;
 
-const DownloadOptions = ({ onDownloadPNG, onDownloadPDF, onDownloadPPT, onBack, hasBack }) => {
-  const { isDark } = useTheme();
-
-  return (
-    <MenuContainer $isDark={isDark}>
-      {hasBack && (
-        <>
-          <MenuItem $isDark={isDark} onClick={onDownloadPNG}>
-            Download as PNG
-          </MenuItem>
-          <MenuItem $isDark={isDark} onClick={onDownloadPDF}>
-            Download as PDF
-          </MenuItem>
-          <MenuItem $isDark={isDark} onClick={onDownloadPPT}>
-            Download as PPT
-          </MenuItem>
-          <BackButton $isDark={isDark} onClick={onBack} style={{marginTop: '8px', marginBottom: '0'}}>Back</BackButton>
-        </>
-      )}
-      {!hasBack && (
-        <>
-          <MenuItem $isDark={isDark} onClick={onDownloadPNG}>
-            Download as PNG
-          </MenuItem>
-          <MenuItem $isDark={isDark} onClick={onDownloadPDF}>
-            Download as PDF
-          </MenuItem>
-          <MenuItem $isDark={isDark} onClick={onDownloadPPT}>
-            Download as PPT
-          </MenuItem>
-        </>
-      )}
-    </MenuContainer>
-  );
-};
-
 const BackButton = styled.button`
   width: 100%;
   padding: 8px 12px;
@@ -89,10 +53,37 @@ const BackButton = styled.button`
   cursor: pointer;
   transition: all 0.3s;
   text-align: center;
+  margin-top: 8px;
 
   &:hover {
     background: ${props => props.$isDark ? 'rgba(100, 200, 255, 0.1)' : 'rgba(0, 100, 200, 0.05)'};
   }
 `;
 
-export default DownloadOptions;
+const Title = styled.div`
+  font-weight: 700;
+  font-size: 13px;
+  color: ${props => props.$isDark ? '#00d9ff' : '#0055ff'};
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid ${props => props.$isDark ? 'rgba(100, 200, 255, 0.2)' : 'rgba(0, 100, 200, 0.2)'};
+`;
+
+const DownloadScopeOptions = ({ onSelectSlide, onSelectAll, onBack }) => {
+  const { isDark } = useTheme();
+
+  return (
+    <MenuContainer $isDark={isDark}>
+      <Title $isDark={isDark}>Download Format</Title>
+      <MenuItem $isDark={isDark} onClick={onSelectSlide}>
+        Download Current Slide
+      </MenuItem>
+      <MenuItem $isDark={isDark} onClick={onSelectAll}>
+        Download All Slides
+      </MenuItem>
+      <BackButton $isDark={isDark} onClick={onBack}>Back</BackButton>
+    </MenuContainer>
+  );
+};
+
+export default DownloadScopeOptions;

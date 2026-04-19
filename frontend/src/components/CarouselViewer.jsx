@@ -11,6 +11,7 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
   const [downloading, setDownloading] = useState(false);
   const [editedSlides, setEditedSlides] = useState({});
   const [regenerating, setRegenerating] = useState(false);
+  const [editMode, setEditMode] = useState(false);
   // Store per-slide fonts and colors
   const [slideStyles, setSlideStyles] = useState({});
 
@@ -21,7 +22,11 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
   const paletteColors = {
     vibrant: { bg: '#FF6B6B', text: '#FFF', secondary: '#FFD93D' },
     minimal: { bg: '#F5F5F5', text: '#333', secondary: '#0284C7' },
-    ocean: { bg: '#0284C7', text: '#FFF', secondary: '#00D9FF' },
+    ocean: { bg: '#1e40af', text: '#FFF', secondary: '#3b82f6' },
+    emerald: { bg: '#047857', text: '#FFF', secondary: '#10b981' },
+    purple: { bg: '#7c3aed', text: '#FFF', secondary: '#a78bfa' },
+    coral: { bg: '#dc2626', text: '#FFF', secondary: '#f87171' },
+    amber: { bg: '#d97706', text: '#FFF', secondary: '#fbbf24' },
     sunset: { bg: '#F97316', text: '#FFF', secondary: '#FFD700' },
     forest: { bg: '#16A34A', text: '#FFF', secondary: '#FFD700' },
     slate: { bg: '#475569', text: '#FFF', secondary: '#00D9FF' },
@@ -153,9 +158,246 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
     }
   };
 
+  const handleDownloadSlide = async () => {
+    setDownloading(true);
+    try {
+      const element = document.getElementById('carousel-container');
+      const canvas = await html2canvas(element, {
+        allowTaint: true,
+        useCORS: true,
+        scale: 2,
+        backgroundColor: null,
+      });
+      const link = document.createElement('a');
+      link.href = canvas.toDataURL('image/png');
+      link.download = `thinkcraft-slide-${currentSlide + 1}-${selectedFormat}-${Date.now()}.png`;
+      link.click();
+    } catch (error) {
+      console.error('Error downloading slide:', error);
+      alert('Failed to download slide. Please try again.');
+    } finally {
+      setDownloading(false);
+    }
+  };
+
+  const handleDownloadSlidePDF = async () => {
+    setDownloading(true);
+    try {
+      const { default: jsPDF } = await import('jspdf');
+      const element = document.getElementById('carousel-container');
+      const canvas = await html2canvas(element, {
+        allowTaint: true,
+        useCORS: true,
+        scale: 2,
+        backgroundColor: '#ffffff',
+      });
+
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4',
+      });
+
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const margin = 10;
+      const availableWidth = pageWidth - (2 * margin);
+      const availableHeight = pageHeight - (2 * margin);
+
+      const imgData = canvas.toDataURL('image/png');
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+      const ratio = imgWidth / imgHeight;
+
+      let finalWidth = availableWidth;
+      let finalHeight = availableWidth / ratio;
+
+      if (finalHeight > availableHeight) {
+        finalHeight = availableHeight;
+        finalWidth = availableHeight * ratio;
+      }
+
+      const xPosition = (pageWidth - finalWidth) / 2;
+      const yPosition = margin + (availableHeight - finalHeight) / 2;
+
+      pdf.addImage(imgData, 'PNG', xPosition, yPosition, finalWidth, finalHeight);
+      pdf.text(`Slide ${currentSlide + 1}`, margin, pageHeight - 5, { fontSize: 10 });
+      pdf.save(`thinkcraft-slide-${currentSlide + 1}.pdf`);
+    } catch (error) {
+      console.error('Error downloading slide PDF:', error);
+      alert('Failed to download PDF. Please try again.');
+    } finally {
+      setDownloading(false);
+    }
+  };
+
+  const handleDownloadAllPDF = async () => {
+    setDownloading(true);
+    try {
+      const { default: jsPDF } = await import('jspdf');
+
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4',
+      });
+
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const margin = 10;
+      const availableWidth = pageWidth - (2 * margin);
+      const availableHeight = pageHeight - (2 * margin);
+
+      for (let i = 0; i < slides.length; i++) {
+        setCurrentSlide(i);
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        const element = document.getElementById('carousel-container');
+        const canvas = await html2canvas(element, {
+          allowTaint: true,
+          useCORS: true,
+          scale: 2,
+          backgroundColor: '#ffffff',
+        });
+
+        const imgData = canvas.toDataURL('image/png');
+        const imgWidth = canvas.width;
+        const imgHeight = canvas.height;
+        const ratio = imgWidth / imgHeight;
+
+        let finalWidth = availableWidth;
+        let finalHeight = availableWidth / ratio;
+
+        if (finalHeight > availableHeight) {
+          finalHeight = availableHeight;
+          finalWidth = availableHeight * ratio;
+        }
+
+        const xPosition = (pageWidth - finalWidth) / 2;
+        const yPosition = margin + (availableHeight - finalHeight) / 2;
+
+        if (i > 0) {
+          pdf.addPage();
+        }
+
+        pdf.addImage(imgData, 'PNG', xPosition, yPosition, finalWidth, finalHeight);
+        pdf.setFontSize(10);
+        pdf.setTextColor(120, 120, 120);
+        pdf.text(`Slide ${i + 1} of ${slides.length}`, margin, pageHeight - 5);
+      }
+
+      pdf.save('thinkcraft-carousel.pdf');
+      setCurrentSlide(0);
+    } catch (error) {
+      console.error('Error downloading all slides PDF:', error);
+      alert('Failed to download PDF. Please try again.');
+    } finally {
+      setDownloading(false);
+    }
+  };
+
+  const handleDownloadSlidePPT = async () => {
+    setDownloading(true);
+    try {
+      const PptxGenJS = (await import('pptxgenjs')).default;
+      const prs = new PptxGenJS();
+      prs.defineLayout({ name: 'LAYOUT1', width: 10, height: 7.5 });
+
+      const element = document.getElementById('carousel-container');
+      const canvas = await html2canvas(element, {
+        allowTaint: true,
+        useCORS: true,
+        scale: 2,
+        backgroundColor: null,
+      });
+
+      const newSlide = prs.addSlide();
+      const imgData = canvas.toDataURL('image/png');
+      newSlide.addImage({
+        data: imgData,
+        x: 0,
+        y: 0,
+        w: 10,
+        h: 7.5,
+      });
+
+      newSlide.addText(`${currentSlide + 1}`, {
+        x: 0.5,
+        y: 7,
+        w: 9,
+        h: 0.4,
+        fontSize: 10,
+        color: '999999',
+        align: 'right',
+      });
+
+      prs.writeFile({ fileName: `thinkcraft-slide-${currentSlide + 1}.pptx` });
+    } catch (error) {
+      console.error('Error downloading slide PPT:', error);
+      alert('Failed to download PowerPoint. Please try again.');
+    } finally {
+      setDownloading(false);
+    }
+  };
+
+  const handleDownloadAllPPT = async () => {
+    setDownloading(true);
+    try {
+      const PptxGenJS = (await import('pptxgenjs')).default;
+      const prs = new PptxGenJS();
+      prs.defineLayout({ name: 'LAYOUT1', width: 10, height: 7.5 });
+
+      for (let i = 0; i < slides.length; i++) {
+        setCurrentSlide(i);
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        const element = document.getElementById('carousel-container');
+        const canvas = await html2canvas(element, {
+          allowTaint: true,
+          useCORS: true,
+          scale: 2,
+          backgroundColor: null,
+        });
+
+        const newSlide = prs.addSlide();
+        const imgData = canvas.toDataURL('image/png');
+        newSlide.addImage({
+          data: imgData,
+          x: 0,
+          y: 0,
+          w: 10,
+          h: 7.5,
+        });
+
+        newSlide.addText(`${i + 1}`, {
+          x: 0.5,
+          y: 7,
+          w: 9,
+          h: 0.4,
+          fontSize: 10,
+          color: '999999',
+          align: 'right',
+        });
+      }
+
+      prs.writeFile({ fileName: 'thinkcraft-carousel.pptx' });
+      setCurrentSlide(0);
+    } catch (error) {
+      console.error('Error downloading all slides PPT:', error);
+      alert('Failed to download PowerPoint. Please try again.');
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   // Expose methods and data via ref
   useImperativeHandle(ref, () => ({
     downloadAll: handleDownloadAll,
+    downloadSlide: handleDownloadSlide,
+    downloadSlidePDF: handleDownloadSlidePDF,
+    downloadAllPDF: handleDownloadAllPDF,
+    downloadSlidePPT: handleDownloadSlidePPT,
+    downloadAllPPT: handleDownloadAllPPT,
     getEditedSlides: () => editedSlides,
     getSlideStyles: () => slideStyles,
     getCurrentSlide: () => currentSlide,
@@ -433,123 +675,6 @@ const CarouselViewer = forwardRef(({ carousel, palette, customColor, selectedFor
             )}
           </PrimaryButton>
         </div>
-
-        {/* Edit Controls (Show when edit mode is on) */}
-        {editMode && (
-          <div className={`space-y-4 p-4 rounded-lg ${isDark ? 'bg-slate-800/50' : 'bg-gray-200'}`}>
-            <h3 className={`font-semibold text-lg ${isDark ? 'text-cyan-400' : 'text-blue-600'}`}>
-              Edit Slide {currentSlide + 1}
-            </h3>
-
-            {/* Font Selectors */}
-            <div className="space-y-3">
-              <div>
-                <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                  🎨 Heading Font
-                </label>
-                <select
-                  value={currentHeadingFont}
-                  onChange={(e) => setCurrentHeadingFont(e.target.value)}
-                  className={`w-full p-2 rounded border text-sm ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
-                  style={{ fontFamily: formatFontForCSS(currentHeadingFont) }}
-                >
-                  {googleFonts.map((font) => (
-                    <option key={font} value={font}>
-                      {font}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                  📄 Body Font
-                </label>
-                <select
-                  value={currentBodyFont}
-                  onChange={(e) => setCurrentBodyFont(e.target.value)}
-                  className={`w-full p-2 rounded border text-sm ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
-                  style={{ fontFamily: formatFontForCSS(currentBodyFont) }}
-                >
-                  {googleFonts.map((font) => (
-                    <option key={font} value={font}>
-                      {font}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            {/* Text Color Picker */}
-            <div className="space-y-2">
-              <label className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                Text Color
-              </label>
-              <div className="flex gap-2 items-center">
-                <input
-                  type="color"
-                  value={getCurrentSlideColor()}
-                  onChange={(e) => updateSlideColor(e.target.value)}
-                  className="w-12 h-12 rounded cursor-pointer border-2 border-gray-400"
-                />
-                <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {getCurrentSlideColor()}
-                </span>
-                <CompactButton
-                  onClick={() => {
-                    const newColor = {};
-                    delete newColor[currentSlide];
-                    setSlideColors(newColor);
-                  }}
-                  $isDark={isDark}
-                >
-                  Reset
-                </CompactButton>
-              </div>
-              <p className={`text-xs ${isDark ? 'text-green-400' : 'text-green-600'}`}>✓ Color applied in real-time</p>
-            </div>
-
-            {/* Regenerate Content */}
-            <div className="space-y-2">
-              <label className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                Regenerate Content
-              </label>
-              <div className="flex flex-col gap-2">
-                <WarningButton
-                  onClick={() => handleRegenerateSlide('text')}
-                  disabled={regenerating}
-                  $isDark={isDark}
-                >
-                  {regenerating ? 'Regenerating...' : '🔄 Regenerate Text Only'}
-                </WarningButton>
-                <WarningButton
-                  onClick={() => handleRegenerateSlide('image')}
-                  disabled={regenerating}
-                  $isDark={isDark}
-                >
-                  {regenerating ? 'Regenerating...' : '🖼️ Regenerate Image Only'}
-                </WarningButton>
-                <DangerButton
-                  onClick={() => handleRegenerateSlide('both')}
-                  disabled={regenerating}
-                  $isDark={isDark}
-                >
-                  {regenerating ? 'Regenerating...' : '🔄 Regenerate Both'}
-                </DangerButton>
-              </div>
-            </div>
-
-            {/* Save Changes Button */}
-            <div className="pt-4 border-t border-gray-400/30">
-              <FullWidthSuccessButton
-                onClick={() => setEditMode(false)}
-                $isDark={isDark}
-              >
-                ✓ Save All Changes & Close
-              </FullWidthSuccessButton>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
