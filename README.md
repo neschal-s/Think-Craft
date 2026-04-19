@@ -77,3 +77,10 @@ Think-Craft is an intelligent platform that generates professional, visually app
 ---
 
 ## 📋 **Key API Endpoints**
+
+POST /api/generate/carousel-structure
+POST /api/generate/images
+POST /api/generate/hashtags
+POST /api/generate/captions
+POST /api/generate/regenerate-image
+POST /api/generate/adapt-format
