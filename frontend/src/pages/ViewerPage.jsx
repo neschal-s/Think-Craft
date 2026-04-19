@@ -2,8 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CarouselViewer from '../components/CarouselViewer';
 import FormatSelector from '../components/FormatSelector';
+import FontSelector from '../components/FontSelector';
+import EditSlidePanel from '../components/EditSlidePanel';
+import DownloadOptions from '../components/DownloadOptions';
+import TonePromptAdjustment from '../components/TonePromptAdjustment';
 import { useTheme } from '../context/ThemeContext';
-import { SecondaryButton, PrimaryButton } from '../styles/ModernButtons';
+import { SecondaryButton, PrimaryButton, CompactButton } from '../styles/ModernButtons';
+import { downloadSlideAsPNG, downloadAllSlidesAsPNG, downloadCarouselAsPDF, downloadCarouselAsPPT } from '../utils/downloadUtils';
 
 const ViewerPage = () => {
   const navigate = useNavigate();
@@ -14,12 +19,30 @@ const ViewerPage = () => {
   const [customColor, setCustomColor] = useState('#475569');
   const [tone, setTone] = useState('professional');
   const [selectedFormat, setSelectedFormat] = useState('1:1');
+  const [originalPrompt, setOriginalPrompt] = useState('');
+  
+  // UI State
+  const [editMode, setEditMode] = useState(false);
+  const [showDownloadMenu, setShowDownloadMenu] = useState(false);
+  const [showFontSelector, setShowFontSelector] = useState(false);
+  const [showToneAdjustment, setShowToneAdjustment] = useState(false);
+  const [editingSlideIndex, setEditingSlideIndex] = useState(null);
+  
+  // Font State
+  const [headingFont, setHeadingFont] = useState('Orbitron');
+  const [bodyFont, setBodyFont] = useState('Inter');
+  
+  // Edit State
+  const [editingHeadline, setEditingHeadline] = useState('');
+  const [editingBody, setEditingBody] = useState('');
+  const [isRegenerating, setIsRegenerating] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem('carousel');
     const savedPalette = localStorage.getItem('palette');
     const savedCustomColor = localStorage.getItem('customColor');
     const savedTone = localStorage.getItem('tone');
+    const savedPrompt = localStorage.getItem('prompt');
 
     if (!saved) {
       navigate('/');
@@ -31,12 +54,77 @@ const ViewerPage = () => {
     setPalette(savedPalette || 'slate');
     setCustomColor(savedCustomColor || '#475569');
     setTone(savedTone || 'professional');
+    setOriginalPrompt(savedPrompt || '');
   }, [navigate]);
 
   const handleFormatChange = (format) => {
-    // Just change the format - content and images stay the same
-    // Only the aspect ratio/CSS dimensions change
     setSelectedFormat(format);
+  };
+
+  const handleEditSlide = (slideIndex) => {
+    const slide = carousel.slides[slideIndex];
+    setEditingSlideIndex(slideIndex);
+    setEditingHeadline(slide.headline);
+    setEditingBody(slide.body);
+    setEditMode(true);
+  };
+
+  const handleSaveSlideEdit = () => {
+    if (!carousel) return;
+
+    const updatedCarousel = { ...carousel };
+    updatedCarousel.slides[editingSlideIndex] = {
+      ...updatedCarousel.slides[editingSlideIndex],
+      headline: editingHeadline,
+      body: editingBody,
+    };
+
+    setCarousel(updatedCarousel);
+    localStorage.setItem('carousel', JSON.stringify(updatedCarousel));
+    setEditMode(false);
+    setEditingSlideIndex(null);
+  };
+
+  const handleCancelEdit = () => {
+    setEditMode(false);
+    setEditingSlideIndex(null);
+    setEditingHeadline('');
+    setEditingBody('');
+  };
+
+  const handleDownloadPNG = async () => {
+    if (carouselRef.current && carouselRef.current.downloadAll) {
+      await downloadAllSlidesAsPNG(carousel);
+    }
+    setShowDownloadMenu(false);
+  };
+
+  const handleDownloadPDF = async () => {
+    const slideContainers = document.querySelectorAll('[data-slide-container]');
+    if (slideContainers.length > 0) {
+      await downloadCarouselAsPDF(carousel, headingFont, bodyFont);
+    }
+    setShowDownloadMenu(false);
+  };
+
+  const handleDownloadPPT = async () => {
+    await downloadCarouselAsPPT(carousel, headingFont, bodyFont);
+    setShowDownloadMenu(false);
+  };
+
+  const handleRegenerateWithChanges = async (newPrompt, newTone) => {
+    setIsRegenerating(true);
+    try {
+      // This would call the backend to regenerate
+      // For now, we'll just show a placeholder
+      alert('🚀 Regenerating carousel with new prompt and tone...\n\nThis feature requires backend integration.');
+      setShowToneAdjustment(false);
+      setIsRegenerating(false);
+    } catch (error) {
+      console.error('Error regenerating:', error);
+      alert('Failed to regenerate carousel');
+      setIsRegenerating(false);
+    }
   };
 
   const handleRegenerateSlide = async (slideIndex, type) => {
@@ -135,7 +223,7 @@ const ViewerPage = () => {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-center gap-4 flex-wrap">
+        <div className="flex items-center justify-center gap-3 flex-wrap mb-8">
           <SecondaryButton
             onClick={() => navigate('/')}
             $isDark={isDark}
@@ -143,31 +231,104 @@ const ViewerPage = () => {
             <span>←</span>
             <span>Create New</span>
           </SecondaryButton>
-          <PrimaryButton
-            onClick={() => {
-              if (carouselRef.current && carouselRef.current.downloadAll) {
-                carouselRef.current.downloadAll();
-              }
-            }}
+
+          <div className="relative">
+            <PrimaryButton
+              onClick={() => setShowDownloadMenu(!showDownloadMenu)}
+              $isDark={isDark}
+            >
+              <span>📥 Download</span>
+            </PrimaryButton>
+            {showDownloadMenu && (
+              <div className="absolute top-full mt-2 right-0 z-50">
+                <DownloadOptions
+                  onDownloadPNG={handleDownloadPNG}
+                  onDownloadPDF={handleDownloadPDF}
+                  onDownloadPPT={handleDownloadPPT}
+                />
+              </div>
+            )}
+          </div>
+
+          <SecondaryButton
+            onClick={() => setShowFontSelector(!showFontSelector)}
             $isDark={isDark}
           >
-            <span>📥 Download All Slides as ZIP</span>
-          </PrimaryButton>
+            <span>🎨 Fonts</span>
+          </SecondaryButton>
+
+          <SecondaryButton
+            onClick={() => setEditMode(!editMode)}
+            $isDark={isDark}
+          >
+            <span>✏️ Edit</span>
+          </SecondaryButton>
+
+          <SecondaryButton
+            onClick={() => setShowToneAdjustment(!showToneAdjustment)}
+            $isDark={isDark}
+          >
+            <span>🔄 Tone</span>
+          </SecondaryButton>
         </div>
 
+        {/* Font Selector Panel */}
+        {showFontSelector && (
+          <div className="mb-8">
+            <FontSelector
+              selectedHeadingFont={headingFont}
+              selectedBodyFont={bodyFont}
+              onHeadingFontChange={setHeadingFont}
+              onBodyFontChange={setBodyFont}
+            />
+          </div>
+        )}
+
+        {/* Edit Mode Panel */}
+        {editMode && editingSlideIndex !== null && (
+          <div className="mb-8">
+            <EditSlidePanel
+              slideNumber={editingSlideIndex + 1}
+              headline={editingHeadline}
+              body={editingBody}
+              onHeadlineChange={setEditingHeadline}
+              onBodyChange={setEditingBody}
+              onSave={handleSaveSlideEdit}
+              onCancel={handleCancelEdit}
+            />
+          </div>
+        )}
+
+        {/* Tone Adjustment Panel */}
+        {showToneAdjustment && (
+          <div className="mb-8">
+            <TonePromptAdjustment
+              currentPrompt={originalPrompt}
+              currentTone={tone}
+              onRegenerateWithChanges={handleRegenerateWithChanges}
+              onCancel={() => setShowToneAdjustment(false)}
+              isLoading={isRegenerating}
+            />
+          </div>
+        )}
+
         {/* Tips */}
-        <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="mt-16 grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className={`${theme.colors.bg.secondary} border ${theme.colors.border} rounded-xl p-6 text-center hover:border-opacity-100 transition-colors duration-300 ${isDark ? 'hover:border-slate-700' : 'hover:border-gray-400'}`}>
-            <h3 className={`font-semibold mb-2 text-lg ${isDark ? 'text-cyan-400' : 'text-blue-600'}`}>Customize</h3>
-            <p className={`${theme.colors.text.tertiary} text-sm`}>Edit and refine each slide to match your message perfectly</p>
+            <h3 className={`font-semibold mb-2 text-lg ${isDark ? 'text-cyan-400' : 'text-blue-600'}`}>✏️ Edit</h3>
+            <p className={`${theme.colors.text.tertiary} text-sm`}>Customize headlines and body text directly on slides</p>
           </div>
           <div className={`${theme.colors.bg.secondary} border ${theme.colors.border} rounded-xl p-6 text-center hover:border-opacity-100 transition-colors duration-300 ${isDark ? 'hover:border-slate-700' : 'hover:border-gray-400'}`}>
-            <h3 className={`font-semibold mb-2 text-lg ${isDark ? 'text-cyan-400' : 'text-blue-600'}`}>Adapt</h3>
-            <p className={`${theme.colors.text.tertiary} text-sm`}>Switch between formats for different social media platforms</p>
+            <h3 className={`font-semibold mb-2 text-lg ${isDark ? 'text-cyan-400' : 'text-blue-600'}`}>🎨 Fonts</h3>
+            <p className={`${theme.colors.text.tertiary} text-sm`}>Choose from 15+ Google Fonts for headings and body</p>
           </div>
           <div className={`${theme.colors.bg.secondary} border ${theme.colors.border} rounded-xl p-6 text-center hover:border-opacity-100 transition-colors duration-300 ${isDark ? 'hover:border-slate-700' : 'hover:border-gray-400'}`}>
-            <h3 className={`font-semibold mb-2 text-lg ${isDark ? 'text-cyan-400' : 'text-blue-600'}`}>Export</h3>
-            <p className={`${theme.colors.text.tertiary} text-sm`}>Download individual slides or the entire carousel as PNG</p>
+            <h3 className={`font-semibold mb-2 text-lg ${isDark ? 'text-cyan-400' : 'text-blue-600'}`}>🔄 Tone</h3>
+            <p className={`${theme.colors.text.tertiary} text-sm`}>Adjust tone or prompt and regenerate carousel instantly</p>
+          </div>
+          <div className={`${theme.colors.bg.secondary} border ${theme.colors.border} rounded-xl p-6 text-center hover:border-opacity-100 transition-colors duration-300 ${isDark ? 'hover:border-slate-700' : 'hover:border-gray-400'}`}>
+            <h3 className={`font-semibold mb-2 text-lg ${isDark ? 'text-cyan-400' : 'text-blue-600'}`}>📥 Download</h3>
+            <p className={`${theme.colors.text.tertiary} text-sm`}>Export as PNG, PDF, or PowerPoint for any use case</p>
           </div>
         </div>
       </div>

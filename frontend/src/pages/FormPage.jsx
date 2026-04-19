@@ -60,6 +60,7 @@ const FormPage = () => {
       localStorage.setItem('palette', palette);
       localStorage.setItem('customColor', customColor);
       localStorage.setItem('tone', tone);
+      localStorage.setItem('prompt', prompt);
 
       navigate('/viewer');
     } catch (err) {
