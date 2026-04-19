@@ -5,9 +5,11 @@ import FormatSelector from '../components/FormatSelector';
 import DownloadOptions from '../components/DownloadOptions';
 import DownloadScopeOptions from '../components/DownloadScopeOptions';
 import TonePromptAdjustment from '../components/TonePromptAdjustment';
+import AIEnhancements from '../components/AIEnhancements';
 import { useTheme } from '../context/ThemeContext';
 import { SecondaryButton, PrimaryButton, SuccessButton, WarningButton, DangerButton, CompactButton } from '../styles/ModernButtons';
 import { googleFonts, formatFontForCSS } from '../utils/fontLoader';
+import { regenerateCarouselWithChanges, generateImages } from '../services/api';
 
 const ViewerPage = () => {
   const navigate = useNavigate();
@@ -26,6 +28,7 @@ const ViewerPage = () => {
   const [downloadMode, setDownloadMode] = useState(null); // 'scope' | 'format' | null
   const [downloadScope, setDownloadScope] = useState('all'); // 'current' | 'all'
   const [showToneAdjustment, setShowToneAdjustment] = useState(false);
+  const [isRegenerating, setIsRegenerating] = useState(false);
   
   // Font State
   const [headingFont, setHeadingFont] = useState('Orbitron');
@@ -147,13 +150,43 @@ const ViewerPage = () => {
 
   const handleRegenerateWithChanges = async (newPrompt, newTone) => {
     try {
-      // This would call the backend to regenerate
-      // For now, we'll just show a placeholder
-      alert('🚀 Regenerating carousel with new prompt and tone...\n\nThis feature requires backend integration.');
+      setIsRegenerating(true);
+
+      // Get slideCount from current carousel
+      const slideCount = carousel?.slides?.length || 5;
+      const format = carousel?.format || '1:1';
+
+      // Regenerate carousel structure with new prompt and tone
+      const structureRes = await regenerateCarouselWithChanges(newPrompt, newTone, format, slideCount);
+      const newCarouselStructure = structureRes.data;
+
+      // Generate images for the new structure
+      const imagesRes = await generateImages(newCarouselStructure);
+
+      // Combine structure with images
+      const newCarousel = {
+        ...newCarouselStructure,
+        slides: newCarouselStructure.slides.map((slide, idx) => ({
+          ...slide,
+          imageUrl: imagesRes.data.images[idx]?.imageUrl,
+          imageError: imagesRes.data.images[idx]?.error,
+        })),
+      };
+
+      // Update state and localStorage
+      setCarousel(newCarousel);
+      setTone(newTone);
+      localStorage.setItem('carousel', JSON.stringify(newCarousel));
+      localStorage.setItem('tone', newTone);
+      localStorage.setItem('prompt', newPrompt);
+
       setShowToneAdjustment(false);
+      alert('Carousel regenerated successfully!');
     } catch (error) {
       console.error('Error regenerating:', error);
-      alert('Failed to regenerate carousel');
+      alert(`Failed to regenerate carousel: ${error.response?.data?.error || error.message}`);
+    } finally {
+      setIsRegenerating(false);
     }
   };
 
@@ -288,7 +321,7 @@ const ViewerPage = () => {
                         currentTone={tone}
                         onRegenerateWithChanges={handleRegenerateWithChanges}
                         onCancel={() => setShowToneAdjustment(false)}
-                        isLoading={false}
+                        isLoading={isRegenerating}
                       />
                     </div>
                   )}
@@ -411,30 +444,30 @@ const ViewerPage = () => {
                   {/* Regenerate Content */}
                   <div className="space-y-2">
                     <label className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                      🔄 Regenerate
+                      Regenerate
                     </label>
                     <div className="flex flex-col gap-2">
-                      <WarningButton
+                      <SecondaryButton
                         onClick={() => handleRegenerateSlide(carouselRef.current?.getCurrentSlide?.() || 0, 'text')}
                         $isDark={isDark}
                         style={{ fontSize: '12px', padding: '8px' }}
                       >
-                        🔄 Text
-                      </WarningButton>
-                      <WarningButton
+                        Text
+                      </SecondaryButton>
+                      <SecondaryButton
                         onClick={() => handleRegenerateSlide(carouselRef.current?.getCurrentSlide?.() || 0, 'image')}
                         $isDark={isDark}
                         style={{ fontSize: '12px', padding: '8px' }}
                       >
-                        🖼️ Image
-                      </WarningButton>
-                      <DangerButton
+                        Image
+                      </SecondaryButton>
+                      <WarningButton
                         onClick={() => handleRegenerateSlide(carouselRef.current?.getCurrentSlide?.() || 0, 'both')}
                         $isDark={isDark}
                         style={{ fontSize: '12px', padding: '8px' }}
                       >
-                        🔄 Both
-                      </DangerButton>
+                        Both
+                      </WarningButton>
                     </div>
                   </div>
 
@@ -444,13 +477,20 @@ const ViewerPage = () => {
                     $isDark={isDark}
                     style={{ width: '100%' }}
                   >
-                    ✓ Done Editing
+                    Done Editing
                   </SuccessButton>
                 </div>
               )}
             </div>
           </div>
         </div>
+
+        {/* AI Enhancements Section */}
+        <AIEnhancements 
+          prompt={originalPrompt} 
+          carouselContent={carousel}
+          isDark={isDark}
+        />
 
         {/* Tips */}
         <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">

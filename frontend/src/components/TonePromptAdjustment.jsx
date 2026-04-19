@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useTheme } from '../context/ThemeContext';
+import { PrimaryButton, SecondaryButton } from '../styles/ModernButtons';
 
 const PanelContainer = styled.div`
   background: ${props => props.$isDark ? 'rgba(26, 29, 37, 0.7)' : 'rgba(255, 255, 255, 0.7)'};
@@ -71,42 +72,6 @@ const ButtonGroup = styled.div`
   margin-top: 16px;
 `;
 
-const Button = styled.button`
-  flex: 1;
-  padding: 12px;
-  border: 2px solid transparent;
-  border-radius: 8px;
-  background: ${props => props.$primary 
-    ? 'linear-gradient(135deg, rgba(0, 85, 255, 0.2) 0%, rgba(0, 170, 255, 0.2) 100%)'
-    : props.$isDark ? 'rgba(30, 41, 59, 0.7)' : 'rgba(255, 255, 255, 0.7)'};
-  color: ${props => props.$primary 
-    ? '#0088ff'
-    : props.$isDark ? '#cbd5e1' : '#475569'};
-  border: 2px solid ${props => props.$primary 
-    ? 'rgba(0, 85, 255, 0.4)' 
-    : props.$isDark ? 'rgba(100, 116, 139, 0.4)' : 'rgba(150, 160, 170, 0.4)'};
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.3s;
-
-  &:hover {
-    background: ${props => props.$primary 
-      ? 'linear-gradient(135deg, rgba(0, 85, 255, 0.3) 0%, rgba(0, 170, 255, 0.3) 100%)'
-      : props.$isDark ? 'rgba(40, 50, 70, 0.7)' : 'rgba(255, 255, 255, 0.9)'};
-    transform: translateY(-2px);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-`;
-
 const InfoText = styled.p`
   font-size: 12px;
   color: ${props => props.$isDark ? '#8a8d93' : '#8b5cf6'};
@@ -150,7 +115,7 @@ const TonePromptAdjustment = ({
         </div>
 
         <div>
-          <Label $isDark={isDark}>📝 Carousel Prompt</Label>
+          <Label $isDark={isDark}>Carousel Prompt</Label>
           <TextArea
             value={newPrompt}
             onChange={(e) => setNewPrompt(e.target.value)}
@@ -161,7 +126,7 @@ const TonePromptAdjustment = ({
         </div>
 
         <div>
-          <Label $isDark={isDark}>🎯 Tone & Style</Label>
+          <Label $isDark={isDark}>Tone & Style</Label>
           <Select
             value={newTone}
             onChange={(e) => setNewTone(e.target.value)}
@@ -181,17 +146,22 @@ const TonePromptAdjustment = ({
         )}
 
         <ButtonGroup>
-          <Button 
+          <PrimaryButton 
             onClick={handleRegenerate} 
-            $primary 
             $isDark={isDark}
             disabled={isLoading || (!promptChanged && !toneChanged)}
+            style={{ flex: 1 }}
           >
-            {isLoading ? '⏳ Regenerating...' : '🚀 Regenerate Carousel'}
-          </Button>
-          <Button onClick={onCancel} $isDark={isDark} disabled={isLoading}>
-            ✕ Cancel
-          </Button>
+            {isLoading ? '⏳ Regenerating...' : 'Regenerate Carousel'}
+          </PrimaryButton>
+          <SecondaryButton 
+            onClick={onCancel} 
+            $isDark={isDark} 
+            disabled={isLoading}
+            style={{ flex: 1 }}
+          >
+            Cancel
+          </SecondaryButton>
         </ButtonGroup>
       </div>
     </PanelContainer>

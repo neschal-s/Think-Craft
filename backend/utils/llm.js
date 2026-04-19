@@ -431,3 +431,145 @@ Return ONLY JSON array with 5 slides: [{slideNumber: 1, headline: "...", body: "
     return generateMockAdaptedStructure(carouselStructure, targetFormat, tone);
   }
 };
+
+/**
+ * Generate 10 relevant hashtags based on carousel content
+ */
+export const generateHashtags = async (prompt, carouselContent) => {
+  try {
+    const response = await axios.post(
+      'https://openrouter.ai/api/v1/chat/completions',
+      {
+        model: 'arcee-ai/trinity-large-preview:free',
+        messages: [
+          {
+            role: 'system',
+            content: `You are a social media expert. Generate 10 highly relevant, trending hashtags that will maximize reach and engagement for educational content. Return ONLY a JSON array of strings, no markdown.`,
+          },
+          {
+            role: 'user',
+            content: `Generate 10 relevant hashtags for this social media carousel about: "${prompt}"
+            
+Carousel content: ${carouselContent}
+
+Requirements:
+- Mix of popular and niche hashtags
+- Relevant to the topic and audience
+- Trending or evergreen (not outdated)
+- No duplicates
+- Include 2-3 branded hashtag ideas
+
+Return ONLY a JSON array: ["#hashtag1", "#hashtag2", ...]`,
+          },
+        ],
+        temperature: 0.7,
+        max_tokens: 500,
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          'HTTP-Referer': 'https://github.com/neschal-s/Think-Craft',
+          'X-OpenRouter-Title': 'ThinkCraft Hashtag Generator',
+          'Content-Type': 'application/json',
+        },
+        timeout: 15000,
+      }
+    );
+
+    const content = response.data.choices[0].message.content.trim();
+    const jsonMatch = content.match(/\[[\s\S]*\]/);
+    if (!jsonMatch) throw new Error('No JSON array found in response');
+    
+    const hashtags = JSON.parse(jsonMatch[0]);
+    return hashtags.slice(0, 10); // Ensure exactly 10 hashtags
+  } catch (error) {
+    console.error('[LLM] Hashtags error:', error.response?.status, error.response?.data || error.message);
+    // Fallback hashtags
+    return [
+      '#SocialMedia',
+      '#ContentCreation',
+      '#Education',
+      '#Marketing',
+      '#Engagement',
+      '#DigitalMarketing',
+      '#SocialMediaTips',
+      '#ContentStrategy',
+      '#OnlineLearning',
+      '#GrowthHacking'
+    ];
+  }
+};
+
+/**
+ * Generate captions for carousel content with specified style and length
+ */
+export const generateCaptions = async (prompt, carouselContent, style = 'catchy', length = 'medium') => {
+  try {
+    const lengthGuide = {
+      short: '20-50 words - concise and punchy',
+      medium: '50-100 words - balanced and engaging',
+      long: '100-150 words - detailed and comprehensive'
+    };
+
+    const styleGuide = {
+      catchy: 'Use attention-grabbing hooks, emojis strategically, and call-to-action. Make it irresistible.',
+      detailed: 'Provide context and value. Explain the "why" and "how". Educational and informative.',
+      funny: 'Use humor, witty wordplay, and entertaining tone. Make people smile while learning.'
+    };
+
+    const response = await axios.post(
+      'https://openrouter.ai/api/v1/chat/completions',
+      {
+        model: 'arcee-ai/trinity-large-preview:free',
+        messages: [
+          {
+            role: 'system',
+            content: `You are a professional copywriter specializing in social media captions. Write compelling captions that drive engagement, clicks, and shares. Return ONLY a JSON array with 2 caption strings, no markdown.`,
+          },
+          {
+            role: 'user',
+            content: `Write 2 different social media captions for this carousel about: "${prompt}"
+
+Carousel content summary: ${carouselContent?.substring(0, 300) || prompt}
+
+Style: ${styleGuide[style] || styleGuide.catchy}
+Length: ${lengthGuide[length] || lengthGuide.medium}
+
+Requirements:
+- Caption should make people want to save and share
+- Include call-to-action (ask question, encourage share, etc)
+- Appropriate for LinkedIn, Instagram, or Twitter
+- Each caption should be distinct and unique
+
+Return ONLY a JSON array with 2 captions: ["Caption 1 here...", "Caption 2 here..."]`,
+          },
+        ],
+        temperature: 0.8,
+        max_tokens: 1000,
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          'HTTP-Referer': 'https://github.com/neschal-s/Think-Craft',
+          'X-OpenRouter-Title': 'ThinkCraft Caption Generator',
+          'Content-Type': 'application/json',
+        },
+        timeout: 20000,
+      }
+    );
+
+    const content = response.data.choices[0].message.content.trim();
+    const jsonMatch = content.match(/\[[\s\S]*\]/);
+    if (!jsonMatch) throw new Error('No JSON array found in response');
+    
+    const captions = JSON.parse(jsonMatch[0]);
+    return captions.slice(0, 2); // Return exactly 2 captions
+  } catch (error) {
+    console.error('[LLM] Captions error:', error.response?.status, error.response?.data || error.message);
+    // Fallback captions
+    return [
+      `Discover the power of ${prompt}! This game-changing approach will transform how you think about success. Don't miss out on this incredible opportunity. What's your biggest takeaway? 👇`,
+      `Everything you need to know about ${prompt} is in this carousel. Save this for later and share with your network. Your success starts here! 🚀 What question do you have?`
+    ];
+  }
+};

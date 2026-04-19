@@ -173,30 +173,46 @@ export const PrimaryButton = styled(ModernButton)`
 
 // Secondary Button (muted, elegant)
 export const SecondaryButton = styled(ModernButton)`
-  background: rgba(26, 29, 37, 0.6);
+  background: ${props => props.$isDark 
+    ? 'rgba(26, 29, 37, 0.7)' 
+    : 'rgba(245, 245, 245, 0.7)'};
   
-  border: 2px solid rgba(42, 45, 53, 0.6);
+  border: 2px solid ${props => props.$isDark 
+    ? 'rgba(42, 45, 53, 0.6)' 
+    : 'rgba(200, 200, 200, 0.5)'};
   
-  color: #b0b3b8;
+  color: ${props => props.$isDark ? '#b0b3b8' : '#666666'};
   
   &:hover:not(:disabled) {
-    background: rgba(37, 42, 53, 0.7);
-    border-color: rgba(0, 85, 255, 0.4);
-    color: #ffffff;
+    background: ${props => props.$isDark 
+      ? 'rgba(37, 42, 53, 0.7)' 
+      : 'rgba(235, 235, 235, 0.8)'};
+    border-color: ${props => props.$isDark 
+      ? 'rgba(0, 85, 255, 0.4)' 
+      : 'rgba(0, 85, 255, 0.5)'};
+    color: ${props => props.$isDark ? '#ffffff' : '#333333'};
   }
 
   &:active:not(:disabled) {
-    box-shadow: inset 0 0 20px rgba(255, 85, 0, 0.3), 0 0 25px rgba(255, 85, 0, 0.4);
+    box-shadow: inset 0 0 20px ${props => props.$isDark 
+      ? 'rgba(255, 85, 0, 0.3)' 
+      : 'rgba(255, 85, 0, 0.2)'}, 0 0 25px ${props => props.$isDark 
+      ? 'rgba(255, 85, 0, 0.4)' 
+      : 'rgba(255, 85, 0, 0.3)'};
   }
 `;
 
 // Success Button (green accent)
 export const SuccessButton = styled(ModernButton)`
-  background: linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(20, 184, 166, 0.15) 100%);
+  background: ${props => props.$isDark 
+    ? 'linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(20, 184, 166, 0.15) 100%)'
+    : 'linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(20, 184, 166, 0.1) 100%)'};
   
-  border: 2px solid rgba(74, 222, 128, 0.3);
+  border: 2px solid ${props => props.$isDark 
+    ? 'rgba(74, 222, 128, 0.3)' 
+    : 'rgba(34, 197, 94, 0.4)'};
   
-  color: #86efac;
+  color: ${props => props.$isDark ? '#86efac' : '#059669'};
   
   &:hover:not(:disabled) {
     border-color: rgba(134, 239, 172, 0.6);
@@ -208,11 +224,15 @@ export const SuccessButton = styled(ModernButton)`
 
 // Warning Button (electric orange accent)
 export const WarningButton = styled(ModernButton)`
-  background: linear-gradient(135deg, rgba(255, 85, 0, 0.15) 0%, rgba(255, 110, 0, 0.15) 100%);
+  background: ${props => props.$isDark 
+    ? 'linear-gradient(135deg, rgba(255, 85, 0, 0.15) 0%, rgba(255, 110, 0, 0.15) 100%)'
+    : 'linear-gradient(135deg, rgba(255, 85, 0, 0.1) 0%, rgba(255, 110, 0, 0.1) 100%)'};
   
-  border: 2px solid rgba(255, 110, 0, 0.3);
+  border: 2px solid ${props => props.$isDark 
+    ? 'rgba(255, 110, 0, 0.3)' 
+    : 'rgba(255, 85, 0, 0.4)'};
   
-  color: #ff8c34;
+  color: ${props => props.$isDark ? '#ff8c34' : '#d97706'};
   
   &:hover:not(:disabled) {
     border-color: rgba(255, 110, 0, 0.6);
@@ -223,11 +243,15 @@ export const WarningButton = styled(ModernButton)`
 
 // Danger Button (red accent)
 export const DangerButton = styled(ModernButton)`
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(220, 38, 38, 0.15) 100%);
+  background: ${props => props.$isDark 
+    ? 'linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(220, 38, 38, 0.15) 100%)'
+    : 'linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.1) 100%)'};
   
-  border: 2px solid rgba(248, 113, 113, 0.3);
+  border: 2px solid ${props => props.$isDark 
+    ? 'rgba(248, 113, 113, 0.3)' 
+    : 'rgba(239, 68, 68, 0.4)'};
   
-  color: #f87171;
+  color: ${props => props.$isDark ? '#f87171' : '#dc2626'};
   
   &:hover:not(:disabled) {
     border-color: rgba(248, 113, 113, 0.6);

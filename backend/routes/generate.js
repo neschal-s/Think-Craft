@@ -303,4 +303,198 @@ router.post('/slide-full', async (req, res, next) => {
   }
 });
 
+/**
+ * POST /api/generate/hashtags
+ * Generate 10 relevant hashtags based on prompt and carousel content
+ */
+router.post('/hashtags', async (req, res, next) => {
+  try {
+    const { prompt, carouselContent } = req.body;
+
+    if (!prompt) {
+      return res.status(400).json({ error: 'Missing prompt' });
+    }
+
+    console.log('[Hashtags] Generating hashtags for prompt:', prompt.substring(0, 50) + '...');
+
+    let hashtags;
+    if (USE_MOCK) {
+      console.log('[MOCK] Using mock hashtags');
+      // Generate mock hashtags based on prompt
+      const keywords = prompt.toLowerCase().split(' ').slice(0, 5);
+      hashtags = [
+        '#' + keywords[0] || 'content',
+        '#' + keywords[1] || 'creative',
+        '#' + keywords[2] || 'social',
+        '#SocialMedia',
+        '#Content',
+        '#Marketing',
+        '#Engagement',
+        '#CreativeContent',
+        '#Digital',
+        '#Success'
+      ];
+      await new Promise(r => setTimeout(r, 300));
+    } else {
+      // Use LLM to generate hashtags
+      const { generateHashtags: generateHashtagsLLM } = await import('../utils/llm.js');
+      hashtags = await generateHashtagsLLM(prompt, carouselContent);
+    }
+
+    console.log(`[Hashtags] ✅ Generated ${hashtags.length} hashtags`);
+    res.json({ hashtags });
+  } catch (error) {
+    console.error('[ERROR] In /hashtags endpoint:', error.message);
+    next(error);
+  }
+});
+
+/**
+ * POST /api/generate/captions
+ * Generate AI captions based on carousel content with specified style and length
+ */
+router.post('/captions', async (req, res, next) => {
+  try {
+    const { prompt, carouselContent, style = 'catchy', length = 'medium' } = req.body;
+
+    if (!prompt) {
+      return res.status(400).json({ error: 'Missing prompt' });
+    }
+
+    console.log('[Captions] Generating captions for prompt:', prompt.substring(0, 50) + '...');
+    console.log('[Captions] Style:', style, 'Length:', length);
+
+    let captions;
+    if (USE_MOCK) {
+      console.log('[MOCK] Using mock captions');
+      // Generate mock captions based on style
+      const lengthMap = {
+        short: 30,
+        medium: 75,
+        long: 120
+      };
+      const wordCount = lengthMap[length] || 75;
+      
+      const styleTemplates = {
+        catchy: `Discover the power of ${prompt}! 🚀 This game-changing approach will transform how you think about success. Don't miss out on this incredible opportunity to level up!`,
+        detailed: `Learn about ${prompt} in depth. This comprehensive guide covers key insights, practical applications, and real-world examples that will help you master this important topic and apply it effectively.`,
+        funny: `Buckle up! We're about to dive into ${prompt} and you'll never look at it the same way again. Prepare for mind-blowing revelations and maybe a few laughs along the way!`
+      };
+
+      captions = [
+        styleTemplates[style] || styleTemplates.catchy,
+        `${prompt} is more important than you think. Here's why: the impact is significant, the benefits are real, and the opportunity is now. Explore how this can change everything.`
+      ];
+      await new Promise(r => setTimeout(r, 500));
+    } else {
+      // Use LLM to generate captions
+      const { generateCaptions: generateCaptionsLLM } = await import('../utils/llm.js');
+      captions = await generateCaptionsLLM(prompt, carouselContent, style, length);
+    }
+
+    console.log(`[Captions] ✅ Generated ${captions.length} captions`);
+    res.json({ captions });
+  } catch (error) {
+    console.error('[ERROR] In /captions endpoint:', error.message);
+    next(error);
+  }
+});
+
+/**
+ * POST /api/generate/hashtags
+ * Generate 10 relevant hashtags based on prompt and carousel content
+ */
+router.post('/hashtags', async (req, res, next) => {
+  try {
+    const { prompt, carouselContent } = req.body;
+
+    if (!prompt) {
+      return res.status(400).json({ error: 'Missing prompt' });
+    }
+
+    console.log('[Hashtags] Generating hashtags for prompt:', prompt.substring(0, 50) + '...');
+
+    let hashtags;
+    if (USE_MOCK) {
+      console.log('[MOCK] Using mock hashtags');
+      // Generate mock hashtags based on prompt
+      const keywords = prompt.toLowerCase().split(' ').slice(0, 5);
+      hashtags = [
+        '#' + keywords[0] || 'content',
+        '#' + keywords[1] || 'creative',
+        '#' + keywords[2] || 'social',
+        '#SocialMedia',
+        '#Content',
+        '#Marketing',
+        '#Engagement',
+        '#CreativeContent',
+        '#Digital',
+        '#Success'
+      ];
+      await new Promise(r => setTimeout(r, 300));
+    } else {
+      // Use LLM to generate hashtags
+      const { generateHashtags: generateHashtagsLLM } = await import('../utils/llm.js');
+      hashtags = await generateHashtagsLLM(prompt, carouselContent);
+    }
+
+    console.log(`[Hashtags] ✅ Generated ${hashtags.length} hashtags`);
+    res.json({ hashtags });
+  } catch (error) {
+    console.error('[ERROR] In /hashtags endpoint:', error.message);
+    next(error);
+  }
+});
+
+/**
+ * POST /api/generate/captions
+ * Generate AI captions based on carousel content with specified style and length
+ */
+router.post('/captions', async (req, res, next) => {
+  try {
+    const { prompt, carouselContent, style = 'catchy', length = 'medium' } = req.body;
+
+    if (!prompt) {
+      return res.status(400).json({ error: 'Missing prompt' });
+    }
+
+    console.log('[Captions] Generating captions for prompt:', prompt.substring(0, 50) + '...');
+    console.log('[Captions] Style:', style, 'Length:', length);
+
+    let captions;
+    if (USE_MOCK) {
+      console.log('[MOCK] Using mock captions');
+      // Generate mock captions based on style
+      const lengthMap = {
+        short: 30,
+        medium: 75,
+        long: 120
+      };
+      const wordCount = lengthMap[length] || 75;
+      
+      const styleTemplates = {
+        catchy: `Discover the power of ${prompt}! 🚀 This game-changing approach will transform how you think about success. Don't miss out on this incredible opportunity to level up!`,
+        detailed: `Learn about ${prompt} in depth. This comprehensive guide covers key insights, practical applications, and real-world examples that will help you master this important topic and apply it effectively.`,
+        funny: `Buckle up! We're about to dive into ${prompt} and you'll never look at it the same way again. Prepare for mind-blowing revelations and maybe a few laughs along the way!`
+      };
+
+      captions = [
+        styleTemplates[style] || styleTemplates.catchy,
+        `${prompt} is more important than you think. Here's why: the impact is significant, the benefits are real, and the opportunity is now. Explore how this can change everything.`
+      ];
+      await new Promise(r => setTimeout(r, 500));
+    } else {
+      // Use LLM to generate captions
+      const { generateCaptions: generateCaptionsLLM } = await import('../utils/llm.js');
+      captions = await generateCaptionsLLM(prompt, carouselContent, style, length);
+    }
+
+    console.log(`[Captions] ✅ Generated ${captions.length} captions`);
+    res.json({ captions });
+  } catch (error) {
+    console.error('[ERROR] In /captions endpoint:', error.message);
+    next(error);
+  }
+});
+
 export default router;

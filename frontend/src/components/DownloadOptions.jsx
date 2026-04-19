@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useTheme } from '../context/ThemeContext';
+import { CompactButton } from '../styles/ModernButtons';
 
 const MenuContainer = styled.div`
   background: ${props => props.$isDark ? 'rgba(26, 29, 37, 0.95)' : 'rgba(255, 255, 255, 0.95)'};
@@ -12,33 +13,10 @@ const MenuContainer = styled.div`
   min-width: 200px;
 `;
 
-const MenuItem = styled.button`
-  width: 100%;
-  padding: 12px 16px;
-  border: 2px solid transparent;
-  border-radius: 8px;
-  background: ${props => props.$isDark ? 'rgba(0, 85, 255, 0.1)' : 'rgba(0, 85, 255, 0.05)'};
-  color: ${props => props.$isDark ? '#00d9ff' : '#0055ff'};
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.3s;
-  text-align: left;
-  margin-bottom: 8px;
-
-  &:last-child {
-    margin-bottom: 0;
-  }
-
-  &:hover {
-    background: ${props => props.$isDark ? 'rgba(0, 85, 255, 0.2)' : 'rgba(0, 85, 255, 0.1)'};
-    border-color: ${props => props.$isDark ? 'rgba(0, 200, 255, 0.5)' : 'rgba(0, 120, 200, 0.5)'};
-    transform: translateX(4px);
-  }
-
-  &:active {
-    transform: translateX(2px);
-  }
+const ButtonWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 `;
 
 const DownloadOptions = ({ onDownloadPNG, onDownloadPDF, onDownloadPPT, onBack, hasBack }) => {
@@ -46,53 +24,40 @@ const DownloadOptions = ({ onDownloadPNG, onDownloadPDF, onDownloadPPT, onBack, 
 
   return (
     <MenuContainer $isDark={isDark}>
-      {hasBack && (
-        <>
-          <MenuItem $isDark={isDark} onClick={onDownloadPNG}>
-            Download as PNG
-          </MenuItem>
-          <MenuItem $isDark={isDark} onClick={onDownloadPDF}>
-            Download as PDF
-          </MenuItem>
-          <MenuItem $isDark={isDark} onClick={onDownloadPPT}>
-            Download as PPT
-          </MenuItem>
-          <BackButton $isDark={isDark} onClick={onBack} style={{marginTop: '8px', marginBottom: '0'}}>Back</BackButton>
-        </>
-      )}
-      {!hasBack && (
-        <>
-          <MenuItem $isDark={isDark} onClick={onDownloadPNG}>
-            Download as PNG
-          </MenuItem>
-          <MenuItem $isDark={isDark} onClick={onDownloadPDF}>
-            Download as PDF
-          </MenuItem>
-          <MenuItem $isDark={isDark} onClick={onDownloadPPT}>
-            Download as PPT
-          </MenuItem>
-        </>
-      )}
+      <ButtonWrapper>
+        <CompactButton
+          $isDark={isDark}
+          onClick={onDownloadPNG}
+          style={{ width: '100%', textAlign: 'left' }}
+        >
+          Download as PNG
+        </CompactButton>
+        <CompactButton
+          $isDark={isDark}
+          onClick={onDownloadPDF}
+          style={{ width: '100%', textAlign: 'left' }}
+        >
+          Download as PDF
+        </CompactButton>
+        <CompactButton
+          $isDark={isDark}
+          onClick={onDownloadPPT}
+          style={{ width: '100%', textAlign: 'left' }}
+        >
+          Download as PPT
+        </CompactButton>
+        {hasBack && (
+          <CompactButton
+            $isDark={isDark}
+            onClick={onBack}
+            style={{ width: '100%', marginTop: '4px' }}
+          >
+            Back
+          </CompactButton>
+        )}
+      </ButtonWrapper>
     </MenuContainer>
   );
 };
-
-const BackButton = styled.button`
-  width: 100%;
-  padding: 8px 12px;
-  border: 1px solid ${props => props.$isDark ? 'rgba(100, 200, 255, 0.3)' : 'rgba(0, 100, 200, 0.3)'};
-  border-radius: 6px;
-  background: transparent;
-  color: ${props => props.$isDark ? '#cbd5e1' : '#64748b'};
-  font-weight: 500;
-  font-size: 12px;
-  cursor: pointer;
-  transition: all 0.3s;
-  text-align: center;
-
-  &:hover {
-    background: ${props => props.$isDark ? 'rgba(100, 200, 255, 0.1)' : 'rgba(0, 100, 200, 0.05)'};
-  }
-`;
 
 export default DownloadOptions;
